@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-ale-rainbow",
+  "name": "@ale-rainbow/node-red-contrib-ale-rainbow",
   "version": "1.1.1",
   "description": "Alcatel-Lucent Enterprise Rainbow Nodes for Node Red",
   "dependencies": {
@@ -14,7 +14,7 @@
     "chat",
     "presence"
   ],
-  "author": "Benoit Trinité <benoit.trinite@al-enterprise.com>",
+  "author": "Benoit Trinité <btrinite@free.fr>",
   "license": "MIT",
   "node-red": {
     "nodes": {
@@ -24,13 +24,13 @@
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/btrinite/node-red-contrib-ale-rainbow.git"
+      "url": "https://github.com/Rainbow-CPaaS/node-red-contrib-ale-rainbow.git"
     }
   ],
   "maintainers": [
     {
       "name": "Benoit Trinite",
-      "email": "benoit.trinite@al-enterprise.com",
+      "email": "btrinite@free.fr",
       "web": "http://www.openrainbow.com"
     }
   ]
