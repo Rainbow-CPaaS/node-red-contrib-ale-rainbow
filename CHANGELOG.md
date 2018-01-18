@@ -2,6 +2,9 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.2.2] - 2018-01-18
+- Do some corrections in package.json
+
 ## [1.2.1] - 2018-01-16
 - Add this Changelog
 - Improve cleanup: stop node.js SDK also to close event socket
