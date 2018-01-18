@@ -1,6 +1,6 @@
 {
-  "name": "@ale-rainbow/node-red-contrib-ale-rainbow",
-  "version": "1.2.2",
+  "name": "node-red-contrib-ale-rainbow",
+  "version": "1.2.3",
   "description": "Alcatel-Lucent Enterprise Rainbow Nodes for Node Red",
   "dependencies": {
     "rainbow-node-sdk": "latest"
