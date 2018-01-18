@@ -24,6 +24,7 @@ module.exports = function(RED) {
   function releaseSDK(node, instanceId) {
     node.log ("Removing RainbowSDK instance "+instanceId);
     if (rainbowSDK[instanceId] === null) {return};
+    rainbowSDK[instanceId].stop();
     delete rainbowSDK[instanceId];
     rainbowSDK[instanceId] = null;
   }
@@ -33,7 +34,7 @@ module.exports = function(RED) {
     if (rainbowSDK[instanceId] === null) {return};
     var handler = rainbowSDKHandlers[instanceId].pop();
      while(handler) {
-        rainbowSDK[instanceId].events.removeListener(handler.evt, handler.fct);
+        rainbowSDK[instanceId].events.eee.removeListener(handler.evt, handler.fct);
         handler = rainbowSDKHandlers[instanceId].pop();
      };
   }
