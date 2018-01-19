@@ -2,7 +2,12 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
-## [1.2.2] - 2018-01-18
+## [1.2.4] - 2018-01-19
+- Corrections for https://github.com/Rainbow-CPaaS/node-red-contrib-ale-rainbow/issues/3 to allow msg in a bubble
+- Code refactoring: add missing state events, add started/stopped states
+- implement also new on "close" from node-red
+
+## [1.2.2] - [1.2.3] - 2018-01-18
 - Do some corrections in package.json
 
 ## [1.2.1] - 2018-01-16
