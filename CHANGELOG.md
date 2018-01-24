@@ -2,6 +2,14 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.2.5] - 2018-01-24
+- Not reproductible: closing issue onRainbowError() : XMPPERROR #5
+- Rewite some docs in nodes to match new node-red format, update the README.md
+- Refactor code
+- There are "Error while Deploy (stop/start)" which should be corrected with next dependency version (Rainbow Node.js SDK)
+- Added in Notified_IM node 2 filters: filterContact and filterCompany to only accept message from a user of from a company
+- Corrected issue: RegExp Filter typo #6
+
 ## [1.2.4] - 2018-01-19
 - Corrections for https://github.com/Rainbow-CPaaS/node-red-contrib-ale-rainbow/issues/3 to allow msg in a bubble
 - Code refactoring: add missing state events, add started/stopped states

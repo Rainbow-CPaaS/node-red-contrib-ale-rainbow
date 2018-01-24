@@ -43,7 +43,8 @@ Accepted message format is:
 - ```destJid``` is : Recipient JID (Jabber ID) for the IM. If not specified, Desintation JID configured at node level is used.
 
 
-3. ```RBGet_IM``` : Input node to listen for new incoming IM from a Rainbow user or Bubble.
+3. ```RBNotified_IM``` : Input node to listen for new incoming IM from a Rainbow user or Bubble.
+You can add filters to select which message may pass through (by RegExp, user or company).
 Delivered message format is:
 ```
 {  
@@ -60,7 +61,12 @@ Delivered message format is:
 
 var msg = { payload: { loginemail:contact.loginEmail, displayname:contact.displayName, fromJid:contact.jid_im, presence:contact.presence, status:contact.status  }};
 
-5. ```RBGet_Presence``` : Input node to listen for presence update of contact list.
+5. ```RBAck_IM_Read``` : Output node to Ack (mark as read) IM received.
+
+⚠ msg.payload should contain the complete message received with Notified_IM node.
+Race condition could occured. It is highly recommanded to add delay between IM reception and ack.
+
+6. ```RBNotified_Presence``` : Input node to listen for presence update of contact list.
 Delivered message format is:
 ```
 {  
@@ -81,7 +87,7 @@ Delivered message format is:
   - ```When presence is online``` can be mobile
   - ```When presence is busy``` can be presentation, audio, video or sharing
 
-  6. ```RBSet_Presence``` : Output node to set own presence .
+  7. ```RBSet_Presence``` : Output node to set own presence .
   Accepted message format is:
   ```
   {  
@@ -90,7 +96,7 @@ Delivered message format is:
   ```
   - ```payload``` is: presence (can be online, dnd, away or invisible).
 
-  7. ```RBGet_CnxState``` : Input node to get connection state .
+  8. ```RBGet_CnxState``` : Input node to get connection state .
   Delivered message format is:
   ```
   {  
