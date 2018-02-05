@@ -2,6 +2,11 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+
+## [1.2.6] - 2018-02-03
+- Add some documentation on usable parameters got from Notified_IM
+- Add Markdown support (alternative content)
+
 ## [1.2.5] - 2018-01-24
 - Not reproductible: closing issue onRainbowError() : XMPPERROR #5
 - Rewite some docs in nodes to match new node-red format, update the README.md

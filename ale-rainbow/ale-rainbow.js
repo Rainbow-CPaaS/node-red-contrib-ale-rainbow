@@ -413,18 +413,21 @@ module.exports = function(RED) {
       if (serverctx.get('RBLoginState') === false) {
         node.log("Rainbow SDK not ready ("+config.server+")");
       } else {
+        let lang = msg.payload.lang ? msg.payload.lang : null;
+        let content = msg.payload.alternateContent ? msg.payload.alternateContent : null;
+        let subject = msg.payload.lang ? msg.payload.lang : null;
         if (msg.payload.destJid) {
           if (msg.payload.destJid.substring(0,5) === "room_") {
-            rainbowSDK[config.server].im.sendMessageToBubbleJid(msg.payload.content,msg.payload.destJid);
+            rainbowSDK[config.server].im.sendMessageToBubbleJid(msg.payload.content,msg.payload.destJid, lang, content, subject);
           } else {
-            rainbowSDK[config.server].im.sendMessageToJid(msg.payload.content,msg.payload.destJid);
+            rainbowSDK[config.server].im.sendMessageToJid(msg.payload.content,msg.payload.destJid, lang, content, subject);
           }
         } else {
           node.log("Rainbow SDK ("+config.server+" "+msg.payload.content + " "+node.destJid);
           if (node.destJid.substring(0,5) === "room_") {
-            rainbowSDK[config.server].im.sendMessageToBubbleJid(msg.payload.content,node.destJid);
+            rainbowSDK[config.server].im.sendMessageToBubbleJid(msg.payload.content,node.destJid, lang, content, subject);
           } else {
-            rainbowSDK[config.server].im.sendMessageToJid(msg.payload.content,node.destJid);
+            rainbowSDK[config.server].im.sendMessageToJid(msg.payload.content,node.destJid, lang, content, subject);
           }
         }
       }

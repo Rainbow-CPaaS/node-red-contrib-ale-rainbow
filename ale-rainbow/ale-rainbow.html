@@ -179,7 +179,13 @@ RED.nodes.registerType('CnxState',{
     <h3>Input :</h3>
     <ul>
         <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
-        <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional).</li>
+        <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string).</li>
+        <li><code>msg.payload.lang</code> The content language used (optional, as a string).</li>
+        <li><code>msg.payload.alternateContent</code> should contain alternative text base content (optional, as a string) with<br/>
+            &nbsp;&nbsp;&nbsp;<code>alternateContent.type = "text"</code> or <code>"markdown"</code>, the message type<br/>
+            &nbsp;&nbsp;&nbsp;<code>alternateContent.message</code> The message body.<br/>
+        Warning: the <code>msg.payload.content</code> should also be sent for clients not able to see Markdown for example</li>
+        <li><code>msg.payload.subject</code> should contain the message subject (optional, as a string).</li>
     </ul>
 </script>
 
@@ -222,9 +228,11 @@ RED.nodes.registerType('CnxState',{
         <br/>
     </dl>
     <h3>Output :</h3>
-    <code>msg.payload</code> contains :<br>
+    <code>msg.payload</code> contains <b>relevant</b> :<br>
     <ul>
         <li><code>fromJid</code> : JID of the originator of the IM,</li>
+        <li><code>toJid</code> : your JID,</li>
+        <li><code>lang</code> : the langage set by the originator (warning, he may write in another language),</li>
         <li><code>content</code> : IM content</li>
     </ul>
 </script>
