@@ -469,64 +469,50 @@ module.exports = function(RED) {
         }
       }
 
-      // Filter with contact/company ?
-      if ( ((node.filterContact != '') && (node.filterContact != undefined)) ||
-        ((node.filterCompany != '') && (node.filterCompany != undefined)) ) {
-
-          node.log("Rainbow : One filter needs to get contact informatopn from jId: " + message.fromJid);
-
-        // Get contact information from server
-        rainbowSDK[config.server]
+      // Get contact information from server
+      rainbowSDK[config.server]
 //        ._core
 //        ._contacts
-        .contacts
-        .getContactByJid(message.fromJid)
-        .then((contact) => {
-          if (contact) {
+      .contacts
+      .getContactByJid(message.fromJid)
+      .then((contact) => {
+        if (contact) {
 
-            // Contact filter ?
-            if ( (node.filterContact != '') && (node.filterContact != undefined) ) {
-              filterOK = false;
-              if ( (node.filterContact === contact.loginEmail) || (node.filterContact === contact.jid_im) ) {
-                filterOK = true;
-                node.log("Rainbow : Contact filter OK !");
-              } else {
-                node.log("Rainbow : Contact filter blocked !");
-                return;
-              }
+          // Contact filter ?
+          if ( (node.filterContact != '') && (node.filterContact != undefined) ) {
+            filterOK = false;
+            if ( (node.filterContact === contact.loginEmail) || (node.filterContact === contact.jid_im) ) {
+              filterOK = true;
+              node.log("Rainbow : Contact filter OK !");
+            } else {
+              node.log("Rainbow : Contact filter blocked !");
+              return;
             }
-
-            // Company filter ?
-            if ( (node.filterCompany != '') && (node.filterCompany != undefined) ) {
-              filterOK = false;
-              if (node.filterCompany === contact.companyId) {
-                filterOK = true;
-                node.log("Rainbow : Company id filter OK !");
-              } else {
-                node.log("Rainbow : Company id filter blocked !");
-                return;
-              }
-            }
-
-            node.log("Rainbow : sending message.");
-
-            var msg = { payload: message };
-            node.send(msg);
-
-          } else {
-            node.warn("Rainbow : couldn't find user for jID : " + message.fromJid);
           }
 
-        });      
+          // Company filter ?
+          if ( (node.filterCompany != '') && (node.filterCompany != undefined) ) {
+            filterOK = false;
+            if (node.filterCompany === contact.companyId) {
+              filterOK = true;
+              node.log("Rainbow : Company id filter OK !");
+            } else {
+              node.log("Rainbow : Company id filter blocked !");
+              return;
+            }
+          }
 
-      } else {
-        if (!filterOK) {
-          return;
+          node.log("Rainbow : sending message.");
+
+          var msg = { payload: message, contact: contact };
+          node.send(msg);
+
+        } else {
+          node.warn("Rainbow : couldn't find user for jID : " + message.fromJid);
         }
-        node.log("Rainbow : sending message.");
-        var msg = { payload: message };
-        node.send(msg);
-      }
+
+      });      
+
     };
 
     var getRainbowSDKGetMessageGetMessage = function getRainbowSDKGetMessageGetMessage() {

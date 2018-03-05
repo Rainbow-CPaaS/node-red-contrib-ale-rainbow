@@ -2,6 +2,9 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.2.7] - 2018-03-05
+- Notified_IM now also give payload.contact which contains sender informations
+- Dependency update: SDK Node.js
 
 ## [1.2.6] - 2018-02-03
 - Add some documentation on usable parameters got from Notified_IM
