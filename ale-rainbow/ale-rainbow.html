@@ -1,428 +1,459 @@
 <script type="text/javascript">
 
-RED.nodes.registerType('Login',{
-  category: 'config',
-  defaults: {
-      name: {value:""},
-      autoLogin: {value:false},
-      proxyHost: {value:"", required:false},
-      proxyPort: {value:"", required:false},
-      proxyProto: {value:"", required:false},
-      ackIM: {value:false},
-  },
-  credentials: {
-       username: {type:"text", required:true},
-       password: {type:"password", required:true}
-  },
-  label: function() {
-      return this.name||"Login";
-  },
-});
-
-RED.nodes.registerType('Send_IM',{
-    category: 'ALE Rainbow',
-    color: '#a6bbcf',
-    defaults: {
-        server: {value:"", type:"Login"},
-        name: {value:""},
-        destJid: {value:"", required:false }
-    },
-    inputs:1,
-    outputs:0,
-    icon: "rainbow.png",
-    label: function() {
-        return this.name||"Send_IM";
-    }
-});
-
-RED.nodes.registerType('Notified_IM',{
-    category: 'ALE Rainbow',
-    color: '#a6bbcf',
-    defaults: {
-        server: {value:"", type:"Login"},
-        name: {value:""},
-        filter: {value:"", required:false},
-        filterContact: {value:"", required:false},
-        filterCompany: {value:"", required:false}
-    },
-    inputs:0,
-    outputs:1,
-    icon: "rainbow.png",
-    label: function() {
-        return this.name||"Notified_IM";
-    }
-});
-
-RED.nodes.registerType('Notified_IM_Read',{
-    category: 'ALE Rainbow',
-    color: '#a6bbcf',
-    defaults: {
-        server: {value:"", type:"Login"},
-        name: {value:""},
-        filter: {value:"", required:false}
-    },
-    inputs:0,
-    outputs:1,
-    icon: "rainbow.png",
-    label: function() {
-        return this.name||"Notified_IM_Read";
-    }
-});
-
-RED.nodes.registerType('Ack_IM_Read',{
-    category: 'ALE Rainbow',
-    color: '#a6bbcf',
-    defaults: {
-        server: {value:"", type:"Login"},
-        name: {value:""},
-    },
-    inputs:1,
-    outputs:0,
-    icon: "rainbow.png",
-    label: function() {
-        return this.name||"Ack_IM_Read";
-    }
-});
-RED.nodes.registerType('Notified_Presence',{
-    category: 'ALE Rainbow',
-    color: '#a6bbcf',
-    defaults: {
-        server: {value:"", type:"Login"},
-        name: {value:""},
-        filter: {value:"", required:false}
-    },
-    inputs:0,
-    outputs:1,
-    icon: "rainbow.png",
-    label: function() {
-        return this.name||"Notified_Presence";
-    }
-});
-
-RED.nodes.registerType('Set_Presence',{
-    category: 'ALE Rainbow',
-    color: '#a6bbcf',
-    defaults: {
-        server: {value:"", type:"Login"},
-        name: {value:""},
-    },
-    inputs:1,
-    outputs:0,
-    icon: "rainbow.png",
-    label: function() {
-        return this.name||"Set_Presence";
-    }
-});
-
-RED.nodes.registerType('CnxState',{
-    category: 'ALE Rainbow',
-    color: '#a6bbcf',
-    defaults: {
-        server: {value:"", type:"Login"},
-        name: {value:""},
-    },
-    inputs:1,
-    outputs:1,
-    icon: "rainbow.png",
-    label: function() {
-        return this.name||"CnxState";
-    },
-    button: {
-        onclick: function() {
-            var node = this;
-            $.ajax({
-                url: "Login/"+this.id,
-                type:"POST",
-                success: function(resp) {
-                    RED.notify(node._("CnxState.success",{label:label}),"success");
-                },
-                error: function(jqXHR,textStatus,errorThrown) {
-                    if (jqXHR.status == 404) {
-                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.not-deployed")}),"error");
-                    } else if (jqXHR.status == 500) {
-                        RED.notify(node._("common.notification.error",{message:node._("inject.errors.failed")}),"error");
-                    } else if (jqXHR.status == 0) {
-                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.no-response")}),"error");
-                    } else {
-                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.unexpected",{status:jqXHR.status,message:textStatus})}),"error");
-                    }
-                }
-            });
+    RED.nodes.registerType('Login',{
+      category: 'config',
+      defaults: {
+          name: {value:""},
+          autoLogin: {value:false},
+          proxyHost: {value:"", required:false},
+          proxyPort: {value:"", required:false},
+          proxyProto: {value:"", required:false},
+          ackIM: {value:false},
+      },
+      credentials: {
+           username: {type:"text", required:true},
+           password: {type:"password", required:true}
+      },
+      label: function() {
+          return this.name||"Login";
+      },
+    });
+    
+    RED.nodes.registerType('Send_IM',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destJid: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_IM";
         }
-    }
-});
-</script>
-
-<script type="text/x-red" data-template-name="Send_IM">
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-destJid"><i class="icon-tag"></i> Destination JID</label>
-        <input type="text" id="node-input-destJid" placeholder="Full JID here">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="Send_IM">
-    <p>Send a instant message to a Rainbow identity</p>
-    <h3>Properties :</h3>
-    <dl class="message-properties">
-        <dt>Destination JID<span class="property-type">string</span></dt>
-        <dd>is the full JID of the default receipient.<br/>.(unless <code>msg.payload.destJid</code> is defined)</dd>
-    </dl>
-    <br>
-    <h3>Input :</h3>
-    <ul>
-        <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
-        <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string).</li>
-        <li><code>msg.payload.lang</code> The content language used (optional, as a string).</li>
-        <li><code>msg.payload.alternateContent</code> should contain alternative text base content (optional, as a string) with<br/>
-            &nbsp;&nbsp;&nbsp;<code>alternateContent.type = "text"</code> or <code>"markdown"</code>, the message type<br/>
-            &nbsp;&nbsp;&nbsp;<code>alternateContent.message</code> The message body.<br/>
-        Warning: the <code>msg.payload.content</code> should also be sent for clients not able to see Markdown for example</li>
-        <li><code>msg.payload.subject</code> should contain the message subject (optional, as a string).</li>
-    </ul>
-</script>
-
-<script type="text/x-red" data-template-name="Notified_IM">
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-filter"><i class="icon-tag"></i>RegExp Filter</label>
-        <input type="text" id="node-input-filter" placeholder="RexExp Here">
-    </div>
-    <div class="form-row">
-        <label for="node-input-filterContact"><i class="icon-tag"></i>Contact filter</label>
-        <input type="text" id="node-input-filterContact" placeholder="JiD, email (login) Here">
-    </div>
-    <div class="form-row">
-        <label for="node-input-filterCompany"><i class="icon-tag"></i>Company filter</label>
-        <input type="text" id="node-input-filterCompany" placeholder="companyId Here">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="Notified_IM">
-    <p>Get a instant message to a Rainbow identity</p>
-    <h3>Filters :</h3>
-    <dl class="message-properties">
-        <p>either</p>
-        <dt>RegExp Filter<span class="property-type">string</span></dt>
-        <dd>a <code>RegExp</code> the msg sent should match.</dd>
-        <br/>
-        <dt>Contact filter<span class="property-type">string</span></dt>
-        <dd>the user's jid or login email.</dd>
-        <br/>
-        <dt>Company filter<span class="property-type">string</span> </dt>
-        <dd>user's compayId (to identify a company id, activate node-red logs and it'll be printed as a message arives from someone).</dd>
-        <br/>
-    </dl>
-    <h3>Output :</h3>
-    <code>msg.payload</code> contains <b>relevant</b> :<br>
-    <ul>
-        <li><code>fromJid</code> : JID of the originator of the IM,</li>
-        <li><code>toJid</code> : your JID,</li>
-        <li><code>lang</code> : the langage set by the originator (warning, he may write in another language),</li>
-        <li><code>content</code> : IM content</li>
-        <li>Other information about the message, if  like <code>alternativeContentw</code>, may be found in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
-    </ul>
-    <code>msg.contact</code> contains <b>relevant</b> information from the IM sender :<br>
-    <ul>
-        <li><code>jid_im</code> : JID of the originator of the IM,</li>
-        <li><code>loginEmail</code> : the sender login email,</li>
-        <li><code>companyId</code> : the sender Company Id,</li>
-        <li><code>firstname</code>, <code>lastname</code>, ... : provided contact informations</li>
-        <li>Other information, if provided, are described in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a></li>
-    </ul>
-</script>
-
-<script type="text/x-red" data-template-name="Notified_IM_Read">
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-filter"><i class="icon-tag"></i> RegExp Filter</label>
-        <input type="text" id="node-input-filter" placeholder="RexExp Here">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="Notified_IM_Read">
-    <p>Get notifies when a message has been read by distant.<br/>
-    You can add a RegExp filter</p>
-    <h3>Properties :</h3>
-    <dl class="message-properties">
-        <dt>RegExp Filter<span class="property-type">string</span></dt>
-        <dd>a <code>RegExp</code> the msg sent should match.</dd>
-        <br/>
-    </dl>
-    <br>
-</script>
-
-<script type="text/x-red" data-template-name="Ack_IM_Read">
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="Ack_IM_Read">
-    <p>Ack (mark as read) IM received.</p>
-    <h3>Input :</h3>
-    <ul>
-        ⚠<code>msg.payload</code> should contain the <b>complete message received</b> with Notified_IM node.
-        <br/>
-    </ul>
-    <h3>Node :</h3>
-    <p>    Race condition could occured. It is highly recommanded to add delay between IM reception and ack.</p>
-</script>
-
-<script type="text/x-red" data-template-name="Notified_Presence">
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-filter"><i class="icon-tag"></i> RegExp Filter</label>
-        <input type="text" id="node-input-filter" placeholder="RexExp Here">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="Notified_Presence">
-    <p>Get presence update of given user<p>
-    <h3>Output :</h3>
-    <dl class="message-properties">
-        <p><code>msg.payload</code> contains :</p>
-        <dt><code>loginemail</code><span class="property-type">string</span></dt>
-        <dd>loginEmail address of the contact.</dd>
-        <br/>
-        <dt><code>displayname</code><span class="property-type">string</span></dt>
-        <dd>plain text display name of the contact.</dd>
-        <br/>
-        <dt><code>fromJid</code><span class="property-type">string</span></dt>
-        <dd>JID of the contact of the IM.</dd>
-        <br/>
-        <dt><code>presence</code><span class="property-type">string</span></dt>
-        <dd>presence of the contact (string), can be 'online', 'offline', 'busy', 'xa' or 'away'. 'xa' means do not disturb.</dd>
-        <br/>
-        <dt><code>status</code><span class="property-type">string</span></dt>
-        <dd>additional presence information : can be 'presentation', 'phone', 'audio', 'video' or 'sharing' when presence is 'busy', can be 'mobile' when presence is 'online'.</dd>
-        <br/>
-    </dl>
-</script>
-
-<script type="text/x-red" data-template-name="Set_Presence">
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="Set_Presence">
-    <p>Set own presence</p>
-    <h3>Output :</h3>
-    <p><code>msg.payload</code> filled with either 
-    <ul>
-        <li><code>'online'</code>,</li>
-        <li><code>'dnd'</code>,</li>
-        <li><code>'away'</code></li>
-        <li>or <code>'invisible'</code></li>
-    </ul>
-</script>
-
-<script type="text/x-red" data-template-name="CnxState">
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
-        <input type="text" id="node-input-server">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="CnxState">
-    <p>Get connection state to Rainbow Cloud services</p>
-    <h3>Input :</h3>
-    <p><code>msg.payload</code> contains connection request (string).<br>
-    It can be :
-    <ul>
-        <li><code>'login'</code> : triggers Rainbow sign-in procedure<br>
-        <li><code>'logout'</code> : triggers Rainbow sign-out procedure<br>
+    });
+    
+    RED.nodes.registerType('Notified_IM',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            filter: {value:"", required:false},
+            filterContact: {value:"", required:false},
+            filterCompany: {value:"", required:false},
+            ignorechat: {value:false, required:false},
+            ignoregroupchat: {value:false, required:false}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Notified_IM";
+        }
+    });
+    
+    RED.nodes.registerType('Notified_IM_Read',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            filter: {value:"", required:false}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Notified_IM_Read";
+        }
+    });
+    
+    RED.nodes.registerType('Ack_IM_Read',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Ack_IM_Read";
+        }
+    });
+    RED.nodes.registerType('Notified_Presence',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            filter: {value:"", required:false}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Notified_Presence";
+        }
+    });
+    
+    RED.nodes.registerType('Set_Presence',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Set_Presence";
+        }
+    });
+    
+    RED.nodes.registerType('CnxState',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"CnxState";
+        },
+        button: {
+            onclick: function() {
+                var node = this;
+                $.ajax({
+                    url: "Login/"+this.id,
+                    type:"POST",
+                    success: function(resp) {
+                        RED.notify(node._("CnxState.success",{label:label}),"success");
+                    },
+                    error: function(jqXHR,textStatus,errorThrown) {
+                        if (jqXHR.status == 404) {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.not-deployed")}),"error");
+                        } else if (jqXHR.status == 500) {
+                            RED.notify(node._("common.notification.error",{message:node._("inject.errors.failed")}),"error");
+                        } else if (jqXHR.status == 0) {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.no-response")}),"error");
+                        } else {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.unexpected",{status:jqXHR.status,message:textStatus})}),"error");
+                        }
+                    }
+                });
+            }
+        }
+    });
+    </script>
+    
+    <script type="text/x-red" data-template-name="Send_IM">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-destJid"><i class="icon-tag"></i> Destination JID</label>
+            <input type="text" id="node-input-destJid" placeholder="Full JID here">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Send_IM">
+        <p>Send a instant message to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Destination JID<span class="property-type">string</span></dt>
+            <dd>is the full JID of the default receipient.<br/>.(unless <code>msg.payload.destJid</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
+            <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string).</li>
+            <li><code>msg.payload.lang</code> The content language used (optional, as a string).</li>
+            <li><code>msg.payload.alternateContent</code> should contain alternative text base content (optional, as a string) with<br/>
+                &nbsp;&nbsp;&nbsp;<code>alternateContent.type = "text"</code> or <code>"markdown"</code>, the message type<br/>
+                &nbsp;&nbsp;&nbsp;<code>alternateContent.message</code> The message body.<br/>
+            Warning: the <code>msg.payload.content</code> should also be sent for clients not able to see Markdown for example</li>
+            <li><code>msg.payload.subject</code> should contain the message subject (optional, as a string).</li>
         </ul>
-    </p>
-    <h3>Output :</h3>
-    <p><code>msg.payload</code> contains connection status (string).<br>
-    It can be :</p>
-    <ul>
-        <li><code>'rainbow_onconnectionok'</code> : Fired when the connection is successfull with Rainbow (signin complete)<br>
-        <li><code>'rainbow_onready'</code> : Fired when the SDK is connected to Rainbow and ready to be used<br>
-        <li><code>'rainbow_onconnectionerror'</code> :  Fired when the connection can t be done with Rainbow (ie. issue on sign-in) <br>
-        <li><code>'rainbow_onerror'</code> : Fired when something goes wrong (ie: bad 'configurations' parameter...)
-    <//ul>
-</script>
-
-<script type="text/x-red" data-template-name="Login">
-    <div class="form-row">
-        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-username"><i class="icon-tag"></i> Username</label>
-        <input type="text" id="node-config-input-username">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
-        <input type="password" id="node-config-input-password">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-autoLogin"><i class="icon-tag"></i> Automatic Login</label>
-        <input type="checkbox" id="node-config-input-autoLogin">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-proxyHost"><i class="icon-tag"></i> Proxy Host</label>
-        <input type="text" id="node-config-input-proxyHost" placeholder="Proxy IP or FQDN">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-proxyPort"><i class="icon-tag"></i> Proxy Port</label>
-        <input type="text" id="node-config-input-proxyPort" placeholder="Proxy Port">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-proxyProto"><i class="icon-tag"></i> Proxy Protocol</label>
-        <input type="text" id="node-config-input-proxyProto" placeholder="http or https">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-ackIM"><i class="icon-tag"></i> Automatic acknowledge of incoming IM</label>
-        <input type="checkbox" id="node-config-input-ackIM">
-    </div>
-</script>
-
-<script type="text/x-red" data-help-name="Login">
-    <p>Login to Rainbow with your identity<br>
-</script>
+    </script>
+    
+    <script type="text/x-red" data-template-name="Notified_IM">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filter"><i class="icon-tag"></i>RegExp Filter</label>
+            <input type="text" id="node-input-filter" placeholder="RexExp Here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filterContact"><i class="icon-tag"></i>Contact filter</label>
+            <input type="text" id="node-input-filterContact" placeholder="JiD, email (login) Here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filterCompany"><i class="icon-tag"></i>Company filter</label>
+            <input type="text" id="node-input-filterCompany" placeholder="companyId Here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-ignorechat"><i class="icon-tag"></i>Ignore chat messages</label>
+            <input type="checkbox" id="node-input-ignorechat">
+        </div>
+        <div class="form-row">
+            <label for="node-input-ignoregroupchat"><i class="icon-tag"></i>Ignore groupchat messages</label>
+            <input type="checkbox" id="node-input-ignoregroupchat">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Notified_IM">
+        <p>Get a instant message to a Rainbow identity</p>
+        <h3>Filters :</h3>
+        <dl class="message-properties">
+            <p>either</p>
+            <dt>RegExp Filter<span class="property-type">string</span></dt>
+            <dd>a <code>RegExp</code> the msg sent should match.</dd>
+            <br/>
+            <dt>Contact filter<span class="property-type">string</span></dt>
+            <dd>the user's jid or login email.</dd>
+            <br/>
+            <dt>Company filter<span class="property-type">string</span> </dt>
+            <dd>user's compayId (to identify a company id, activate node-red logs and it'll be printed as a message arives from someone).</dd>
+            <br/>
+            <dt>Ignore chat messages </dt>
+            <dd>to ignore one to one messages</dd>
+            <br/>
+            <dt>Ignore groupchat messages </dt>
+            <dd>to ignore messages in Bubbles</dd>
+            <br/>
+        </dl>
+        <h3>Output :</h3>
+        <code>msg.payload</code> contains <b>relevant</b> :<br>
+        <ul>
+            <li><code>toJid</code> : your JID,</li>
+            <li><code>type</code> : IM type, may be "chat" or "groupchat" (in a Bubble),</li>
+            <li><code>fromJid</code> : </li>
+                <ul>
+                    <li>one to one chat: JID of the originator of the IM,</li>
+                    <li>When in a bubble: the fromJid property contains the identity of the user inside the bubble so follows the pattern jid_room/jid_user</li>
+                </ul>
+            <li><code>fromBubbleUserJid</code> : The JID of the user who send the message without the JID of the Bubble. (Only for groupchat message),</li>
+            <li><code>lang</code> : the langage set by the originator (warning, he may write in another language),</li>
+            <li><code>content</code> : IM content</li>
+            <li>Other information about the message, if  like <code>alternativeContentw</code>, may be found in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
+        </ul>
+        <code>msg.contact</code> contains <b>relevant</b> information from the IM sender :<br>
+        <ul>
+            <li><code>jid_im</code> : JID of the originator of the IM,</li>
+            <li><code>loginEmail</code> : the sender login email,</li>
+            <li><code>companyId</code> : the sender Company Id,</li>
+            <li><code>firstname</code>, <code>lastname</code>, ... : provided contact informations</li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a></li>
+        </ul>
+        Only for groupchat message:<br/>
+        <code>msg.bubble</code> some bubble <b>relevant</b> information :<br>
+        <ul>
+            <li><code>jid</code> : The JID of the Bubble,</li>
+            <li><code>name</code> : The name of the Bubble,</li>
+            <li><code>topic</code> : The topic of the Bubble,</li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/bubble">Bubble</a></li>
+        </ul>
+    </script>
+    
+    <script type="text/x-red" data-template-name="Notified_IM_Read">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filter"><i class="icon-tag"></i> RegExp Filter</label>
+            <input type="text" id="node-input-filter" placeholder="RexExp Here">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Notified_IM_Read">
+        <p>Get notifies when a message has been read by distant.<br/>
+        You can add a RegExp filter</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>RegExp Filter<span class="property-type">string</span></dt>
+            <dd>a <code>RegExp</code> the msg sent should match.</dd>
+            <br/>
+        </dl>
+        <br>
+    </script>
+    
+    <script type="text/x-red" data-template-name="Ack_IM_Read">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Ack_IM_Read">
+        <p>Ack (mark as read) IM received.</p>
+        <h3>Input :</h3>
+        <ul>
+            ⚠<code>msg.payload</code> should contain the <b>complete message received</b> with Notified_IM node.
+            <br/>
+        </ul>
+        <h3>Node :</h3>
+        <p>    Race condition could occured. It is highly recommanded to add delay between IM reception and ack.</p>
+    </script>
+    
+    <script type="text/x-red" data-template-name="Notified_Presence">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filter"><i class="icon-tag"></i> RegExp Filter</label>
+            <input type="text" id="node-input-filter" placeholder="RexExp Here">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Notified_Presence">
+        <p>Get presence update of given user<p>
+        <h3>Output :</h3>
+        <dl class="message-properties">
+            <p><code>msg.payload</code> contains :</p>
+            <dt><code>loginemail</code><span class="property-type">string</span></dt>
+            <dd>loginEmail address of the contact.</dd>
+            <br/>
+            <dt><code>displayname</code><span class="property-type">string</span></dt>
+            <dd>plain text display name of the contact.</dd>
+            <br/>
+            <dt><code>fromJid</code><span class="property-type">string</span></dt>
+            <dd>JID of the contact of the IM.</dd>
+            <br/>
+            <dt><code>presence</code><span class="property-type">string</span></dt>
+            <dd>presence of the contact (string), can be 'online', 'offline', 'busy', 'xa' or 'away'. 'xa' means do not disturb.</dd>
+            <br/>
+            <dt><code>status</code><span class="property-type">string</span></dt>
+            <dd>additional presence information : can be 'presentation', 'phone', 'audio', 'video' or 'sharing' when presence is 'busy', can be 'mobile' when presence is 'online'.</dd>
+            <br/>
+        </dl>
+    </script>
+    
+    <script type="text/x-red" data-template-name="Set_Presence">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Set_Presence">
+        <p>Set own presence</p>
+        <h3>Output :</h3>
+        <p><code>msg.payload</code> filled with either 
+        <ul>
+            <li><code>'online'</code>,</li>
+            <li><code>'dnd'</code>,</li>
+            <li><code>'away'</code></li>
+            <li>or <code>'invisible'</code></li>
+        </ul>
+    </script>
+    
+    <script type="text/x-red" data-template-name="CnxState">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="CnxState">
+        <p>Get connection state to Rainbow Cloud services</p>
+        <h3>Input :</h3>
+        <p><code>msg.payload</code> contains connection request (string).<br>
+        It can be :
+        <ul>
+            <li><code>'login'</code> : triggers Rainbow sign-in procedure<br>
+            <li><code>'logout'</code> : triggers Rainbow sign-out procedure<br>
+            </ul>
+        </p>
+        <h3>Output :</h3>
+        <p><code>msg.payload</code> contains connection status (string).<br>
+        It can be :</p>
+        <ul>
+            <li><code>'rainbow_onconnectionok'</code> : Fired when the connection is successfull with Rainbow (signin complete)<br>
+            <li><code>'rainbow_onready'</code> : Fired when the SDK is connected to Rainbow and ready to be used<br>
+            <li><code>'rainbow_onconnectionerror'</code> :  Fired when the connection can t be done with Rainbow (ie. issue on sign-in) <br>
+            <li><code>'rainbow_onerror'</code> : Fired when something goes wrong (ie: bad 'configurations' parameter...)
+        <//ul>
+    </script>
+    
+    <script type="text/x-red" data-template-name="Login">
+        <div class="form-row">
+            <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-config-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-username"><i class="icon-tag"></i> Username</label>
+            <input type="text" id="node-config-input-username">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
+            <input type="password" id="node-config-input-password">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-autoLogin"><i class="icon-tag"></i> Automatic Login</label>
+            <input type="checkbox" id="node-config-input-autoLogin">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-proxyHost"><i class="icon-tag"></i> Proxy Host</label>
+            <input type="text" id="node-config-input-proxyHost" placeholder="Proxy IP or FQDN">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-proxyPort"><i class="icon-tag"></i> Proxy Port</label>
+            <input type="text" id="node-config-input-proxyPort" placeholder="Proxy Port">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-proxyProto"><i class="icon-tag"></i> Proxy Protocol</label>
+            <input type="text" id="node-config-input-proxyProto" placeholder="http or https">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-ackIM"><i class="icon-tag"></i> Automatic acknowledge of incoming IM</label>
+            <input type="checkbox" id="node-config-input-ackIM">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Login">
+        <p>Login to Rainbow with your identity<br>
+    </script>
+    

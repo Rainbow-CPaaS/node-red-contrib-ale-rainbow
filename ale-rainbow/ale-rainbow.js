@@ -444,6 +444,8 @@ module.exports = function(RED) {
     this.filter = config.filter;
     this.filterContact = config.filterContact;
     this.filterCompany = config.filterCompany;
+    this.ignorechat = config.ignorechat;
+    this.ignoregroupchat = config.ignoregroupchat;
     this.server = RED.nodes.getNode(config.server);
     serverctx = this.server.context();
 
@@ -453,8 +455,20 @@ module.exports = function(RED) {
 
     var rainbow_onmessagereceivedGetMessage = function rainbow_onmessagereceivedGetMessage(message) {
       let filterOK = true;
+      var fromJID = "";
+      var bubble = null;
       node.log("Rainbow : onMessageReceived")
       node.log("Rainbow : Message :"+JSON.stringify(message));
+
+      // Ignore asked ?
+      if ( (node.ignorechat) && ("chat" === message.type) ) {
+        node.log("Rainbow : ignore chat asked");
+        return;
+      }
+      if ( (node.ignoregroupchat) && ("groupchat" === message.type) ) {
+        node.log("Rainbow : ignore groupchat asked");
+        return;
+      }
 
       // RegExp filter ?
       if ((node.filter != '') && (node.filter != undefined)) {
@@ -469,12 +483,28 @@ module.exports = function(RED) {
         }
       }
 
+      // Check if the message comes from a user
+      fromJID = message.fromJid;
+      if(message.type === "groupchat") {
+        node.log("Rainbow : Message GROUPCHAT !");
+
+        // Get the from JID
+        fromJID = message.fromBubbleUserJid;
+
+        if (message.fromBubbleJid) {
+          var bubbleJid = message.fromBubbleJid;
+          node.log("Rainbow : Message GROUPCHAT working with bubbleJid: " + bubbleJid);
+
+          bubble = rainbowSDK[config.server].bubbles.getBubbleByJid(bubbleJid);
+        }
+
+        node.log("Rainbow : Message GROUPCHAT fromJid : " + fromJID);
+      }
+
       // Get contact information from server
       rainbowSDK[config.server]
-//        ._core
-//        ._contacts
       .contacts
-      .getContactByJid(message.fromJid)
+      .getContactByJid(fromJID)
       .then((contact) => {
         if (contact) {
 
@@ -504,14 +534,26 @@ module.exports = function(RED) {
 
           node.log("Rainbow : sending message.");
 
-          var msg = { payload: message, contact: contact };
+          var msg;
+          if (bubble) {
+            msg = { payload: message, contact: contact, bubble: bubble };
+          } else {
+            msg = { payload: message, contact: contact };
+          }
           node.send(msg);
 
         } else {
           node.warn("Rainbow : couldn't find user for jID : " + message.fromJid);
+            var msg;
+            if (bubble) {
+              msg = { payload: message, contact: {}, bubble: bubble };
+            } else {
+              msg = { payload: message, contact: {} };
+            }
+            node.send(msg);
         }
 
-      });      
+      });
 
     };
 

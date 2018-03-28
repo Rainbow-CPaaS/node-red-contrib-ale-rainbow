@@ -44,18 +44,22 @@ Accepted message format is:
 
 
 3. ```RBNotified_IM``` : Input node to listen for new incoming IM from a Rainbow user or Bubble.
-You can add filters to select which message may pass through (by RegExp, user or company).
+You can add filters to select which message may pass through (by type, RegExp, user or company).
 Delivered message format is:
 ```
 {  
    "payload":{  
       "content":"Hello world",
       "fromJid":"29487a323b00403297c1d2984b2f1d60@openrainbow.com",
-   }
+      ...
+   },
+   "contact": {...},
+   "bubble": {}
 }
 ```
 - ```content``` is: IM content (string).
 - ```fromJid``` is : Originator JID (Jabber ID) of the IM. Can be used to reply by coping this value for destJid.
+Others are described in the node.
 
 4. ```RBNotified_IM_Read``` : Input node to listen for message acknowledge.
 

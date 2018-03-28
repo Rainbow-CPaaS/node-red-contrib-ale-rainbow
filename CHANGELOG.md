@@ -2,6 +2,12 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.2.8] - 2018-03-28
+- issues/7 on git: correction for receiving msg from room
+- Notified_IM: 2 options ignorechat and ignoregroupchat to allow to filter one to one chat, and/or group chat
+- Notified_IM: add some documentation about "fromBubbleUserJid" and "type" in the message
+- Notified_IM: in case od "groupchat" type, also send the bubble in the payload
+
 ## [1.2.7] - 2018-03-05
 - Notified_IM now also give payload.contact which contains sender informations
 - Dependency update: SDK Node.js
