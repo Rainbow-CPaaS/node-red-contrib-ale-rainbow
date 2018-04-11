@@ -26,7 +26,7 @@ npm install node-red-contrib-ale-rainbow
 It includes seven nodes:
 
 1. ```RBLogin``` : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.
-Note : for know, only a single connection to Rainbow is supported.
+Since v1.3.0 and it's dependency rainbow-node-sdk v1.39.0 connection to Rainbow is well supported. Thanks to Loic Jehanno for his work.
 
 2. ```RBSend_IM``` : Output node to send IM to a Rainbow identity (User or Bubble).
 You can configure a default recipient for outgoing IM in node parameters.

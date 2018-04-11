@@ -2,6 +2,11 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.3.0] - 2018-04-11
+- Jump to 1.3 version: multi user supported (needs also dependency rainbow-node-sdk v1.39.0)
+- thanks to Loic Jehanno for his help !
+- git issues/4 corrected also (Error while Deploy (stop/start) with Contacts._onRosterPresenceChanged in dependency)
+
 ## [1.2.8] - 2018-03-28
 - issues/7 on git: correction for receiving msg from room
 - Notified_IM: 2 options ignorechat and ignoregroupchat to allow to filter one to one chat, and/or group chat
