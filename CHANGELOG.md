@@ -2,6 +2,10 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.3.1] - 2018-04-11
+- Remove JSON.stringify logs which crashed (circular)
+- Add counter to Send_IM node
+
 ## [1.3.0] - 2018-04-11
 - Jump to 1.3 version: multi user supported (needs also dependency rainbow-node-sdk v1.39.0)
 - thanks to Loic Jehanno for his help !
