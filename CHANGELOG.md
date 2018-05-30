@@ -2,6 +2,10 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.3.2] - 2018-05-30
+- Remove JSON.stringify also for Notify IM
+- Add counter also for IM messages got
+
 ## [1.3.1] - 2018-04-11
 - Remove JSON.stringify logs which crashed (circular)
 - Add counter to Send_IM node
