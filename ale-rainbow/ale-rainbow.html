@@ -34,7 +34,7 @@
             return this.name||"Send_IM";
         }
     });
-    
+
     RED.nodes.registerType('Notified_IM',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -85,6 +85,43 @@
             return this.name||"Ack_IM_Read";
         }
     });
+
+    RED.nodes.registerType('Send_Makecall',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_Makecall";
+        }
+    });
+
+    RED.nodes.registerType('Notified_CallUpdate',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            filter: {value:"", required:false},
+            filterContact: {value:"", required:false},
+            filterCompany: {value:"", required:false},
+            ignorechat: {value:false, required:false},
+            ignoregroupchat: {value:false, required:false}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Notified_CallUpdate";
+        }
+    });
+
     RED.nodes.registerType('Notified_Presence',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -190,7 +227,37 @@
             <li><code>msg.payload.subject</code> should contain the message subject (optional, as a string).</li>
         </ul>
     </script>
-    
+
+<script type="text/x-red" data-template-name="Send_Makecall">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-destNumber"><i class="icon-tag"></i> Destination Phone number</label>
+            <input type="text" id="node-input-destNumber" placeholder="Phone number here">
+        </div>
+    </script>
+
+    <script type="text/x-red" data-help-name="Send_Makecall">
+        <p>Send a makecall Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Destination Phonenumber<span class="property-type">string</span></dt>
+            <dd>is the phone number of the default receipient.<br/>.(unless <code>msg.payload.destNumber</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
+            <li><code>msg.payload.destNumber</code> should contain phone number of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
     <script type="text/x-red" data-template-name="Notified_IM">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -324,7 +391,92 @@
         <h3>Node :</h3>
         <p>    Race condition could occured. It is highly recommanded to add delay between IM reception and ack.</p>
     </script>
-    
+
+<script type="text/x-red" data-template-name="Notified_CallUpdate">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filter"><i class="icon-tag"></i>RegExp Filter</label>
+            <input type="text" id="node-input-filter" placeholder="RexExp Here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filterContact"><i class="icon-tag"></i>Contact filter</label>
+            <input type="text" id="node-input-filterContact" placeholder="JiD, email (login) Here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-filterCompany"><i class="icon-tag"></i>Company filter</label>
+            <input type="text" id="node-input-filterCompany" placeholder="companyId Here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-ignorechat"><i class="icon-tag"></i>Ignore chat messages</label>
+            <input type="checkbox" id="node-input-ignorechat">
+        </div>
+        <div class="form-row">
+            <label for="node-input-ignoregroupchat"><i class="icon-tag"></i>Ignore groupchat messages</label>
+            <input type="checkbox" id="node-input-ignoregroupchat">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Notified_CallUpdate">
+        <p>Get a call update message to a Rainbow identity</p>
+        <h3>Filters :</h3>
+        <dl class="message-properties">
+            <p>either</p>
+            <dt>RegExp Filter<span class="property-type">string</span></dt>
+            <dd>a <code>RegExp</code> the msg sent should match.</dd>
+            <br/>
+            <dt>Contact filter<span class="property-type">string</span></dt>
+            <dd>the user's jid or login email.</dd>
+            <br/>
+            <dt>Company filter<span class="property-type">string</span> </dt>
+            <dd>user's compayId (to identify a company id, activate node-red logs and it'll be printed as a message arives from someone).</dd>
+            <br/>
+            <dt>Ignore chat messages </dt>
+            <dd>to ignore one to one messages</dd>
+            <br/>
+            <dt>Ignore groupchat messages </dt>
+            <dd>to ignore messages in Bubbles</dd>
+            <br/>
+        </dl>
+        <h3>Output :</h3>
+        <code>msg.payload</code> contains <b>relevant</b> :<br>
+        <ul>
+            <li><code>toJid</code> : your JID,</li>
+            <li><code>type</code> : IM type, may be "chat" or "groupchat" (in a Bubble),</li>
+            <li><code>fromJid</code> : </li>
+                <ul>
+                    <li>one to one chat: JID of the originator of the IM,</li>
+                    <li>When in a bubble: the fromJid property contains the identity of the user inside the bubble so follows the pattern jid_room/jid_user</li>
+                </ul>
+            <li><code>fromBubbleUserJid</code> : The JID of the user who send the message without the JID of the Bubble. (Only for groupchat message),</li>
+            <li><code>lang</code> : the langage set by the originator (warning, he may write in another language),</li>
+            <li><code>content</code> : IM content</li>
+            <li>Other information about the message, if  like <code>alternativeContentw</code>, may be found in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
+        </ul>
+        <code>msg.contact</code> contains <b>relevant</b> information from the IM sender :<br>
+        <ul>
+            <li><code>jid_im</code> : JID of the originator of the IM,</li>
+            <li><code>loginEmail</code> : the sender login email,</li>
+            <li><code>companyId</code> : the sender Company Id,</li>
+            <li><code>firstname</code>, <code>lastname</code>, ... : provided contact informations</li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a></li>
+        </ul>
+        Only for groupchat message:<br/>
+        <code>msg.bubble</code> some bubble <b>relevant</b> information :<br>
+        <ul>
+            <li><code>jid</code> : The JID of the Bubble,</li>
+            <li><code>name</code> : The name of the Bubble,</li>
+            <li><code>topic</code> : The topic of the Bubble,</li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/bubble">Bubble</a></li>
+        </ul>
+    </script>
+
     <script type="text/x-red" data-template-name="Notified_Presence">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>

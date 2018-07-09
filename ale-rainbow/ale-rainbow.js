@@ -648,7 +648,155 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
-  
+
+    function getCallUpdate(config) {
+        RED.nodes.createNode(this, config);
+//        this.filter = config.filter;
+//        this.filterContact = config.filterContact;
+//        this.filterCompany = config.filterCompany;
+//        this.ignorechat = config.ignorechat;
+//        this.ignoregroupchat = config.ignoregroupchat;
+        this.server = RED.nodes.getNode(config.server);
+        serverctx = this.server.context();
+        var cfgTimer = null;
+        var node = this;
+        var msgGot = 0;
+
+        node.log("Rainbow : getCallUpdate node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var rainbow_onmessagereceivedGetCallUpdate = function rainbow_onmessagereceivedGetCallUpdate(call) {
+            let filterOK = true;
+            var fromJID = "";
+            var bubble = null;
+            node.log("Rainbow : rainbow_oncallupdated: " + JSON.stringify(node.server.name) + " : " + JSON.stringify(call.status));
+            msgGot++;
+            node.status({
+                fill: "green",
+                shape: "ring",
+                text: "Nb: " + msgGot
+            });
+
+            msg = {
+                payload: call
+            };
+            node.send(msg);
+
+            /*
+            // Ignore asked ?
+            if ((node.ignorechat) && ("chat" === message.type)) {
+                node.log("Rainbow : ignore chat asked" + JSON.stringify(node.server.name));
+                return;
+            }
+            if ((node.ignoregroupchat) && ("groupchat" === message.type)) {
+                node.log("Rainbow : ignore groupchat asked" + JSON.stringify(node.server.name));
+                return;
+            }
+            // RegExp filter ?
+            if ((node.filter != '') && (node.filter != undefined)) {
+                var regexp = new RegExp(node.filter, 'img');
+                node.log("Rainbow : Apply filter :" + node.filter + " cnx: " + JSON.stringify(node.server.name));
+                var res = JSON.stringify(message.content).match(regexp);
+                node.log("Rainbow : Filter result:" + JSON.stringify(res) + " cnx: " + JSON.stringify(node.server.name))
+                if (res == null) {
+                    filterOK = false;
+                    node.log("Rainbow : RegExp filter blocked !" + " cnx: " + JSON.stringify(node.server.name));
+                    return;
+                }
+            }
+            // Check if the message comes from a user
+            fromJID = message.fromJid;
+            if (message.type === "groupchat") {
+                node.log("Rainbow : Message GROUPCHAT !" + " cnx: " + JSON.stringify(node.server.name));
+                // Get the from JID
+                fromJID = message.fromBubbleUserJid;
+                if (message.fromBubbleJid) {
+                    var bubbleJid = message.fromBubbleJid;
+                    node.log("Rainbow : Message GROUPCHAT working with bubbleJid: " + bubbleJid + " cnx: " + JSON.stringify(node.server.name));
+                    bubble = node.server.rainbow.sdk.bubbles.getBubbleByJid(bubbleJid);
+                }
+                node.log("Rainbow : Message GROUPCHAT fromJid : " + fromJID + " cnx: " + JSON.stringify(node.server.name));
+            }
+            // Get contact information from server
+            node.server.rainbow.sdk.contacts.getContactByJid(fromJID).then((contact) => {
+                if (contact) {
+                    // Contact filter ?
+                    if ((node.filterContact != '') && (node.filterContact != undefined)) {
+                        filterOK = false;
+                        if ((node.filterContact === contact.loginEmail) || (node.filterContact === contact.jid_im)) {
+                            filterOK = true;
+                            node.log("Rainbow : Contact filter OK !" + " cnx: " + JSON.stringify(node.server.name));
+                        } else {
+                            node.log("Rainbow : Contact filter blocked !" + " cnx: " + JSON.stringify(node.server.name));
+                            return;
+                        }
+                    }
+                    // Company filter ?
+                    if ((node.filterCompany != '') && (node.filterCompany != undefined)) {
+                        filterOK = false;
+                        if (node.filterCompany === contact.companyId) {
+                            filterOK = true;
+                            node.log("Rainbow : Company id filter OK !" + " cnx: " + JSON.stringify(node.server.name));
+                        } else {
+                            node.log("Rainbow : Company id filter blocked !" + " cnx: " + JSON.stringify(node.server.name));
+                            return;
+                        }
+                    }
+                    node.log("Rainbow : sending message." + " cnx: " + JSON.stringify(node.server.name));
+                    var msg;
+                    if (bubble) {
+                        msg = {
+                            payload: message,
+                            contact: contact,
+                            bubble: bubble
+                        };
+                    } else {
+                        msg = {
+                            payload: message,
+                            contact: contact
+                        };
+                    }
+                    node.send(msg);
+                } else {
+                    node.warn("Rainbow : couldn't find user for jID : " + message.fromJid + " cnx: " + JSON.stringify(node.server.name));
+                    var msg;
+                    if (bubble) {
+                        msg = {
+                            payload: message,
+                            contact: {},
+                            bubble: bubble
+                        };
+                    } else {
+                        msg = {
+                            payload: message,
+                            contact: {}
+                        };
+                    }
+                    node.send(msg);
+                }
+            });// */
+        };
+
+        var getRainbowSDKGetMessageGetCallUpdate = function getRainbowSDKGetMessageGetCallUpdate() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKGetMessageGetCallUpdate, 2000);
+            } else {
+                node.log("Rainbow SDK (" + config.server + ") Registering rainbow_oncallupdated" + " cnx: " + JSON.stringify(node.server.name));
+                node.server.rainbow.sdk.events.on('rainbow_oncallupdated', rainbow_onmessagereceivedGetCallUpdate);
+                node.server.rainbow.sdkhandler.push({
+                    evt: 'rainbow_oncallupdated',
+                    fct: rainbow_onmessagereceivedGetCallUpdate
+                });
+                node.log("Rainbow : getMessage register for event 'rainbow_oncallupdated'" + " cnx: " + JSON.stringify(node.server.name));
+            }
+        }
+        getRainbowSDKGetMessageGetCallUpdate();
+        this.on('close', function() {
+            // tidy up any state
+            clearTimeout(cfgTimer);
+        });
+    }
+
+
     function notifyMessageRead(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -812,8 +960,84 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
+
+    function sendMakecall(config) {
+        RED.nodes.createNode(this, config);
+        this.destNumber = config.destNumber;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendMakecall node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendMakecall = function getRainbowSDKSendMakecall() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendMakecall, 2000);
+            }
+        }
+        getRainbowSDKSendMakecall();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendMakecall to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                /*let lang = msg.payload.lang ? msg.payload.lang : null;
+                let content = msg.payload.alternateContent ? msg.payload.alternateContent : null;
+                let subject = msg.payload.lang ? msg.payload.lang : null;
+                if (msg.payload.destJid) {
+                    if (msg.payload.destJid.substring(0, 5) === "room_") {
+                        node.server.rainbow.sdk.im.sendMessageToBubbleJid(msg.payload.content, msg.payload.destJid, lang, content, subject);
+                    } else {
+                        node.server.rainbow.sdk.im.sendMessageToJid(msg.payload.content, msg.payload.destJid, lang, content, subject);
+                    }
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + msg.payload.content + " " + node.destJid + " cnx: " + JSON.stringify(node.server.name));
+                    if (node.destJid.substring(0, 5) === "room_") {
+                        node.server.rainbow.sdk.im.sendMessageToBubbleJid(msg.payload.content, node.destJid, lang, content, subject);
+                    } else {
+                        node.server.rainbow.sdk.im.sendMessageToJid(msg.payload.content, node.destJid, lang, content, subject);
+                    }
+                } */
+
+                if (msg.payload.destNumber) {
+                    node.server.rainbow.sdk.telephony.makeCallByPhoneNumber(msg.payload.destNumber);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.destNumber + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.makeCallByPhoneNumber(node.destNumber);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+
+
+
     RED.nodes.registerType("Send_IM", sendMessage);
     RED.nodes.registerType("Notified_IM", getMessage);
+
+    RED.nodes.registerType("Send_Makecall", sendMakecall);
+    RED.nodes.registerType("Notified_CallUpdate", getCallUpdate);
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);
     RED.nodes.registerType("Set_Presence", setPresence);
