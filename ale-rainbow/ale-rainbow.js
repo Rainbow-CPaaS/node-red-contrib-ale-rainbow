@@ -1082,6 +1082,57 @@ module.exports = function(RED) {
         });
     }
 
+    function sendAnswercall(config) {
+        RED.nodes.createNode(this, config);
+        this.call = config.call;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendAnswercall node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendAnswercall = function getRainbowSDKSendAnswercall() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendAnswercall, 2000);
+            }
+        }
+        getRainbowSDKSendAnswercall();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendAnswercall to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.call) {
+                    node.server.rainbow.sdk.telephony.answerCall(msg.payload.call);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.call + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.answerCall(node.call);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
 
 
     RED.nodes.registerType("Send_IM", sendMessage);
@@ -1090,6 +1141,7 @@ module.exports = function(RED) {
     RED.nodes.registerType("Send_Makecall", sendMakecall);
     RED.nodes.registerType("Notified_CallUpdate", getCallUpdate);
     RED.nodes.registerType("Send_Releasecall", sendReleasecall);
+    RED.nodes.registerType("Send_Answercall", sendAnswercall);
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);
     RED.nodes.registerType("Set_Presence", setPresence);
