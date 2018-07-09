@@ -122,6 +122,22 @@
         }
     });
 
+    RED.nodes.registerType('Send_Releasecall',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_Releasecall";
+        }
+    });
+
     RED.nodes.registerType('Notified_Presence',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -228,7 +244,7 @@
         </ul>
     </script>
 
-<script type="text/x-red" data-template-name="Send_Makecall">
+    <script type="text/x-red" data-template-name="Send_Makecall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -255,6 +271,36 @@
         <ul>
             <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
             <li><code>msg.payload.destNumber</code> should contain phone number of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
+    <script type="text/x-red" data-template-name="Send_Releasecall">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-call"><i class="icon-tag"></i> Call infos</label>
+            <input type="text" id="node-input-call" placeholder="Phone number here">
+        </div>
+    </script>
+
+    <script type="text/x-red" data-help-name="Send_Releasecall">
+        <p>Send a release call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.call</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
+            <li><code>msg.payload.call</code> should contain call infos of the receipient (optional, as a string).</li>
         </ul>
     </script>
 
