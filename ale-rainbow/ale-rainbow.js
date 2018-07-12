@@ -1133,6 +1133,456 @@ module.exports = function(RED) {
         });
     }
 
+    function sendTransfertcall(config) {
+        RED.nodes.createNode(this, config);
+        this.activecall = config.activecall;
+        this.heldcall = config.heldcall;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendTransfertcall node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendTransfertcall = function getRainbowSDKSendTransfertcall() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendTransfertcall, 2000);
+            }
+        }
+        getRainbowSDKSendTransfertcall();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendTransfertcall to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.activecall) {
+                    node.server.rainbow.sdk.telephony.transfertCall(msg.payload.activecall, msg.payload.heldcall);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.activecall + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.transfertCall(node.activecall, node.heldcall);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+    function sendConferenceCall(config) {
+        RED.nodes.createNode(this, config);
+        this.activecall = config.activecall;
+        this.heldcall = config.heldcall;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendConferenceCall node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendConferenceCall = function getRainbowSDKSendConferenceCall() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendConferenceCall, 2000);
+            }
+        }
+        getRainbowSDKSendConferenceCall();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendConferenceCall to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.activecall) {
+                    node.server.rainbow.sdk.telephony.conferenceCall(msg.payload.activecall, msg.payload.heldcall);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.activecall + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.conferenceCall(node.activecall, node.heldcall);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+    function sendHoldcall(config) {
+        RED.nodes.createNode(this, config);
+        this.activecall = config.activecall;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendHoldcall node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendHoldcall = function getRainbowSDKSendHoldcall() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendHoldcall, 2000);
+            }
+        }
+        getRainbowSDKSendHoldcall();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendHoldcall to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.call) {
+                    node.server.rainbow.sdk.telephony.holdCall(msg.payload.call);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.activecall + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.holdCall(node.activecall);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+    function sendRetrievecall(config) {
+        RED.nodes.createNode(this, config);
+        this.heldcall = config.heldcall;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendRetrievecall node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendRetrievecall = function getRainbowSDKSendRetrievecall() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendRetrievecall, 2000);
+            }
+        }
+        getRainbowSDKSendRetrievecall();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendRetrievecall to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.call) {
+                    node.server.rainbow.sdk.telephony.retrieveCall(msg.payload.call);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.heldcall + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.retrieveCall(node.heldcall);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+    function sendDeflectCallToVM(config) {
+        RED.nodes.createNode(this, config);
+        this.activecall = config.activecall;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendDeflectCallToVM node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendDeflectCallToVM = function getRainbowSDKSendDeflectCallToVM() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendDeflectCallToVM, 2000);
+            }
+        }
+        getRainbowSDKSendDeflectCallToVM();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendDeflectCallToVM to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.call) {
+                    node.server.rainbow.sdk.telephony.deflectCallToVM(msg.payload.call);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.call + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.deflectCallToVM(node.call);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+    function sendForwardToDevice(config) {
+        RED.nodes.createNode(this, config);
+        this.phonenumber = config.phonenumber;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendForwardToDevice node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendForwardToDevice = function getRainbowSDKSendForwardToDevice() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendForwardToDevice, 2000);
+            }
+        }
+        getRainbowSDKSendForwardToDevice();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendForwardToDevice to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.phonenumber) {
+                    node.server.rainbow.sdk.telephony.forwardToDevice(msg.payload.phonenumber);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.phonenumber + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.forwardToDevice(node.phonenumber);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+    function sendForwardToVoicemail(config) {
+        RED.nodes.createNode(this, config);
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendForwardToVoicemail node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendForwardToVoicemail = function getRainbowSDKSendForwardToVoicemail() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendForwardToVoicemail, 2000);
+            }
+        }
+        getRainbowSDKSendForwardToVoicemail();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendForwardToVoicemail to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                node.log("Rainbow SDK (" + config.server + " " + " cnx: " + JSON.stringify(node.server.name));
+                node.server.rainbow.sdk.telephony.forwardToVoicemail();
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+    function sendCancelForward(config) {
+        RED.nodes.createNode(this, config);
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendCancelForward node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendCancelForward = function getRainbowSDKSendCancelForward() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendCancelForward, 2000);
+            }
+        }
+        getRainbowSDKSendCancelForward();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendCancelForward to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                node.log("Rainbow SDK (" + config.server + " " + " cnx: " + JSON.stringify(node.server.name));
+                node.server.rainbow.sdk.telephony.forwardToVoicemail();
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+
+    function sendDtmf(config) {
+        RED.nodes.createNode(this, config);
+        this.connectionId = config.connectionId;
+        this.dtmf = config.dtmf;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendDtmf node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendDtmf = function getRainbowSDKSendDtmf() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendDtmf, 2000);
+            }
+        }
+        getRainbowSDKSendDtmf();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendDtmf to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                if (msg.payload.call) {
+                    node.server.rainbow.sdk.telephony.sendDtmf(msg.payload.connectionId, msg.payload.dtmf);
+                } else {
+                    node.log("Rainbow SDK (" + config.server + " " + node.connectionId + " : " + node.dtmf + " cnx: " + JSON.stringify(node.server.name));
+                    node.server.rainbow.sdk.telephony.sendDtmf(node.connectionId, node.dtmf);
+                }
+
+                msgSent++;
+                node.status({
+                    fill: "green",
+                    shape: "dot",
+                    text: "Nb sent: " + msgSent
+                });
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
 
 
     RED.nodes.registerType("Send_IM", sendMessage);
@@ -1142,6 +1592,19 @@ module.exports = function(RED) {
     RED.nodes.registerType("Notified_CallUpdate", getCallUpdate);
     RED.nodes.registerType("Send_Releasecall", sendReleasecall);
     RED.nodes.registerType("Send_Answercall", sendAnswercall);
+    RED.nodes.registerType("Send_Transfertcall", sendTransfertcall);
+    RED.nodes.registerType("Send_ConferenceCall", sendConferenceCall);
+    RED.nodes.registerType("Send_Holdcall", sendHoldcall);
+    RED.nodes.registerType("Send_Retrievecall", sendRetrievecall);
+    RED.nodes.registerType("Send_DeflectCallToVM", sendDeflectCallToVM);
+    RED.nodes.registerType("Send_ForwardToDevice", sendForwardToDevice);
+    RED.nodes.registerType("Send_ForwardToVoicemail", sendForwardToVoicemail);
+    RED.nodes.registerType("Send_CancelForward", sendCancelForward);
+    RED.nodes.registerType("Send_SendDtmf", sendDtmf);
+
+
+
+
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);
     RED.nodes.registerType("Set_Presence", setPresence);

@@ -154,6 +154,150 @@
         }
     });
 
+    RED.nodes.registerType('Send_Transfertcall',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_Transfertcall";
+        }
+    });
+
+    RED.nodes.registerType('Send_ConferenceCall',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_ConferenceCall";
+        }
+    });
+
+    RED.nodes.registerType('Send_Holdcall',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_Holdcall";
+        }
+    });
+
+    RED.nodes.registerType('Send_Retrievecall',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_Retrievecall";
+        }
+    });
+
+    RED.nodes.registerType('Send_DeflectCallToVM',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_DeflectCallToVM";
+        }
+    });
+
+    RED.nodes.registerType('Send_ForwardToDevice',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_ForwardToDevice";
+        }
+    });
+
+    RED.nodes.registerType('Send_ForwardToVoicemail',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_ForwardToVoicemail";
+        }
+    });
+
+    RED.nodes.registerType('Send_CancelForward',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_CancelForward";
+        }
+    });
+
+    RED.nodes.registerType('Send_SendDtmf',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destNumber: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "rainbow.png",
+        label: function() {
+            return this.name||"Send_SendDtmf";
+        }
+    });
+
     RED.nodes.registerType('Notified_Presence',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -348,7 +492,271 @@
         </ul>
     </script>
 
-<script type="text/x-red" data-template-name="Notified_IM">
+<script type="text/x-red" data-template-name="Send_Transfertcall">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-activecall"><i class="icon-tag"></i>Active Call infos</label>
+            <input type="text" id="node-input-activecall" placeholder="activecall infos here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-heldcall"><i class="icon-tag"></i>Held Call infos</label>
+            <input type="text" id="node-input-heldcall" placeholder="heldcall infos here">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Send_Transfertcall">
+        <p>Send a transfert call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Active Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.activecall</code> is defined)</dd>
+        </dl>
+        <dl class="message-properties">
+            <dt>Held Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.heldcall</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.activecall</code> should contain call infos of the receipient (optional, as a string).</li>
+            <li><code>msg.payload.heldcall</code> should contain call infos of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
+<script type="text/x-red" data-template-name="Send_ConferenceCall">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-activecall"><i class="icon-tag"></i>Active Call infos</label>
+            <input type="text" id="node-input-activecall" placeholder="activecall infos here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-heldcall"><i class="icon-tag"></i>Held Call infos</label>
+            <input type="text" id="node-input-heldcall" placeholder="heldcall infos here">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Send_ConferenceCall">
+        <p>Send a conferenceCall call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Active Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.activecall</code> is defined)</dd>
+        </dl>
+        <dl class="message-properties">
+            <dt>Held Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.heldcall</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.activecall</code> should contain call infos of the receipient (optional, as a string).</li>
+            <li><code>msg.payload.heldcall</code> should contain call infos of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
+
+<script type="text/x-red" data-template-name="Send_Holdcall">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-activecall"><i class="icon-tag"></i>Active Call infos</label>
+            <input type="text" id="node-input-activecall" placeholder="activecall infos here">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Send_Holdcall">
+        <p>Send a holdcall call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Active Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.call</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.activecall</code> should contain call infos of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
+<script type="text/x-red" data-template-name="Send_Retrievecall">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-heldcall"><i class="icon-tag"></i>Held Call infos</label>
+            <input type="text" id="node-input-heldcall" placeholder="heldcall infos here">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Send_Retrievecall">
+        <p>Send a retrieve call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Held Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.call</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.heldcall</code> should contain call infos of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
+    <script type="text/x-red" data-template-name="Send_DeflectCallToVM">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-heldcall"><i class="icon-tag"></i>Held Call infos</label>
+            <input type="text" id="node-input-heldcall" placeholder="heldcall infos here">
+        </div>
+    </script>
+
+    <script type="text/x-red" data-help-name="Send_DeflectCallToVM">
+        <p>Send a Send_DeflectCallToVM call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Held Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.activecall</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.activecall</code> should contain call infos of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
+    <script type="text/x-red" data-template-name="Send_ForwardToDevice">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-activecall"><i class="icon-tag"></i>Active Call infos</label>
+            <input type="text" id="node-input-phonenumber" placeholder="phonenumber infos here">
+        </div>
+    </script>
+
+    <script type="text/x-red" data-help-name="Send_ForwardToDevice">
+        <p>Send a forwardToDevice call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Phone number<span class="property-type">Object</span></dt>
+            <dd>is the the phone where to forward.<br/>.(unless <code>msg.payload.phonenumber</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.activecall</code> should contain call infos of the receipient (optional, as a string).</li>
+        </ul>
+    </script>
+
+<script type="text/x-red" data-template-name="Send_ForwardToVoicemail">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Send_ForwardToVoicemail">
+        <p>Send a forwardToVoicemail call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties : None</h3>
+    </script>
+
+<script type="text/x-red" data-template-name="Send_CancelForward">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Send_CancelForward">
+        <p>Send a cancelForward call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties : None</h3>
+    </script>
+
+<script type="text/x-red" data-template-name="Send_SendDtmf">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-connectionId"><i class="icon-tag"></i>connectionId Call infos</label>
+            <input type="text" id="node-input-connectionId" placeholder="connectionId infos here">
+        </div>
+        <div class="form-row">
+            <label for="node-input-dtmf"><i class="icon-tag"></i>Held Call infos</label>
+            <input type="text" id="node-input-dtmf" placeholder="dtmf infos here">
+        </div>
+    </script>
+
+<script type="text/x-red" data-help-name="Send_SendDtmf">
+        <p>Send a sendDtmf call Telephony RCC to a Rainbow identity</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>connectionId Call infos<span class="property-type">Object</span></dt>
+            <dd>is the call infos of the default receipient.<br/>.(unless <code>msg.payload.connectionId</code> is defined)</dd>
+        </dl>
+        <dl class="message-properties">
+            <dt>dtmf infos<span class="property-type">Object</span></dt>
+            <dd>is the dtmf sent.<br/>.(unless <code>msg.payload.dtmf</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.connectionId</code> should contain call connectionId infos of the receipient (optional, as a string).</li>
+            <li><code>msg.payload.dtmf</code> should contain dtmf infos (optional, as a string).</li>
+        </ul>
+    </script>
+
+
+    <script type="text/x-red" data-template-name="Notified_IM">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
