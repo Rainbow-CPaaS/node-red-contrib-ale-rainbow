@@ -19,7 +19,8 @@
   "homepage": "https://github.com/Rainbow-CPaaS/node-red-contrib-ale-rainbow",
   "node-red": {
     "nodes": {
-      "ale-rainbow": "ale-rainbow/ale-rainbow.js"
+      "ale-rainbow": "ale-rainbow/ale-rainbow.js",
+      "ale-iot-hub-function": "ale-iot-hub/ale-iot-hub-function.js"
     }
   },
   "repository": {
