@@ -20,7 +20,7 @@
   "node-red": {
     "nodes": {
       "ale-rainbow": "ale-rainbow/ale-rainbow.js",
-      "ale-iot-hub-function": "ale-iot-hub/ale-iot-hub-function.js"
+      "ale-rainbow-function": "ale-rainbow/ale-rainbow-function.js"
     }
   },
   "repository": {
