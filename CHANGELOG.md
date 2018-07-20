@@ -2,6 +2,10 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.3.3] - 2018-07-00
+- Add new node Rainbow_function to allow to call a specific API in Rainbow Node.js SDK
+Thanks to Christian Foricher
+
 ## [1.3.2] - 2018-05-30
 - Remove JSON.stringify also for Notify IM
 - Add counter also for IM messages got
