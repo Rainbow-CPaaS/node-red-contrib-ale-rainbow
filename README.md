@@ -25,10 +25,10 @@ npm install node-red-contrib-ale-rainbow
 ## What's inside?
 It includes nine nodes:
 
-1. ```RBLogin``` : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.
+1. **```RBLogin```** : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.
 Since v1.3.0 and it's dependency rainbow-node-sdk v1.39.0 connection to Rainbow is well supported. Thanks to Loic Jehanno for his work.
 
-2. ```RBSend_IM``` : Output node to send IM to a Rainbow identity (User or Bubble).
+2. **```RBSend_IM```** : Output node to send IM to a Rainbow identity (User or Bubble).
 You can configure a default recipient for outgoing IM in node parameters.
 Accepted message format is:
 ```
@@ -43,7 +43,7 @@ Accepted message format is:
 - ```destJid``` is : Recipient JID (Jabber ID) for the IM. If not specified, Desintation JID configured at node level is used.
 
 
-3. ```RBNotified_IM``` : Input node to listen for new incoming IM from a Rainbow user or Bubble.
+3. **```RBNotified_IM```** : Input node to listen for new incoming IM from a Rainbow user or Bubble.
 You can add filters to select which message may pass through (by type, RegExp, user or company).
 Delivered message format is:
 ```
@@ -58,19 +58,19 @@ Delivered message format is:
 }
 ```
 - ```content``` is: IM content (string).
-- ```fromJid``` is : Originator JID (Jabber ID) of the IM. Can be used to reply by coping this value for destJid.
+- ```fromJid``` is : Originator JID (Jabber ID) of the IM. Can be used to reply by copying this value for destJid.
 Others are described in the node.
 
-4. ```RBNotified_IM_Read``` : Input node to listen for message acknowledge.
+4. **```RBNotified_IM_Read```** : Input node to listen for message acknowledge.
 
 var msg = { payload: { loginemail:contact.loginEmail, displayname:contact.displayName, fromJid:contact.jid_im, presence:contact.presence, status:contact.status  }};
 
-5. ```RBAck_IM_Read``` : Output node to Ack (mark as read) IM received.
+5. **```RBAck_IM_Read```** : Output node to Ack (mark as read) IM received.
 
 ⚠ msg.payload should contain the complete message received with Notified_IM node.
-Race condition could occured. It is highly recommanded to add delay between IM reception and ack.
+Race condition could occur. It is highly recommended to add delay between IM reception and ack.
 
-6. ```RBNotified_Presence``` : Input node to listen for presence update of contact list.
+6. **```RBNotified_Presence```** : Input node to listen for presence update of contact list.
 Delivered message format is:
 ```
 {  
@@ -91,7 +91,7 @@ Delivered message format is:
   - ```When presence is online``` can be mobile
   - ```When presence is busy``` can be presentation, audio, video or sharing
 
-  7. ```RBSet_Presence``` : Output node to set own presence .
+7. **```RBSet_Presence```** : Output node to set own presence .
   Accepted message format is:
   ```
   {  
@@ -100,7 +100,7 @@ Delivered message format is:
   ```
   - ```payload``` is: presence (can be online, dnd, away or invisible).
 
-  8. ```RBGet_CnxState``` : Input node to get connection state .
+8. **```RBGet_CnxState```** : Input node to get connection state .
   Delivered message format is:
   ```
   {  
@@ -115,7 +115,7 @@ Delivered message format is:
   -  ```rainbow_onconnectionerror``` : Fired when the connection can t be done with Rainbow (ie. issue on sign-in)
   -  ```rainbow_onerror``` :  Fired when something goes wrong (ie: bad 'configurations' parameter...)
 
-  9. ```Rainbow_function``` : A JavaScript function rainbow to run against <a target="_blank" href="https://www.npmjs.com/package/rainbow-node-sdk">Rainbow Sdk</a> by the node.</p>
+9. **```Rainbow_function```** : A JavaScript function rainbow to run against <a target="_blank" href="https://www.npmjs.com/package/rainbow-node-sdk">Rainbow Sdk</a> by the node.</p>
 
 
   
