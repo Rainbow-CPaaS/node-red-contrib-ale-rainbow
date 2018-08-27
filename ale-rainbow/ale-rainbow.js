@@ -479,29 +479,44 @@ module.exports = function(RED) {
                     text: "not connected"
                 });
             } else {
-                let lang = msg.payload.lang ? msg.payload.lang : null;
-                let content = msg.payload.alternateContent ? msg.payload.alternateContent : null;
-                let subject = msg.payload.lang ? msg.payload.lang : null;
-                if (msg.payload.destJid) {
-                    if (msg.payload.destJid.substring(0, 5) === "room_") {
-                        node.server.rainbow.sdk.im.sendMessageToBubbleJid(msg.payload.content, msg.payload.destJid, lang, content, subject);
-                    } else {
-                        node.server.rainbow.sdk.im.sendMessageToJid(msg.payload.content, msg.payload.destJid, lang, content, subject);
-                    }
-                } else {
-                    node.log("Rainbow SDK (" + config.server + " " + msg.payload.content + " " + node.destJid + " cnx: " + JSON.stringify(node.server.name));
-                    if (node.destJid.substring(0, 5) === "room_") {
-                        node.server.rainbow.sdk.im.sendMessageToBubbleJid(msg.payload.content, node.destJid, lang, content, subject);
-                    } else {
-                        node.server.rainbow.sdk.im.sendMessageToJid(msg.payload.content, node.destJid, lang, content, subject);
-                    }
-                }
-                msgSent++;
-                node.status({
-                    fill: "green",
-                    shape: "dot",
-                    text: "Nb sent: " + msgSent
-                });
+                let destJid = (msg.payload.destJid != undefined ? msg.payload.destJid : (node.destJid != "" ? node.destJid : msg.payload.fromJid));
+				let lang = msg.payload.lang ? msg.payload.lang : null;
+				let content = msg.payload.content;
+				let alternateContent = (msg.payload.alternateContent ? msg.payload.alternateContent : null);
+				let subject = (msg.payload.subject ? msg.payload.subject : null);
+				if (destJid != undefined && "" != destJid) {
+					node.log("Rainbow SDK (" + config.server + " " + content + " " + node.destJid + " " + JSON.stringify(alternateContent) + " cnx: " + JSON.stringify(node.server.name));
+					if (destJid.substring(0, 5) === "room_") {
+						var bubbleJid = destJid.split("/")[0]
+						if (msg.payload.customData != undefined) {
+							var bubble = node.server.rainbow.sdk.bubbles.getBubbleByJid(bubbleJid);
+							if (bubble !== null) {
+								node.server.rainbow.sdk.bubbles.setBubbleCustomData(bubble, msg.payload.customData).then(function () {
+									node.log("Rainbow SDK (" + config.server + " setBubbleCustomData " + bubbleJid + " " + JSON.stringify(msg.payload.customData) + " cnx: " + JSON.stringify(node.server.name));
+									node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject).then(function () {                    });
+								}, function (error) {
+									node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject);
+								});
+							}
+						} else {
+							node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject);
+						}
+					} else {
+						node.server.rainbow.sdk.im.sendMessageToJid(content, destJid, lang, alternateContent, subject);
+					}
+					msgSent++;
+					node.status({
+						fill: "green",
+						shape: "dot",
+						text: "Nb sent: " + msgSent
+					});
+				} else {
+					node.status({
+						fill: "red",
+						shape: "dot",
+						text: "no valid destination Jid"
+					});
+				}
             }
             this.on('close', function() {
                 // tidy up any state
