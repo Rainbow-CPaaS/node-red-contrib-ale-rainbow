@@ -11,9 +11,12 @@
           ackIM: {value:false},
       },
       credentials: {
-           username: {type:"text", required:true},
-           password: {type:"password", required:true}
+        username: {type:"text", required:true},
+        password: {type:"password", required:true},
+        appID: {type:"text", required:true},
+        appSecret: {type:"password", required:true}
       },
+
       label: function() {
           return this.name||"Login";
       },
@@ -29,7 +32,7 @@
         },
         inputs:1,
         outputs:0,
-        icon: "rainbow.png",
+        icon: "Send_IM.png",
         label: function() {
             return this.name||"Send_IM";
         }
@@ -49,7 +52,7 @@
         },
         inputs:0,
         outputs:1,
-        icon: "rainbow.png",
+        icon: "Notified_IM.png",
         label: function() {
             return this.name||"Notified_IM";
         }
@@ -65,7 +68,7 @@
         },
         inputs:0,
         outputs:1,
-        icon: "rainbow.png",
+        icon: "Notified_IM_Read.png",
         label: function() {
             return this.name||"Notified_IM_Read";
         }
@@ -80,11 +83,12 @@
         },
         inputs:1,
         outputs:0,
-        icon: "rainbow.png",
+        icon: "Ack_IM_Read.png",
         label: function() {
             return this.name||"Ack_IM_Read";
         }
     });
+
     RED.nodes.registerType('Notified_Presence',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -95,7 +99,7 @@
         },
         inputs:0,
         outputs:1,
-        icon: "rainbow.png",
+        icon: "Notified_Presence.png",
         label: function() {
             return this.name||"Notified_Presence";
         }
@@ -110,7 +114,7 @@
         },
         inputs:1,
         outputs:0,
-        icon: "rainbow.png",
+        icon: "Set_Presence.png",
         label: function() {
             return this.name||"Set_Presence";
         }
@@ -153,7 +157,39 @@
             }
         }
     });
-    </script>
+    
+    RED.nodes.registerType('Send_Channel',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            destJid: {value:"", required:false }
+        },
+        inputs:1,
+        outputs:0,
+        icon: "Send_Channel.png",
+        label: function() {
+            return this.name||"Send_Channel";
+        }
+    });
+    
+    RED.nodes.registerType('Notified_Channel',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            fromChannelId: {value:"", required:false}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "Notified_Channel.png",
+        label: function() {
+            return this.name||"Notified_IM";
+        }
+    });
+</script>
     
     <script type="text/x-red" data-template-name="Send_IM">
         <div class="form-row">
@@ -175,13 +211,13 @@
         <h3>Properties :</h3>
         <dl class="message-properties">
             <dt>Destination JID<span class="property-type">string</span></dt>
-            <dd>is the full JID of the default receipient.<br/>.(unless <code>msg.payload.destJid</code> is defined)</dd>
+            <dd>is the full JID of the default receipient.<br/>(unless <code>msg.payload.destJid</code> is defined)</dd>
         </dl>
         <br>
         <h3>Input :</h3>
         <ul>
             <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
-            <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string).</li>
+            <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string, will overwrite Destination JID).  If <code>msg.payload.destJid</code> or "Destination JID" aren't provided and <code>msg.payload.fromJid</code> exists (reply to) it'll be used for the destJid.</li>
             <li><code>msg.payload.lang</code> The content language used (optional, as a string).</li>
             <li><code>msg.payload.alternateContent</code> should contain alternative text base content (optional, as a string) with<br/>
                 &nbsp;&nbsp;&nbsp;<code>alternateContent.type = "text"</code> or <code>"markdown"</code>, the message type<br/>
@@ -432,6 +468,14 @@
             <input type="password" id="node-config-input-password">
         </div>
         <div class="form-row">
+            <label for="node-config-input-appID"><i class="icon-tag"></i> Application ID</label>
+            <input type="text" id="node-config-input-appID">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-appSecret"><i class="icon-tag"></i> Application secret</label>
+            <input type="password" id="node-config-input-appSecret">
+        </div>
+        <div class="form-row">
             <label for="node-config-input-autoLogin"><i class="icon-tag"></i> Automatic Login</label>
             <input type="checkbox" id="node-config-input-autoLogin">
         </div>
@@ -456,4 +500,68 @@
     <script type="text/x-red" data-help-name="Login">
         <p>Login to Rainbow with your identity<br>
     </script>
+
+    <script type="text/x-red" data-template-name="Send_Channel">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-channelId"><i class="icon-tag"></i> Channel ID</label>
+            <input type="text" id="node-input-channelId" placeholder="ID here">
+        </div>
+    </script>
     
+    <script type="text/x-red" data-help-name="Send_Channel">
+        <p>Send a message to a Rainbow channel</p>
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Channel ID<span class="property-type">string</span></dt>
+            <dd>is the ID of the default channel.<br/>(unless <code>msg.payload.channelId</code> is defined)</dd>
+        </dl>
+        <br>
+        <h3>Input :</h3>
+        <ul>
+            <li><code>msg.payload.message</code> should contain a plain text (as a string).</li>
+            <li><code>msg.payload.channelId</code> should contain a Channel ID (optional, as a string, will overwrite Node's given Channel ID if any JID).</li>
+            <li><code>msg.payload.title</code> Title (optional, as a string).</li>
+            <li><code>msg.payload.url</code> url to join to message (optional, as a string).</li>
+        </ul>
+    </script>
+    
+    <script type="text/x-red" data-template-name="Notified_Channel">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-channelId"><i class="icon-tag"></i>Default Channel id</label>
+            <input type="text" id="node-input-filter" placeholder="channel's id">
+        </div>
+    </script>
+    
+    <script type="text/x-red" data-help-name="Notified_Channel">
+        <p>Be notified by message sent to a challen</p>
+        <h3>channelId :</h3>
+        If given, will be used as default channel id to "listen to".
+        <h3>Output :</h3>
+        <code>msg.payload</code> contains <b>relevant</b> :<br>
+        The message with
+        <ul>
+            <li><code>{String} messageId</code> : the id of the message,</li>
+            <li><code>{Channel} channel</code> : the channel, see <a href="https://hub.openrainbow.com/#/documentation/doc/sdk/node/api/channel">Channel</a>,</li>
+            <li><code>{String} fromJid</code> : the sender Jid,</li>
+            <li><code>{String} message</code> : message if any,</li>
+            <li><code>{String} title</code> : title if any,</li>
+            <li><code>{String} url</code> : url if any,</li>
+            <li><code>{Date} date</code> : the date</li>
+        </ul>
+    </script>
