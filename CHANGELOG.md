@@ -3,6 +3,9 @@
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
 
+## [1.3.5] - 2018-09-07
+Update documentation
+
 ## [1.3.4] - 2018-09-03
 - Login node: add appID and secret which will be mandatory soon in production
 - Send_IM node: allow to also modify Bubble's customData (only for Bubble owner)

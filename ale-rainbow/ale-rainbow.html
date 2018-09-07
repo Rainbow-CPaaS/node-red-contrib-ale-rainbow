@@ -207,7 +207,8 @@
     </script>
     
     <script type="text/x-red" data-help-name="Send_IM">
-        <p>Send a instant message to a Rainbow identity</p>
+        <p>Send a instant message to a Rainbow identity.<br/>
+        For a Bubble, may also set the customData.</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
             <dt>Destination JID<span class="property-type">string</span></dt>
@@ -217,13 +218,16 @@
         <h3>Input :</h3>
         <ul>
             <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
-            <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string, will overwrite Destination JID).  If <code>msg.payload.destJid</code> or "Destination JID" aren't provided and <code>msg.payload.fromJid</code> exists (reply to) it'll be used for the destJid.</li>
+            <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string, will overwrite Destination JID).<br/>
+                If <code>msg.payload.destJid</code> or "Destination JID" aren't provided and <code>msg.payload.fromJid</code> exists (reply to) it'll be used for the destJid.</li>
             <li><code>msg.payload.lang</code> The content language used (optional, as a string).</li>
             <li><code>msg.payload.alternateContent</code> should contain alternative text base content (optional, as a string) with<br/>
                 &nbsp;&nbsp;&nbsp;<code>alternateContent.type = "text"</code> or <code>"markdown"</code>, the message type<br/>
                 &nbsp;&nbsp;&nbsp;<code>alternateContent.message</code> The message body.<br/>
             Warning: the <code>msg.payload.content</code> should also be sent for clients not able to see Markdown for example</li>
             <li><code>msg.payload.subject</code> should contain the message subject (optional, as a string).</li>
+            <li>Bubble only: <b>and only if user is Bubble owner !</b><br/>
+                <code>msg.payload.customData</code> if given (and if user is the Bubble owner), will also set the Bubble's customData (optional, as a string).</li>
         </ul>
     </script>
     
@@ -259,7 +263,7 @@
     </script>
     
     <script type="text/x-red" data-help-name="Notified_IM">
-        <p>Get a instant message to a Rainbow identity</p>
+        <p>Get a instant message from a Rainbow identity</p>
         <h3>Filters :</h3>
         <dl class="message-properties">
             <p>either</p>
@@ -328,7 +332,7 @@
     </script>
     
     <script type="text/x-red" data-help-name="Notified_IM_Read">
-        <p>Get notifies when a message has been read by distant.<br/>
+        <p>Get notifies when a <code>message</code> has been read by distant.<br/>
         You can add a RegExp filter</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -337,6 +341,10 @@
             <br/>
         </dl>
         <br>
+        <code>msg.payload</code> contains :<br>
+        <ul>
+            <li><code>ack</code> : the message, described in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
+        </ul>
     </script>
     
     <script type="text/x-red" data-template-name="Ack_IM_Read">
@@ -354,7 +362,7 @@
         <p>Ack (mark as read) IM received.</p>
         <h3>Input :</h3>
         <ul>
-            ⚠<code>msg.payload</code> should contain the <b>complete message received</b> with Notified_IM node.
+            ⚠<code>msg.payload</code> should contain the <b>complete <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">message</a> received</b> with Notified_IM node.
             <br/>
         </ul>
         <h3>Node :</h3>
@@ -377,10 +385,11 @@
     </script>
     
     <script type="text/x-red" data-help-name="Notified_Presence">
-        <p>Get presence update of given user<p>
+        <p>Get presence update of given user<br/>
+            Full <code>msg.payload</code> provided is described in the HUB in <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a>'s model.<p>
         <h3>Output :</h3>
         <dl class="message-properties">
-            <p><code>msg.payload</code> contains :</p>
+            <p><code>msg.payload</code> contains relevant :</p>
             <dt><code>loginemail</code><span class="property-type">string</span></dt>
             <dd>loginEmail address of the contact.</dd>
             <br/>
@@ -412,7 +421,7 @@
     
     <script type="text/x-red" data-help-name="Set_Presence">
         <p>Set own presence</p>
-        <h3>Output :</h3>
+        <h3>Input :</h3>
         <p><code>msg.payload</code> filled with either 
         <ul>
             <li><code>'online'</code>,</li>
@@ -550,8 +559,13 @@
     
     <script type="text/x-red" data-help-name="Notified_Channel">
         <p>Be notified by message sent to a challen</p>
-        <h3>channelId :</h3>
-        If given, will be used as default channel id to "listen to".
+        <h3>Properties :</h3>
+        <dl class="message-properties">
+            <dt>Channel ID<span class="property-type">string</span></dt>
+            <dd>If given, will be used as default channel id to "listen to".<br/>
+            If empty, all listening channels will notify.</dd>
+        </dl>
+        <br>
         <h3>Output :</h3>
         <code>msg.payload</code> contains <b>relevant</b> :<br>
         The message with

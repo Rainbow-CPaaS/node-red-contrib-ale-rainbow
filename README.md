@@ -25,12 +25,14 @@ npm install node-red-contrib-ale-rainbow
 ## What's inside?
 It includes nine nodes:
 
-1. **```RBLogin```** : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.
-Since v1.3.0 and it's dependency rainbow-node-sdk v1.39.0 connection to Rainbow is well supported. Thanks to Loic Jehanno for his work.
-End of september 2018, a valid AppID/secret will be mandatory.  Please check the HUB to create one: [HUB](https://hub.openrainbow.com)
+1. **```RBLogin```** : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.  
+Since v1.3.0 and it's dependency rainbow-node-sdk v1.39.0 connection to Rainbow is well supported. Thanks to Loic Jehanno for his work.  
+**End of september 2018, a valid AppID/secret will be mandatory**.  Please check the HUB to create one: [HUB](https://hub.openrainbow.com)
 
-2. **```RBSend_IM```** : Output node to send IM to a Rainbow identity (User or Bubble).
-You can configure a default recipient for outgoing IM in node parameters.
+2. **```RBSend_IM```** : Output node to send IM to a Rainbow identity (User or Bubble).  
+You can configure a default recipient for outgoing IM in node parameters.  
+Bubble only: **and only if user is Bubble owner** :
+`msg.payload.customData` if given (and if user is the Bubble owner), will also set the Bubble's customData.  
 Accepted message format is:
 ```
 {  
@@ -45,8 +47,8 @@ Accepted message format is:
 - ```destJid``` is : Recipient JID (Jabber ID) for the IM. If not specified, Destination JID configured at node level is used.
 
 
-3. **```RBNotified_IM```** : Input node to listen for new incoming IM from a Rainbow user or Bubble.
-You can add filters to select which message may pass through (by type, RegExp, user or company).
+3. **```RBNotified_IM```** : Input node to listen for new incoming IM from a Rainbow user or Bubble.  
+You can add filters to select which message may pass through (by type, RegExp, user or company).  
 Delivered message format is:
 ```
 {  
@@ -60,16 +62,23 @@ Delivered message format is:
 }
 ```
 - ```content``` is: IM content (string).
-- ```fromJid``` is : Originator JID (Jabber ID) of the IM. Can be used to reply by copying this value for destJid.
-Others are described in the node.
+- ```fromJid``` is : Originator JID (Jabber ID) of the IM. Can be used to reply by copying this value for destJid.  
+Others are described in the node and here [Message](https://hub.openrainbow.com/#/documentation/doc/sdk/node/api/message).
 
-4. **```RBNotified_IM_Read```** : Input node to listen for message acknowledge.
+4. **```RBNotified_IM_Read```** : Input node to listen for message acknowledge.  
+Delivered message format is:
 
-var msg = { payload: { loginemail:contact.loginEmail, displayname:contact.displayName, fromJid:contact.jid_im, presence:contact.presence, status:contact.status  }};
+```
+{
+  payload: {
+    ack: message
+};
+```
+with `message` described here [Message](https://hub.openrainbow.com/#/documentation/doc/sdk/node/api/message)
 
 5. **```RBAck_IM_Read```** : Output node to Ack (mark as read) IM received.
 
-⚠ msg.payload should contain the complete message received with Notified_IM node.
+⚠ msg.payload should contain the complete `message` received with Notified_IM node.  
 Race condition could occur. It is highly recommended to add delay between IM reception and ack.
 
 6. **```RBNotified_Presence```** : Input node to listen for presence update of contact list.
@@ -119,8 +128,8 @@ Delivered message format is:
 
 9. **```Rainbow_function```** : A JavaScript function rainbow to run against <a target="_blank" href="https://www.npmjs.com/package/rainbow-node-sdk">Rainbow Sdk</a> by the node.</p>
 
-10. **```RBSend_Channel```** : Output node to send a message to a Rainbow channel.
-You can configure a default channel for outgoing message in node parameters.
+10. **```RBSend_Channel```** : Output node to send a message to a Rainbow channel.  
+You can configure a default channel for outgoing message in node parameters.  
 Accepted message format is:
 ```
 {  
@@ -142,8 +151,8 @@ Accepted message format is:
 - ```url``` is: url (string, optional).
 
 
-11. **```RBNotified_Channel```** : Input node to listen for new incoming message from a Rainbow Channel.
-You can configure a default channel for incoming message in node parameters.
+11. **```RBNotified_Channel```** : Input node to listen for new incoming message from a Rainbow Channel.  
+You can configure a default channel for incoming message in node parameters.  
 Delivered message format is:
 ```
 {  
@@ -171,4 +180,3 @@ Delivered message format is:
 - ```date``` is: published Date (Date).
 - ```channel``` is : channel which got the message (Channel). See [Channel](https://hub.openrainbow.com/#/documentation/doc/sdk/node/api/channel) for the structure.
 
-  
