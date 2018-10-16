@@ -93,6 +93,11 @@ module.exports = function(RED) {
                 login: node.credentials.username,
                 password: node.credentials.password
             },
+            // Application identifier
+            application: {
+                appID: node.credentials.appID, 
+                appSecret: node.credentials.appSecret, 
+            },
             logs: {
                 enableConsoleLogs: false, // Default: false
                 enableFileLogs: false, // Default: false
@@ -141,6 +146,7 @@ module.exports = function(RED) {
             node.log("login: **************************************************" + " cnx: " + JSON.stringify(node.name));
             allocateSDK(node, node);
             node.log("login: **** SDK allocated" + " cnx: " + JSON.stringify(node.name));
+            node.log("login: **** SDK allocated version: " + node.rainbow.sdk.version);
             var onLoginConnectionReady = function onLoginConnectionReady() {
                 node.log("++++++++++++++++++++");
                 node.log("onLoginConnectionReady()"+ " cnx: " + JSON.stringify(node.name));
@@ -464,6 +470,22 @@ module.exports = function(RED) {
             }
         }
         getRainbowSDKSendMessage();
+	var getRainbowSDKSendMessage = function getRainbowSDKSendMessage() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendMessage, 2000);
+            }
+        }
+
+        var sendMessageToBubble = function (content, bubbleJid, lang, alternateContent, subject) {
+            node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject);
+            msgSent++;
+            node.status({
+                fill: "green",
+                shape: "dot",
+                text: "Nb sent: " + msgSent
+            });
+        }    
         this.on('input', function(msg) {
             node.status({
                 fill: "orange",
@@ -479,44 +501,46 @@ module.exports = function(RED) {
                     text: "not connected"
                 });
             } else {
-                let destJid = (msg.payload.destJid != undefined ? msg.payload.destJid : (node.destJid != "" ? node.destJid : msg.payload.fromJid));
-				let lang = msg.payload.lang ? msg.payload.lang : null;
-				let content = msg.payload.content;
-				let alternateContent = (msg.payload.alternateContent ? msg.payload.alternateContent : null);
-				let subject = (msg.payload.subject ? msg.payload.subject : null);
-				if (destJid != undefined && "" != destJid) {
-					node.log("Rainbow SDK (" + config.server + " " + content + " " + node.destJid + " " + JSON.stringify(alternateContent) + " cnx: " + JSON.stringify(node.server.name));
-					if (destJid.substring(0, 5) === "room_") {
-						var bubbleJid = destJid.split("/")[0]
-						if (msg.payload.customData != undefined) {
-							var bubble = node.server.rainbow.sdk.bubbles.getBubbleByJid(bubbleJid);
-							if (bubble !== null) {
-								node.server.rainbow.sdk.bubbles.setBubbleCustomData(bubble, msg.payload.customData).then(function () {
-									node.log("Rainbow SDK (" + config.server + " setBubbleCustomData " + bubbleJid + " " + JSON.stringify(msg.payload.customData) + " cnx: " + JSON.stringify(node.server.name));
-									node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject).then(function () {                    });
-								}, function (error) {
-									node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject);
-								});
-							}
-						} else {
-							node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject);
-						}
-					} else {
-						node.server.rainbow.sdk.im.sendMessageToJid(content, destJid, lang, alternateContent, subject);
-					}
-					msgSent++;
-					node.status({
-						fill: "green",
-						shape: "dot",
-						text: "Nb sent: " + msgSent
-					});
-				} else {
-					node.status({
-						fill: "red",
-						shape: "dot",
-						text: "no valid destination Jid"
-					});
-				}
+ 		let destJid = (msg.payload.destJid != undefined ? msg.payload.destJid : (node.destJid != "" ? node.destJid : msg.payload.fromJid));
+                let lang = msg.payload.lang ? msg.payload.lang : null;
+                let content = msg.payload.content;
+                let alternateContent = (msg.payload.alternateContent ? msg.payload.alternateContent : null);
+                let subject = (msg.payload.subject ? msg.payload.subject : null);
+                if (destJid != undefined && "" != destJid) {
+                    node.log("Rainbow SDK (" + config.server + " " + content + " " + node.destJid + " " + JSON.stringify(alternateContent) + " cnx: " + JSON.stringify(node.server.name));
+                    if (destJid.substring(0, 5) === "room_") {
+                        var bubbleJid = destJid.split("/")[0]
+                        if (msg.payload.customData != undefined) {
+                            node.server.rainbow.sdk.bubbles.getBubbleByJid(bubbleJid).then(bubble => {
+                                if (bubble !== null) {
+                                    node.server.rainbow.sdk.bubbles.setBubbleCustomData(bubble, msg.payload.customData).then(function () {
+                                        node.log("Rainbow SDK (" + config.server + " setBubbleCustomData " + bubbleJid + " " + JSON.stringify(msg.payload.customData) + " cnx: " + JSON.stringify(node.server.name));
+                                        sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject);
+
+                                    }, function (error) {
+                                        var label = (error ? (error.label ? error.label : error) : "unknown");
+                                        node.log("Rainbow SDK (" + config.server + " setBubbleCustomData " + bubbleJid + " failed")
+                                        node.log("Rainbow SDK (" + config.server + "bubble " + JSON.stringify(bubble) + " , error: " + (typeof label == 'object' ? JSON.stringify(label) : label));
+                                        sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject);
+                                    });
+                                }
+                            });
+                        } else {
+                            sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject);
+                        }
+
+                    } else {
+                        sendMessageToContact(content, destJid, lang, alternateContent, subject);
+
+                    }
+
+                } else {
+                    node.status({
+                        fill: "red",
+                        shape: "dot",
+                        text: "no valid destination Jid"
+                    });
+                }
             }
             this.on('close', function() {
                 // tidy up any state
@@ -537,7 +561,52 @@ module.exports = function(RED) {
         var cfgTimer = null;
         var node = this;
         var msgGot = 0;
-  
+  	var sendMsg = function (message, contact, bubble) {
+            var msg;
+            if (bubble) {
+                msg = {
+                    payload: message,
+                    contact: contact,
+                    bubble: bubble
+                };
+            } else {
+                msg = {
+                    payload: message,
+                    contact: contact
+                };
+            }
+            node.send(msg);
+        }
+        var getFromContactThenSendMsg = function (message, fromJID, bubble) {
+            // Get contact information from server
+            node.server.rainbow.sdk.contacts.getContactByJid(fromJID).then((contact) => {
+                if (contact) {
+                    // Contact filter ?
+                    if ((node.filterContact != '') && (node.filterContact != undefined)) {
+                        if ((node.filterContact === contact.loginEmail) || (node.filterContact === contact.jid_im)) {
+                            node.log("Rainbow : Contact filter OK !" + " cnx: " + JSON.stringify(node.server.name));
+                        } else {
+                            node.log("Rainbow : Contact filter blocked !" + " cnx: " + JSON.stringify(node.server.name));
+                            return;
+                        }
+                    }
+                    // Company filter ?
+                    if ((node.filterCompany != '') && (node.filterCompany != undefined)) {
+                        if (node.filterCompany === contact.companyId) {
+                            node.log("Rainbow : Company id filter OK !" + " cnx: " + JSON.stringify(node.server.name));
+                        } else {
+                            node.log("Rainbow : Company id filter blocked !" + " cnx: " + JSON.stringify(node.server.name));
+                            return;
+                        }
+                    }
+                    node.log("Rainbow : sending message." + " cnx: " + JSON.stringify(node.server.name));
+                    sendMsg(message, contact, bubble)
+                } else {
+                    node.warn("Rainbow : couldn't find user for jID : " + message.fromJid + " cnx: " + JSON.stringify(node.server.name));
+                    sendMsg(message, {}, bubble)
+                }
+            });
+        }
         node.log("Rainbow : getMessage node initialized :" + " cnx: " + JSON.stringify(node.server.name))
         var rainbow_onmessagereceivedGetMessage = function rainbow_onmessagereceivedGetMessage(message) {
             let filterOK = true;
@@ -571,77 +640,22 @@ module.exports = function(RED) {
                     return;
                 }
             }
+          
             // Check if the message comes from a user
-            fromJID = message.fromJid;
             if (message.type === "groupchat") {
                 node.log("Rainbow : Message GROUPCHAT !" + " cnx: " + JSON.stringify(node.server.name));
                 // Get the from JID
-                fromJID = message.fromBubbleUserJid;
                 if (message.fromBubbleJid) {
                     var bubbleJid = message.fromBubbleJid;
                     node.log("Rainbow : Message GROUPCHAT working with bubbleJid: " + bubbleJid + " cnx: " + JSON.stringify(node.server.name));
-                    bubble = node.server.rainbow.sdk.bubbles.getBubbleByJid(bubbleJid);
+                    node.server.rainbow.sdk.bubbles.getBubbleByJid(bubbleJid).then(bubble => {
+                        node.log("Rainbow : Message GROUPCHAT fromJid : " + message.fromBubbleUserJid + " cnx: " + JSON.stringify(node.server.name));
+                        getFromContactThenSendMsg(message, message.fromBubbleUserJid, bubble)
+                    });
                 }
-                node.log("Rainbow : Message GROUPCHAT fromJid : " + fromJID + " cnx: " + JSON.stringify(node.server.name));
-            }
-            // Get contact information from server
-            node.server.rainbow.sdk.contacts.getContactByJid(fromJID).then((contact) => {
-                if (contact) {
-                    // Contact filter ?
-                    if ((node.filterContact != '') && (node.filterContact != undefined)) {
-                        filterOK = false;
-                        if ((node.filterContact === contact.loginEmail) || (node.filterContact === contact.jid_im)) {
-                            filterOK = true;
-                            node.log("Rainbow : Contact filter OK !" + " cnx: " + JSON.stringify(node.server.name));
-                        } else {
-                            node.log("Rainbow : Contact filter blocked !" + " cnx: " + JSON.stringify(node.server.name));
-                            return;
-                        }
-                    }
-                    // Company filter ?
-                    if ((node.filterCompany != '') && (node.filterCompany != undefined)) {
-                        filterOK = false;
-                        if (node.filterCompany === contact.companyId) {
-                            filterOK = true;
-                            node.log("Rainbow : Company id filter OK !" + " cnx: " + JSON.stringify(node.server.name));
-                        } else {
-                            node.log("Rainbow : Company id filter blocked !" + " cnx: " + JSON.stringify(node.server.name));
-                            return;
-                        }
-                    }
-                    node.log("Rainbow : sending message." + " cnx: " + JSON.stringify(node.server.name));
-                    var msg;
-                    if (bubble) {
-                        msg = {
-                            payload: message,
-                            contact: contact,
-                            bubble: bubble
-                        };
-                    } else {
-                        msg = {
-                            payload: message,
-                            contact: contact
-                        };
-                    }
-                    node.send(msg);
-                } else {
-                    node.warn("Rainbow : couldn't find user for jID : " + message.fromJid + " cnx: " + JSON.stringify(node.server.name));
-                    var msg;
-                    if (bubble) {
-                        msg = {
-                            payload: message,
-                            contact: {},
-                            bubble: bubble
-                        };
-                    } else {
-                        msg = {
-                            payload: message,
-                            contact: {}
-                        };
-                    }
-                    node.send(msg);
-                }
-            });
+            } else {
+                getFromContactThenSendMsg(message, message.fromJid, null)
+            }	
         };
         var getRainbowSDKGetMessageGetMessage = function getRainbowSDKGetMessageGetMessage() {
             if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
@@ -827,6 +841,134 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
+
+
+    function sendMessageToChannel(config) {
+        RED.nodes.createNode(this, config);
+        this.channelId = config.channelId;
+        this.server = RED.nodes.getNode(config.server);
+        var cfgTimer = null;
+        var msgSent = 0;
+        var node = this;
+        node.log("Rainbow : sendMessageToChannel node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var getRainbowSDKSendMessageToChannel = function getRainbowSDKSendMessageToChannel() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKSendMessage, 2000);
+            }
+        }
+        getRainbowSDKSendMessageToChannel();
+        this.on('input', function(msg) {
+            node.status({
+                fill: "orange",
+                shape: "dot",
+                text: "will send..."
+            });
+            node.log("Rainbow : sendMessageToChannel to cnx: " + JSON.stringify(node.server.name));
+            if (node.server.rainbow.logged === false) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                node.status({
+                    fill: "red",
+                    shape: "dot",
+                    text: "not connected"
+                });
+            } else {
+                let channel = (msg.payload.channel != undefined ? msg.payload.channel : (node.channelId != "" ? { id:node.channelId} : null));
+				let message = msg.payload.content;
+				let title = (msg.payload.title ? msg.payload.title : null);
+				let url = (msg.payload.url ? msg.payload.url : null);
+				if (channel != undefined && null != channel && channel.id != undefined && "" !== channel.id) {
+					node.log("Sending to id " + channel.id + " (" + message + " "+ ") cnx: " + JSON.stringify(node.server.name));
+                    
+                    node.server.rainbow.sdk.channels.publishMessageToChannel(
+                        channel, 
+                        message, 
+                        title, 
+                        url);
+					
+					msgSent++;
+					node.status({
+						fill: "green",
+						shape: "dot",
+						text: "Nb sent: " + msgSent
+					});
+				} else {
+                    let errorTxt = "no valid destination channel/id, looks like " + util.inspect(channel);
+					node.status({
+						fill: "red",
+						shape: "dot",
+						text: errorTxt
+					});
+					node.error("Can't send to Channel: " + errorTxt);
+				}
+            }
+            this.on('close', function() {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+    }
+  
+    function getMessageFromChannel(config) {
+        RED.nodes.createNode(this, config);
+        this.channelId = config.channelId;
+        this.server = RED.nodes.getNode(config.server);
+        serverctx = this.server.context();
+        var cfgTimer = null;
+        var node = this;
+        var msgGot = 0;
+  
+        node.log("Rainbow : getMessageFromChannel node initialized :" + " cnx: " + JSON.stringify(node.server.name))
+        var rainbow_onchannelmessagereceivedGetMessageFromChannel = function rainbow_onchannelmessagereceivedGetMessageFromChannel(message) {
+            node.log("Rainbow : onChannelMessageReceived: " + JSON.stringify(node.server.name))
+
+            if (node.channelId != undefined && node.channelId != "") {
+                if (node.channelId !== message.channelId) {
+                    // Not wanted channel, filtering
+                    node.log("Rainbow : onChannelMessageReceived: ignoring message as not from good channel id");
+                    return;
+                }
+            }
+
+            msgGot++;
+            node.status({
+                fill: "green",
+                shape: "ring",
+                text: "Nb: " + msgGot
+            });
+                
+            node.log("Rainbow : sending message." + " cnx: " + JSON.stringify(node.server.name));
+                
+            var msg;
+
+            msg = {
+                payload: message
+            };
+            node.send(msg);
+
+        };
+        var getRainbowSDKGetMessageFromChannel = function getRainbowSDKGetMessageFromChannel() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKGetMessageGetMessageFromChannel, 2000);
+            } else {
+                node.log("Rainbow SDK (" + config.server + ") Registering rainbow_onchannelmessagereceived" + " cnx: " + JSON.stringify(node.server.name));
+                node.server.rainbow.sdk.events.on('rainbow_onchannelmessagereceived', rainbow_onchannelmessagereceivedGetMessageFromChannel);
+                node.server.rainbow.sdkhandler.push({
+                    evt: 'rainbow_onchannelmessagereceived',
+                    fct: rainbow_onchannelmessagereceivedGetMessageFromChannel
+                });
+                node.log("Rainbow : getMessageFromChannel register for event 'rainbow_onchannelmessagereceived'" + " cnx: " + JSON.stringify(node.server.name));
+            }
+        }
+        getRainbowSDKGetMessageFromChannel();
+        this.on('close', function() {
+            // tidy up any state
+            clearTimeout(cfgTimer);
+        });
+    }
+  
+
     RED.nodes.registerType("Send_IM", sendMessage);
     RED.nodes.registerType("Notified_IM", getMessage);
 
@@ -836,6 +978,9 @@ module.exports = function(RED) {
     RED.nodes.registerType("Notified_IM_Read", notifyMessageRead);
     RED.nodes.registerType("Ack_IM_Read", ackMessage);
 
+    RED.nodes.registerType("Send_Channel", sendMessageToChannel);
+    RED.nodes.registerType("Notified_Channel", getMessageFromChannel);
+
     RED.nodes.registerType("CnxState", getCnxState);
     RED.nodes.registerType("Login", login, {
         credentials: {
@@ -843,6 +988,12 @@ module.exports = function(RED) {
                 type: "text"
             },
             password: {
+                type: "password"
+            },
+            appID: {
+                type: "text"
+            },
+            appSecret: {
                 type: "password"
             }
         }
