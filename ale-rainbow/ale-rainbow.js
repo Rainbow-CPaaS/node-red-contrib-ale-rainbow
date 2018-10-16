@@ -469,15 +469,7 @@ module.exports = function(RED) {
                 cfgTimer = setTimeout(getRainbowSDKSendMessage, 2000);
             }
         }
-        getRainbowSDKSendMessage();
-	var getRainbowSDKSendMessage = function getRainbowSDKSendMessage() {
-            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
-                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
-                cfgTimer = setTimeout(getRainbowSDKSendMessage, 2000);
-            }
-        }
-
-        var sendMessageToBubble = function (content, bubbleJid, lang, alternateContent, subject) {
+		var sendMessageToBubble = function (content, bubbleJid, lang, alternateContent, subject) {
             node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject);
             msgSent++;
             node.status({
@@ -485,7 +477,19 @@ module.exports = function(RED) {
                 shape: "dot",
                 text: "Nb sent: " + msgSent
             });
-        }    
+        }
+
+        var sendMessageToContact = function (content, destJid, lang, alternateContent, subject) {
+            node.server.rainbow.sdk.im.sendMessageToJid(content, destJid, lang, alternateContent, subject);
+            msgSent++;
+            node.status({
+                fill: "green",
+                shape: "dot",
+                text: "Nb sent: " + msgSent
+            });
+        }
+        getRainbowSDKSendMessage();
+	
         this.on('input', function(msg) {
             node.status({
                 fill: "orange",
@@ -561,7 +565,7 @@ module.exports = function(RED) {
         var cfgTimer = null;
         var node = this;
         var msgGot = 0;
-  	var sendMsg = function (message, contact, bubble) {
+  	    var sendMsg = function (message, contact, bubble) {
             var msg;
             if (bubble) {
                 msg = {
