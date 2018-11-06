@@ -25,7 +25,7 @@ npm install node-red-contrib-ale-rainbow
 ## What's inside?
 It includes nine nodes:
 
-1. **```RBLogin```** : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.  
+1. **```RBLogin```** : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here the sandbox or official system, and the credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.  
 Since v1.3.0 and it's dependency rainbow-node-sdk v1.39.0 connection to Rainbow is well supported. Thanks to Loic Jehanno for his work.  
 **End of september 2018, a valid AppID/secret will be mandatory**.  Please check the HUB to create one: [HUB](https://hub.openrainbow.com)
 

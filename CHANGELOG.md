@@ -2,6 +2,8 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.3.6] - 2018-11-06
+Login node: add host selection to choose between sandbox and official rainbow systems. 
 
 ## [1.3.5] - 2018-09-07
 Update documentation

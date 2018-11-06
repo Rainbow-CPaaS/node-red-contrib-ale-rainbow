@@ -87,7 +87,8 @@ module.exports = function(RED) {
         node.rainbow.logged = false;
         node.rainbow.options = {
             rainbow: {
-                host: "official",
+//                host: "official",
+                host: config.host
             },
             credentials: {
                 login: node.credentials.username,
@@ -99,6 +100,7 @@ module.exports = function(RED) {
                 appSecret: node.credentials.appSecret, 
             },
             logs: {
+//                enableConsoleLogs: true, // Default: false
                 enableConsoleLogs: false, // Default: false
                 enableFileLogs: false, // Default: false
                 file: {

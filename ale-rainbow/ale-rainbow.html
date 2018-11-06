@@ -4,6 +4,7 @@
       category: 'config',
       defaults: {
           name: {value:""},
+          host: {value:"official"},
           autoLogin: {value:false},
           proxyHost: {value:"", required:false},
           proxyPort: {value:"", required:false},
@@ -464,6 +465,13 @@
     </script>
     
     <script type="text/x-red" data-template-name="Login">
+        <div class="form-row">
+            <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
+            <select id="node-config-input-host" placeholder="Host">
+                <option value="sandbox">sandbox</option>
+                <option value="official" selected>production</option>
+            </select>
+        </div>
         <div class="form-row">
             <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
             <input type="text" id="node-config-input-name" placeholder="Name">
