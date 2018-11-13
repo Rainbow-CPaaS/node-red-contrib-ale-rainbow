@@ -100,9 +100,17 @@ module.exports = function(RED) {
                 appSecret: node.credentials.appSecret, 
             },
             logs: {
-//                enableConsoleLogs: true, // Default: false
+
                 enableConsoleLogs: false, // Default: false
+//                enableConsoleLogs: false, // Default: false
                 enableFileLogs: false, // Default: false
+                /*"color": true,
+                "level": 'debug',
+                "customLabel": "noderedcontrib",
+                "system-dev": {
+                    "internals": true,
+                    "http": true
+                }, // */
                 file: {
                     path: '/var/tmp/rainbowsdk/', // Default path used
                     level: 'info' // Default log level used
