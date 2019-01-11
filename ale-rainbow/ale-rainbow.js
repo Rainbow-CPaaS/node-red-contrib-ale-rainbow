@@ -104,12 +104,12 @@ module.exports = function(RED) {
                 enableConsoleLogs: false, // Default: false
 //                enableConsoleLogs: false, // Default: false
                 enableFileLogs: false, // Default: false
-                /*"color": true,
+                "color": true,
                 "level": 'debug',
                 "customLabel": "noderedcontrib",
                 "system-dev": {
-                    "internals": true,
-                    "http": true
+                    "internals": false,
+                    "http": false
                 }, // */
                 file: {
                     path: '/var/tmp/rainbowsdk/', // Default path used
