@@ -20,9 +20,12 @@ module.exports = function(RED) {
         node.log("Removing RainbowSDK (releaseSDK) instance " + " cnx: " + JSON.stringify(server.name));
         if (server.rainbow.sdk === null) {
             return
-        };
-        delete server.rainbow.sdk;
-        server.rainbow.sdk = null;
+        }
+
+        server.rainbow.sdk.stop().then(() => {
+            delete server.rainbow.sdk;
+            server.rainbow.sdk = null;
+        });
     }
   
     function pauseSDK(node, server, done) {
@@ -868,7 +871,7 @@ module.exports = function(RED) {
         var getRainbowSDKSendMessageToChannel = function getRainbowSDKSendMessageToChannel() {
             if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
                 node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
-                cfgTimer = setTimeout(getRainbowSDKSendMessage, 2000);
+                cfgTimer = setTimeout(getRainbowSDKSendMessageToChannel, 2000);
             }
         }
         getRainbowSDKSendMessageToChannel();
