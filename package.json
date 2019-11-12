@@ -6,7 +6,7 @@
     "startnodered": "node-red -v %NODE_DEBUG_OPTION% "
   },
   "dependencies": {
-    "rainbow-node-sdk": "1.63.1"
+    "rainbow-node-sdk": "latest"
   },
   "keywords": [
     "node-red",
