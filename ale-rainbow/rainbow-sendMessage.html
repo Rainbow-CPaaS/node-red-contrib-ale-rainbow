@@ -1,0 +1,68 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Rainbow_Send_IM_Attachments',{
+      category: 'ALE Rainbow',
+      color: '#a6bbcf',
+      defaults: {
+          server: {value:"", type:"Login"},
+          name: {value:""},
+          isLoginEmail: { value: false},
+          destJid: {value:"", required:false }
+      },
+      inputs:1,
+      outputs:0,
+      icon: "Rainbow_Send_IM_Attachments.png",
+      label: function() {
+          return this.name||"Send IM";
+      }
+  });
+</script>
+
+
+<script type="text/x-red" data-template-name="Rainbow_Send_IM_Attachments">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-server"> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-destJid"> Entity</label>
+        <input type="text" id="node-input-destJid" placeholder="Full JID here or loginEmail here">
+    </div>
+
+    <div class="form-row">
+        <input type="checkbox" id="node-input-isLoginEmail" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-isLoginEmail" style="width: 70%;"><span>Entity is the login Email.</span></label>
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="Rainbow_Send_IM_Attachments">
+  <p>Send a instant message to a Rainbow entity.<br/>
+  </p>
+  <h3>Properties :</h3>
+  <dl class="message-properties">
+      <dt>Entity <span class="property-type">string</span></dt>
+      <dd>is the full JID of the default receipient or his login email.<br/>(unless <code>msg.payload.destJid</code> is defined)</dd>
+  </dl>
+  <br>
+  <h3>Input :</h3>
+  <ul>
+      <li><code>msg.payload.content</code> should contain a plain text IM (as a string).</li>
+      <li><code>msg.payload.destJid</code> should contain full JID os the receipient (optional, as a string, will overwrite Destination JID).<br/>
+          If <code>msg.payload.destJid</code> or "Destination JID" aren't provided and <code>msg.payload.fromJid</code> exists (reply to) it'll be used for the destJid.</li>
+      <li><code>msg.payload.lang</code> The content language used (optional, as a string).</li>
+      <li><code>msg.payload.alternateContent</code> should contain alternative text base content (optional, as a string) with<br/>
+          &nbsp;&nbsp;&nbsp;<code>alternateContent.type = "text"</code> or <code>"markdown"</code>, the message type<br/>
+          &nbsp;&nbsp;&nbsp;<code>alternateContent.message</code> The message body.<br/>
+      Warning: the <code>msg.payload.content</code> should also be sent for clients not able to see Markdown for example</li>
+      <li><code>msg.payload.subject</code> should contain the message subject (optional, as a string).</li>
+      <li>Bubble only: <b>and only if user is Bubble owner !</b><br/>
+          <code>msg.payload.customData</code> if given (and if user is the Bubble owner), will also set the Bubble's customData (optional, as a string).</li>
+  </ul>
+</script>
+

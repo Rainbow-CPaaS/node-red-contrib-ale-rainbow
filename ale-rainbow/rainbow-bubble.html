@@ -1,0 +1,176 @@
+<script type="text/javascript">
+  RED.nodes.registerType('Rainbow_Manage_Bubble',{
+      category: 'ALE Rainbow',
+      color: '#a6bbcf',
+      defaults: {
+          server: {value:"", type:"Login", required: true },
+          name: {value:""},
+          bubbleName: { value: "" },
+          customData: { value: undefined },
+          bubbleDescription: { value: "" },
+          bubbleCreate: { value: true },
+          history: { value: true },
+          forceInvite: { value: true },
+          users: { value: undefined },
+          usersType: { value: "json"},
+          moderators: { value: undefined },
+          moderatorsType: { value:"json" },
+      },
+      inputs:1,
+      outputs:1,
+      icon: "Rainbow_Manage_Bubble.png",
+      label: function() {
+          return this.name||"Bubble";
+      },
+      oneditprepare: function() {
+            $("#node-input-bubbleCreate").change(function() {
+                if ($(this).is(":checked")) {
+                    $(".node-input-bubbleCreate-row").show();
+                } else {
+                    $(".node-input-bubbleCreate-row").hide();
+                }
+            });
+            $("#node-input-history-select").change(function() {
+                if ($(this).find("option:selected").val() === "number") {
+                    $(".node-input-historyNumber-row").show();
+                } else {
+                    $(".node-input-historyNumber-row").hide();
+                }
+            });
+            
+            $("#node-input-customData").typedInput({
+              default: 'json',
+              typeField: $("#node-input-customDataType"),
+              types:['json' ]
+            });
+            $("#node-input-users").typedInput({
+              default: 'json',
+              typeField: $("#node-input-usersType"),
+              types:[ 'json' ]
+            });
+            
+            $("#node-input-moderators").typedInput({
+              default: 'json',
+              typeField: $("#node-input-moderatorsType"),
+              types:['json' ]
+            });
+          }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="Rainbow_Manage_Bubble">
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-server">Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+
+  <div class="form-row">      
+      <label for="node-input-bubbleName">Bubble</label>
+      <input type="text" id="node-input-bubbleName" placeholder="Name of the bubble">
+  </div>
+  <div class="form-row">      
+      <label for="node-input-customData">Custom Datas</label>
+      <input type="text" id="node-input-customData" placeholder="CustomData">
+      <input type="hidden" id="node-input-customDataType">
+  </div>
+  <div class="form-row">      
+    <input type="checkbox" id="node-input-bubbleCreate" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-bubbleCreate" style="width: 70%;"><span>Create the bubble if missing.</span></label>
+  </div>
+
+  <div style="margin-left: 20px" class="node-input-bubbleCreate-row hide">
+      <div class="form-row">
+          <label for="node-input-bubbleDescription"></i> <span>Description</span></label>            
+          <input type="text" id="node-input-bubbleDescription">
+      </div>
+
+      <div class="form-row">
+          <label for="node-input-history"><i class="fa fa-user-secret "></i> <span>History</span></label>
+          <input type="checkbox" id="node-input-history" style="display: inline-block; width: auto; vertical-align: top;">
+          <label for="node-input-history" style="width: 70%;"><span>New comers can see history.</span></label>
+      </div>
+      
+      <div style="margin-left: 20px" class="node-input-historyNumber-row hide">
+        <div class="form-row">      
+            <label for="node-input-historyNumber">Number</label>
+            <input type="text" id="node-input-historyNumber" placeholder="number of messages">
+        </div>
+      </div>        
+    </div>
+
+    <div class="form-row">      
+      <input type="checkbox" id="node-input-forceInvite" style="display: inline-block; width: auto; vertical-align: top;">
+      <label for="node-input-forceInvite" style="width: 70%;"><span>Force invitations</span></label>
+    </div>
+      
+    <div class="form-row">
+      <label for="node-input-users"><span>Users:</span></label>
+      <input type="text" id="node-input-users" style="width:70%" >
+      <input type="hidden" id="node-input-usersType">
+    </div>
+
+    <div class="form-row">      
+      <label for="node-input-moderators"><span>Moderators:</span></label>
+      <input type="text" id="node-input-moderators" style="width:70%">
+      <input type="hidden" id="node-input-moderatorsType">
+    </div>
+    
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="Rainbow_Manage_Bubble">
+  <p>Create/retrieves a Rainbow bubble<br>
+    This node will try to find a bubble based on its name, and customData.
+    If none is found, it will optionally create one.
+    Then it will add or invite users and moderators as defined by the configuration or the input message.
+  </p>
+    <h3>Properties :</h3>
+    <dl class="message-properties">
+        <dt>Bubble<span class="property-type">string</span></dt>
+        <dd>is the name of the bubble to retrieve/create.<br/>(unless <code>msg.payload.name</code> is defined)</dd>
+        <dt>Custom Datas<span class="property-type">JSon object</span></dt>
+        <dd>the custom data associated to the bubble. It is used to find the bubble, so a bubble with the specified name and different custom data won't be retrieved.<br/>(unless <code>msg.payload.customData</code> is defined)</dd>
+        <dt>Create the bubble if missing<span class="property-type">boolean</span></dt>
+        <dd>if set and no bubble with specified bubble name and customData exist, the bubble will be created.<br/>(unless <code>msg.payload.create</code> is defined)</dd>
+        <dt>Description<span class="property-type">string</span></dt>
+        <dd>the initial description of the bubble if it is created by the node.<br/>(unless <code>msg.payload.description</code> is defined)</dd>
+        <dt>History<span class="property-type">boolean</span></dt>
+        <dd>if set and the bubble is created by the node, people added to the node will be able to read existing messages.<br/>(unless <code>msg.payload.history</code> is defined)</dd>
+        <dt>Users<span class="property-type">JSON array</span></dt>
+        <dd>the list of users to add to the bubble with a user privilege <br>It can be an array of strings (loginEmails), or an array of objects containing either a <code>loginEmail</code> property, an <code>id</code> property, or a <code>jid</code> property.<br/>(unless <code>msg.payload.users</code> is defined)</dd>
+        <dt>Moderators<span class="property-type">JSON array</span></dt>
+        <dd>same as users but for the moderators.<br/>(unless <code>msg.payload.moderators</code> is defined)</dd>
+        <dt>Force invitations<span class="property-type">boolean</span></dt>
+        <dd>if set and there are people (users or moderators) to add into the bubble, they will be directly added without going through an invitation.<br/>(unless <code>msg.payload.forceInvite</code> is defined)</dd>        
+    </dl>
+    <br>
+    <h3>Input :</h3>
+    <ul>
+        <li><code>msg.payload.name</code> should contain the name of the bubble (as a string).</li>
+        <li><code>msg.payload.customData</code> should contain the custom data of the bubble we search / want to create (optional, as a json object, will overwrite Custom Data).</li>
+        <li><code>msg.payload.create</code> says if the bubble must be created if not found  (optional, as a boolean).</li>
+        <li><code>msg.payload.description</code> should contain the description to set if the bubble is created (optional, as a string).</li>
+        <li><code>msg.payload.history</code> should contain true if we want to create the bubble in a way that newly added users can read the previous messages (optional, as a boolean).</li>
+        <li><code>msg.payload.users</code> should contain the list of users for the bubble (optional, as a json object).<br>
+          Items of this array can be a string (in which case it is the loginEmail), or an object with either an id a jid or a loginEmail property example:<br>
+          <code>msg.payload.users = [ "user1@someDomain.com", { "loginEmail": "user2@someDomain.com"}, {"jid": "xxy"}, {"id": "id_1"}]</code><br>
+          will try to make sure that the users whith login email "user1@someDomain.com", "user2@someDomain.com", the user with jid xxy, and the user with id "id_1" are 
+          in the list of users with the "user" privilege.          
+        </li>
+        <li><code>msg.payload.moderators</code> should contain the list of moderators for the bubble (optional as a json object).<br>
+          same as <code> msg.payload.users</code>, but for the "moderator" privilege.
+        </li>
+        <li><code>msg.payload.forceInvite</code> should contain a boolean (optional) that indicates if the users and moderators must be added directly into the bubble (if true) or sent an invitation to the bubble.</li>
+    </ul>
+    <br>
+    <h3>Output:</h3>
+    <ul>
+        <li><code>msg.bubble</code> resulting bubble if found/created.</li>
+    </ul>
+
+</script>

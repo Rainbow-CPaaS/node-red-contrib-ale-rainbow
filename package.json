@@ -23,7 +23,9 @@
   "node-red": {
     "nodes": {
       "ale-rainbow": "ale-rainbow/ale-rainbow.js",
-      "ale-rainbow-function": "ale-rainbow/ale-rainbow-function.js"
+      "ale-rainbow-function": "ale-rainbow/ale-rainbow-function.js",
+      "Rainbow_Manage_Bubble": "nodes/rainbow-bubble.js",
+      "Rainbow_Send_IM_Attachments": "nodes/rainbow-sendMessage.js"
     }
   },
   "repository": {
