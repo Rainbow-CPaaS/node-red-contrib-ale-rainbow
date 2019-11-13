@@ -2,6 +2,28 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.4.2] - 2019-02-12
+update to rainbow-node-sdk 1.52.0
+
+## [1.4.1] - 2019-02-12
+
+## [1.3.6] - 2018-11-06
+Login node: add host selection to choose between sandbox and official rainbow systems. 
+
+## [1.3.5] - 2018-09-07
+Update documentation
+
+## [1.3.4] - 2018-09-03
+- Login node: add appID and secret which will be mandatory soon in production
+- Send_IM node: allow to also modify Bubble's customData (only for Bubble owner)
+Thanks to loloj
+- Send_Channel and Notified_Channel nodes added
+- Add some icons for Rainbow Nodes...
+
+## [1.3.3] - 2018-07-00
+- Add new node Rainbow_function to allow to call a specific API in Rainbow Node.js SDK
+Thanks to Christian Foricher
+
 ## [1.3.2] - 2018-05-30
 - Remove JSON.stringify also for Notify IM
 - Add counter also for IM messages got
