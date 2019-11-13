@@ -22,7 +22,7 @@
           return this.name||"Login";
       },
     });
-    
+
     RED.nodes.registerType('Send_IM',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -58,7 +58,7 @@
             return this.name||"Notified_IM";
         }
     });
-    
+
     RED.nodes.registerType('Notified_IM_Read',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -74,7 +74,7 @@
             return this.name||"Notified_IM_Read";
         }
     });
-    
+
     RED.nodes.registerType('Ack_IM_Read',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -317,7 +317,7 @@
             return this.name||"Notified_Presence";
         }
     });
-    
+
     RED.nodes.registerType('Set_Presence',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -332,7 +332,7 @@
             return this.name||"Set_Presence";
         }
     });
-    
+
     RED.nodes.registerType('CnxState',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -370,7 +370,7 @@
             }
         }
     });
-    
+
     RED.nodes.registerType('Send_Channel',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -386,7 +386,7 @@
             return this.name||"Send_Channel";
         }
     });
-    
+
     RED.nodes.registerType('Notified_Channel',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -403,7 +403,7 @@
         }
     });
 </script>
-    
+
     <script type="text/x-red" data-template-name="Send_IM">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -418,7 +418,7 @@
             <input type="text" id="node-input-destJid" placeholder="Full JID here">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Send_IM">
         <p>Send a instant message to a Rainbow identity.<br/>
         For a Bubble, may also set the customData.</p>
@@ -826,7 +826,7 @@
             <input type="checkbox" id="node-input-ignoregroupchat">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Notified_IM">
         <p>Get a instant message from a Rainbow identity</p>
         <h3>Filters :</h3>
@@ -880,7 +880,7 @@
             <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/bubble">Bubble</a></li>
         </ul>
     </script>
-    
+
     <script type="text/x-red" data-template-name="Notified_IM_Read">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -895,7 +895,7 @@
             <input type="text" id="node-input-filter" placeholder="RexExp Here">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Notified_IM_Read">
         <p>Get notifies when a <code>message</code> has been read by distant.<br/>
         You can add a RegExp filter</p>
@@ -911,7 +911,7 @@
             <li><code>ack</code> : the message, described in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
         </ul>
     </script>
-    
+
     <script type="text/x-red" data-template-name="Ack_IM_Read">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -922,7 +922,7 @@
             <input type="text" id="node-input-name" placeholder="Name">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Ack_IM_Read">
         <p>Ack (mark as read) IM received.</p>
         <h3>Input :</h3>
@@ -1033,7 +1033,7 @@
             <input type="text" id="node-input-filter" placeholder="RexExp Here">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Notified_Presence">
         <p>Get presence update of given user<br/>
             Full <code>msg.payload</code> provided is described in the HUB in <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a>'s model.<p>
@@ -1057,7 +1057,7 @@
             <br/>
         </dl>
     </script>
-    
+
     <script type="text/x-red" data-template-name="Set_Presence">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -1068,11 +1068,11 @@
             <input type="text" id="node-input-name" placeholder="Name">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Set_Presence">
         <p>Set own presence</p>
         <h3>Input :</h3>
-        <p><code>msg.payload</code> filled with either 
+        <p><code>msg.payload</code> filled with either
         <ul>
             <li><code>'online'</code>,</li>
             <li><code>'dnd'</code>,</li>
@@ -1080,7 +1080,7 @@
             <li>or <code>'invisible'</code></li>
         </ul>
     </script>
-    
+
     <script type="text/x-red" data-template-name="CnxState">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -1091,7 +1091,7 @@
             <input type="text" id="node-input-name" placeholder="Name">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="CnxState">
         <p>Get connection state to Rainbow Cloud services</p>
         <h3>Input :</h3>
@@ -1112,11 +1112,18 @@
             <li><code>'rainbow_onerror'</code> : Fired when something goes wrong (ie: bad 'configurations' parameter...)
         <//ul>
     </script>
-    
+<script type="application/javascript" >
+    function hostSelected(element) {
+        const innerTextOutput = document.getElementById('node-config-input-host');
+        innerTextOutput.value = element.options[element.selectedIndex].innerHTML;
+    }
+</script>
     <script type="text/x-red" data-template-name="Login">
         <div class="form-row">
-            <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
-            <select id="node-config-input-host" placeholder="Host">
+            <label for="node-config-input-host"><i class="icon-tag"></i> HostName</label>
+            <input type="text" id="node-config-input-host" >
+            <label for="node-config-input-hostSelect" class="property-type"> Select a platform</label>
+            <select id="node-config-input-hostSelect" placeholder="Host" onchange="hostSelected(this)">
                 <option value="official" selected>production</option>
                 <option value="sandbox">sandbox</option>
                 <!-- <option value="vberder.openrainbow.org">vberder</option> -->
@@ -1163,7 +1170,7 @@
             <input type="checkbox" id="node-config-input-ackIM">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Login">
         <p>Login to Rainbow with your identity<br>
     </script>
@@ -1182,7 +1189,7 @@
             <input type="text" id="node-input-channelId" placeholder="ID here">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Send_Channel">
         <p>Send a message to a Rainbow channel</p>
         <h3>Properties :</h3>
@@ -1199,7 +1206,7 @@
             <li><code>msg.payload.url</code> url to join to message (optional, as a string).</li>
         </ul>
     </script>
-    
+
     <script type="text/x-red" data-template-name="Notified_Channel">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -1214,7 +1221,7 @@
             <input type="text" id="node-input-filter" placeholder="channel's id">
         </div>
     </script>
-    
+
     <script type="text/x-red" data-help-name="Notified_Channel">
         <p>Be notified by message sent to a challen</p>
         <h3>Properties :</h3>
