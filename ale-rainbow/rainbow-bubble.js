@@ -6,41 +6,95 @@ module.exports = function(RED) {
     .then( bubble => customData ? sdk.bubbles.setBubbleCustomData( bubble, customData ): bubble )
     .then(  bubble => bubble );
   }
-
-  const restPost = (sdk, url, data) => {
-    return new Promise((resolve, reject) => {
-      sdk.rest.http.post(url, sdk.rest.getRequestHeader(), data)
-      .then( res=> {
-        // console.info('restPost result', {restPost: res});
-        let ret;
-        try {
-          ret=JSON.parse(res)
-        }catch (e) {
-          ret= res;
+ 
+  const inviteGuests = async ( sdk, emails, bubble ) => {
+    const inviteContactsByEmailsToBubble = ( sdk, emails, bubble ) => {
+      if( sdk.bubbles.inviteContactsByEmailsToBubble ) {
+        return sdk.bubbles.inviteContactsByEmailsToBubble( bubble, emails );
+      }
+      else {
+        const restPost = (sdk, url, data) => {
+          return new Promise((resolve, reject) => {
+            sdk.rest.http.post(url, sdk.rest.getRequestHeader(), data)
+            .then( res=> {
+              // console.info('restPost result', {restPost: res});
+              let ret;
+              try {
+                ret=JSON.parse(res)
+              }catch (e) {
+                ret= res;
+              }
+              resolve( ret);
+            })
+            .catch( (err) => {
+              reject(err);
+            });
+          })
         }
-        resolve( ret);
-      })
-      .catch( (err) => {
-        reject(err);
-      });
-    })
-  }
-
-  const inviteGuests = ( sdk, emails, bubble ) => {
-    const url ="/api/rainbow/enduser/v1.0/rooms/" + bubble.id + "/invitations";
-    const data = { 
-      scenario: "chat",
-      emails: emails 
+      
+        const url ="/api/rainbow/enduser/v1.0/rooms/" + bubble.id + "/invitations";
+        const data = { 
+          scenario: "chat",
+          emails: emails
+        };
+        return restPost( sdk, url, data).then( x =>{
+          console.warn( x );
+          return x;
+        })
+        .catch( x => {
+          console.warn( "inviteGuests FAILED",url, data, x );
+          return ( null );
+        } )
+    
+      }
     };
-    // console.warn( "inviteGuests ", url, data  );
-    restPost( sdk, url, data).then( x =>{
-      // console.warn( x );
-      return x;
-    })
-    .catch( x => {       
-      console.warn( "inviteGuests FAILED",url, data, x );
-    } )
-    // console.warn( "done");
+    const inviteByEmail = email => {
+      let result;
+      console.warn( "invite by email ", email )
+      try {
+        result = inviteContactsByEmailsToBubble( sdk, [email], bubble  )
+        .then( response => {
+          if( response && response.guestEmails && 
+              Array.isArray( response.guestEmails ) && 
+              response.guestEmails.includes( email ) ) {
+            return { "ok": email };
+          }
+          else {
+            return { "ko": email }
+          }
+        })
+        .catch( fail => {
+          return { "ko":email };
+        });
+      }
+      catch( err ) {
+        console.log( err );
+        result = new Promise( resolve  => { resolve({ "ko": emails }); } );
+      }
+      return result;
+    }
+
+    let failedEmails = [];
+    const promises = [];
+    emails.forEach( email => { promises.push( inviteByEmail( email)  ); } );
+    try {
+      const result = await Promise.all( promises );
+      
+      result.forEach( res => {
+        if( res && res.ko ) {
+          if( Array.isArray( res.ko )) {
+            failedEmails = failedEmails.concat( res.ko );
+          }
+          else {
+            failedEmails.push( res.ko );
+          }
+        }
+      });
+    }
+    catch( err ) {
+      console.error( "inviteGuests FAILED",url, data, x );
+    }
+    return failedEmails;
   }
 
   
@@ -223,8 +277,9 @@ module.exports = function(RED) {
         resolvedUsers => {
         // if some contacts are not found contact, invite those are guests
         if( contactsNotResolved.length ){
-          // console.warn( "INVITE GUESTS: ", contactsNotResolved );
-          inviteGuests( sdk, contactsNotResolved, bubble );
+          // console.warn( "INVITE GUESTS: ", contactsNotResolved );       
+          inviteGuests( sdk, contactsNotResolved, bubble )
+          .then( failedEmails => console.warn( "RainbowBubble: failed to invite "+failedEmails + " into bubble."));                  
         }
 
         // find out wich ones are resolved for guest, moderators and users
@@ -285,6 +340,7 @@ module.exports = function(RED) {
       this.server = RED.nodes.getNode(config.server);
 
       node.on('input', async function(msg) {
+        let currentStep = "";
         try {
           const sdk = this.server.rainbow.sdk;
           let name = msg.payload.hasOwnProperty("name") ? msg.payload.name: config.bubbleName;
@@ -302,11 +358,7 @@ module.exports = function(RED) {
             node.error("RainbowBubble: missing Rainbow Broker");
             return;
           }
-
-          // if( !this.server.rainbow.logged ){
-          //   node.error("RainbowBubble: not connected.");
-          //   return;
-          // }
+ 
           
           if( !sdk ){
             node.error("RainbowBubble: sdk not ready");
@@ -348,8 +400,8 @@ module.exports = function(RED) {
             moderators = [];
           }
           if( !moderators ) moderators = [];
+          currentStep = "search bubble";
 
-          // check parameters, if not good do sthg.. (throw ?)
           bubble = sdk.bubbles.getAll( ).find( bubble => {            
             if( bubble.name === name ) {
               if( customData ) {
@@ -364,25 +416,31 @@ module.exports = function(RED) {
           
           if( bubble || create ) {
             try {
-              if( !bubble ) {    
+              if( !bubble ) {  
+                currentStep = "create bubble";  
                 bubble = await createBubble( sdk, name, description, customData, history  );
+              }
+              else {
+                currentStep = "found bubble";
               }
 
               msg.bubble = bubble;
               node.send( msg );
-                            
+              currentStep = "update members";
               bubble = await updateBubbleMembers( sdk, users, moderators, bubble, forceInvite );
               
               if( contactsToRemove ){
+                currentStep = "resolve members to remove";
                 const toRemove = await resolveContacts( sdk, contactsToRemove );
                 if( toRemove.length ) {                 
+                  currentStep = "remove members";
                   bubble = await removeMembers( sdk, bubble, toRemove );
                 }
               }
 
             }
             catch( error ) { 
-              node.error("RainbowBubble : failed");
+              node.error("RainbowBubble : failed " + currentStep );
               node.warn( error );
             }
           }
@@ -393,7 +451,7 @@ module.exports = function(RED) {
 
         }
         catch( err ){
-          node.error("RainbowBubble: failed");
+          node.error("RainbowBubble: failed " + currentStep );
           node.warn( error );
         }
  

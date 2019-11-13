@@ -6,7 +6,8 @@
     "startnodered": "node-red -v %NODE_DEBUG_OPTION% "
   },
   "dependencies": {
-    "rainbow-node-sdk": "latest"
+    "rainbow-node-sdk": "latest",
+    "uuidv4": "^5.0.1"
   },
   "keywords": [
     "node-red",
@@ -24,8 +25,8 @@
     "nodes": {
       "ale-rainbow": "ale-rainbow/ale-rainbow.js",
       "ale-rainbow-function": "ale-rainbow/ale-rainbow-function.js",
-      "Rainbow_Manage_Bubble": "nodes/rainbow-bubble.js",
-      "Rainbow_Send_IM_Attachments": "nodes/rainbow-sendMessage.js"
+      "Rainbow_Manage_Bubble": "ale-rainbow/rainbow-bubble.js",
+      "Rainbow_Send_IM_Attachments": "ale-rainbow/rainbow-sendMessage.js"
     }
   },
   "repository": {
