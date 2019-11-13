@@ -205,7 +205,6 @@ module.exports = (RED) => {
       node.status({  fill: "orange", shape: "ring", text: "will send..." });
 
       node.log("RainbowSendMessage : sendMessage to cnx: " + JSON.stringify(node.server.name));
-      node.log("calling postUrl");
       
       if (node.server.rainbow.logged === false) {
         node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
