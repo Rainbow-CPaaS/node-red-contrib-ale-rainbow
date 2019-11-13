@@ -110,7 +110,7 @@
     "wires": [["206fc4b0.1e51b4"]]
 }, {
     "id": "42bfc42e.f375cc",
-    "type": "Send_Makecall",
+    "type": "Makecall",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "makecall",
@@ -171,7 +171,7 @@
     "wires": []
 }, {
     "id": "1eed4998.ab44be",
-    "type": "Send_Releasecall",
+    "type": "Releasecall",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "releasecall",
@@ -296,7 +296,7 @@
     "wires": [["63b61c7c.ed0c04"]]
 }, {
     "id": "63b61c7c.ed0c04",
-    "type": "Send_Answercall",
+    "type": "Answercall",
     "z": "39952334.ceaee4",
     "server": "bf0cc7a4.50435",
     "name": "answercall",
@@ -717,7 +717,7 @@
     "wires": [["1eed4998.ab44be"]]
 }, {
     "id": "50a55c2f.e27ddc",
-    "type": "Send_Transfertcall",
+    "type": "Transfertcall",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "transfertcall",
@@ -769,7 +769,7 @@
     "wires": [["43ad1831.1999b"]]
 }, {
     "id": "43ad1831.1999b",
-    "type": "Send_Holdcall",
+    "type": "Holdcall",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "",
@@ -779,7 +779,7 @@
     "wires": []
 }, {
     "id": "38443502.4bdd1a",
-    "type": "Send_Retrievecall",
+    "type": "Retrievecall",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "",
@@ -888,7 +888,7 @@
     "wires": [["977fa687.0e70c8"]]
 }, {
     "id": "977fa687.0e70c8",
-    "type": "Send_Answercall",
+    "type": "Answercall",
     "z": "39952334.ceaee4",
     "server": "703c2aee.a704a4",
     "name": "answercall",
@@ -962,7 +962,7 @@
     "wires": []
 }, {
     "id": "2427301c.282b98",
-    "type": "Send_ConferenceCall",
+    "type": "ConferenceCall",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "conferencecall",
@@ -972,7 +972,7 @@
     "wires": []
 }, {
     "id": "c8ad0ba2.fae3c",
-    "type": "Send_ForwardToDevice",
+    "type": "ForwardToDevice",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "forwardToDevice",
@@ -1014,7 +1014,7 @@
     "wires": [["171e5fe9.cab538"]]
 }, {
     "id": "1fb62e36.307b22",
-    "type": "Send_CancelForward",
+    "type": "CancelForward",
     "z": "39952334.ceaee4",
     "server": "b591749a.5ccbc8",
     "name": "cancelForward",

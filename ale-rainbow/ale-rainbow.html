@@ -90,7 +90,7 @@
         }
     });
 
-    RED.nodes.registerType('Send_Makecall',{
+    RED.nodes.registerType('Makecall',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -102,7 +102,7 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_Makecall";
+            return this.name||"Makecall";
         }
     });
 
@@ -126,7 +126,7 @@
         }
     });
 
-    RED.nodes.registerType('Send_Releasecall',{
+    RED.nodes.registerType('Releasecall',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -138,11 +138,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_Releasecall";
+            return this.name||"Releasecall";
         }
     });
 
-    RED.nodes.registerType('Send_Answercall',{
+    RED.nodes.registerType('Answercall',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -154,11 +154,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_Answercall";
+            return this.name||"Answercall";
         }
     });
 
-    RED.nodes.registerType('Send_Transfertcall',{
+    RED.nodes.registerType('Transfertcall',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -170,11 +170,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_Transfertcall";
+            return this.name||"Transfertcall";
         }
     });
 
-    RED.nodes.registerType('Send_ConferenceCall',{
+    RED.nodes.registerType('ConferenceCall',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -186,11 +186,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_ConferenceCall";
+            return this.name||"ConferenceCall";
         }
     });
 
-    RED.nodes.registerType('Send_Holdcall',{
+    RED.nodes.registerType('Holdcall',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -202,11 +202,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_Holdcall";
+            return this.name||"Holdcall";
         }
     });
 
-    RED.nodes.registerType('Send_Retrievecall',{
+    RED.nodes.registerType('Retrievecall',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -218,11 +218,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_Retrievecall";
+            return this.name||"Retrievecall";
         }
     });
 
-    RED.nodes.registerType('Send_DeflectCallToVM',{
+    RED.nodes.registerType('DeflectCallToVM',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -234,11 +234,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_DeflectCallToVM";
+            return this.name||"DeflectCallToVM";
         }
     });
 
-    RED.nodes.registerType('Send_ForwardToDevice',{
+    RED.nodes.registerType('ForwardToDevice',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -250,11 +250,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_ForwardToDevice";
+            return this.name||"ForwardToDevice";
         }
     });
 
-    RED.nodes.registerType('Send_ForwardToVoicemail',{
+    RED.nodes.registerType('ForwardToVoicemail',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -266,11 +266,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_ForwardToVoicemail";
+            return this.name||"ForwardToVoicemail";
         }
     });
 
-    RED.nodes.registerType('Send_CancelForward',{
+    RED.nodes.registerType('CancelForward',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -282,11 +282,11 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_CancelForward";
+            return this.name||"CancelForward";
         }
     });
 
-    RED.nodes.registerType('Send_SendDtmf',{
+    RED.nodes.registerType('SendDtmf',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -298,7 +298,7 @@
         outputs:0,
         icon: "rainbow.png",
         label: function() {
-            return this.name||"Send_SendDtmf";
+            return this.name||"SendDtmf";
         }
     });
 
@@ -371,7 +371,7 @@
         }
     });
 
-    RED.nodes.registerType('Send_Channel',{
+    RED.nodes.registerType('Channel',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
         defaults: {
@@ -383,7 +383,7 @@
         outputs:0,
         icon: "Send_Channel.png",
         label: function() {
-            return this.name||"Send_Channel";
+            return this.name||"Channel";
         }
     });
 
@@ -444,7 +444,7 @@
         </ul>
     </script>
 
-    <script type="text/x-red" data-template-name="Send_Makecall">
+    <script type="text/x-red" data-template-name="Makecall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -459,7 +459,7 @@
         </div>
     </script>
 
-    <script type="text/x-red" data-help-name="Send_Makecall">
+    <script type="text/x-red" data-help-name="Makecall">
         <p>Send a makecall Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -474,7 +474,7 @@
         </ul>
     </script>
 
-    <script type="text/x-red" data-template-name="Send_Releasecall">
+    <script type="text/x-red" data-template-name="Releasecall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -489,7 +489,7 @@
         </div>
     </script>
 
-    <script type="text/x-red" data-help-name="Send_Releasecall">
+    <script type="text/x-red" data-help-name="Releasecall">
         <p>Send a release call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -503,7 +503,7 @@
         </ul>
     </script>
 
-<script type="text/x-red" data-template-name="Send_Answercall">
+<script type="text/x-red" data-template-name="Answercall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -518,7 +518,7 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_Answercall">
+<script type="text/x-red" data-help-name="Answercall">
         <p>Send a answer call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -532,7 +532,7 @@
         </ul>
     </script>
 
-<script type="text/x-red" data-template-name="Send_Transfertcall">
+<script type="text/x-red" data-template-name="Transfertcall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -551,7 +551,7 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_Transfertcall">
+<script type="text/x-red" data-help-name="Transfertcall">
         <p>Send a transfert call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -570,7 +570,7 @@
         </ul>
     </script>
 
-<script type="text/x-red" data-template-name="Send_ConferenceCall">
+<script type="text/x-red" data-template-name="ConferenceCall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -589,7 +589,7 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_ConferenceCall">
+<script type="text/x-red" data-help-name="ConferenceCall">
         <p>Send a conferenceCall call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -609,7 +609,7 @@
     </script>
 
 
-<script type="text/x-red" data-template-name="Send_Holdcall">
+<script type="text/x-red" data-template-name="Holdcall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -624,7 +624,7 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_Holdcall">
+<script type="text/x-red" data-help-name="Holdcall">
         <p>Send a holdcall call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -638,7 +638,7 @@
         </ul>
     </script>
 
-<script type="text/x-red" data-template-name="Send_Retrievecall">
+<script type="text/x-red" data-template-name="Retrievecall">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -653,7 +653,7 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_Retrievecall">
+<script type="text/x-red" data-help-name="Retrievecall">
         <p>Send a retrieve call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -667,7 +667,7 @@
         </ul>
     </script>
 
-    <script type="text/x-red" data-template-name="Send_DeflectCallToVM">
+    <script type="text/x-red" data-template-name="DeflectCallToVM">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -682,8 +682,8 @@
         </div>
     </script>
 
-    <script type="text/x-red" data-help-name="Send_DeflectCallToVM">
-        <p>Send a Send_DeflectCallToVM call Telephony RCC to a Rainbow identity</p>
+    <script type="text/x-red" data-help-name="DeflectCallToVM">
+        <p>Send a DeflectCallToVM call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
             <dt>Held Call infos<span class="property-type">Object</span></dt>
@@ -696,7 +696,7 @@
         </ul>
     </script>
 
-    <script type="text/x-red" data-template-name="Send_ForwardToDevice">
+    <script type="text/x-red" data-template-name="ForwardToDevice">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -711,7 +711,7 @@
         </div>
     </script>
 
-    <script type="text/x-red" data-help-name="Send_ForwardToDevice">
+    <script type="text/x-red" data-help-name="ForwardToDevice">
         <p>Send a forwardToDevice call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -725,7 +725,7 @@
         </ul>
     </script>
 
-<script type="text/x-red" data-template-name="Send_ForwardToVoicemail">
+<script type="text/x-red" data-template-name="ForwardToVoicemail">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -736,12 +736,12 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_ForwardToVoicemail">
+<script type="text/x-red" data-help-name="ForwardToVoicemail">
         <p>Send a forwardToVoicemail call Telephony RCC to a Rainbow identity</p>
         <h3>Properties : None</h3>
     </script>
 
-<script type="text/x-red" data-template-name="Send_CancelForward">
+<script type="text/x-red" data-template-name="CancelForward">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -752,12 +752,12 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_CancelForward">
+<script type="text/x-red" data-help-name="CancelForward">
         <p>Send a cancelForward call Telephony RCC to a Rainbow identity</p>
         <h3>Properties : None</h3>
     </script>
 
-<script type="text/x-red" data-template-name="Send_SendDtmf">
+<script type="text/x-red" data-template-name="SendDtmf">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -776,7 +776,7 @@
         </div>
     </script>
 
-<script type="text/x-red" data-help-name="Send_SendDtmf">
+<script type="text/x-red" data-help-name="SendDtmf">
         <p>Send a sendDtmf call Telephony RCC to a Rainbow identity</p>
         <h3>Properties :</h3>
         <dl class="message-properties">
@@ -1175,7 +1175,7 @@
         <p>Login to Rainbow with your identity<br>
     </script>
 
-    <script type="text/x-red" data-template-name="Send_Channel">
+    <script type="text/x-red" data-template-name="Channel">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
@@ -1190,7 +1190,7 @@
         </div>
     </script>
 
-    <script type="text/x-red" data-help-name="Send_Channel">
+    <script type="text/x-red" data-help-name="Channel">
         <p>Send a message to a Rainbow channel</p>
         <h3>Properties :</h3>
         <dl class="message-properties">

@@ -1,7 +1,7 @@
 module.exports = function(RED) {
     var _RainbowSDK = null;
     const util = require('util');
-  
+
     function allocateSDK(node, server) {
         node.log("RainbowSDK instance allocated" + " cnx: " + JSON.stringify(server.name));
         server.rainbow.sdk = new _RainbowSDK(server.rainbow.options);
@@ -15,7 +15,7 @@ module.exports = function(RED) {
             server.rainbow.sdkhandler = [];
         }
     }
-  
+
     function releaseSDK(node, server) {
         node.log("Removing RainbowSDK (releaseSDK) instance " + " cnx: " + JSON.stringify(server.name));
         if (server.rainbow.sdk === null) {
@@ -27,7 +27,7 @@ module.exports = function(RED) {
             server.rainbow.sdk = null;
         });
     }
-  
+
     function pauseSDK(node, server, done) {
         node.log("****************************************** IN");
         node.log("Removing RainbowSDK (pauseSDK) instance " + " cnx: " + JSON.stringify(server.name));
@@ -50,7 +50,7 @@ module.exports = function(RED) {
             if (typeof done === "function") done();
         });
     }
-  
+
     function removeEventListeners(node, server) {
         node.log("Removing RainbowSDK event listeners for instance " + " cnx: " + JSON.stringify(server.name));
         if (server.rainbow.sdk === null) {
@@ -63,7 +63,7 @@ module.exports = function(RED) {
             handler = server.rainbow.sdkhandler.pop();
         };
     }
-  
+
     function login(config) {
         RED.nodes.createNode(this, config);
         var context = this.context();
@@ -75,7 +75,7 @@ module.exports = function(RED) {
         context.set('RBLoginState', false);
         var successiveCOnnectionFail = 0;
         var node = this;
-  
+
         node.log("login: **************************************************");
         node.log("login: **************************************************");
         node.log("login: " + JSON.stringify(config));
@@ -85,7 +85,7 @@ module.exports = function(RED) {
         node.log("login: " + JSON.stringify(node));
         node.log("login: **************************************************");
         node.log("login: **************************************************");
-  
+
         node.rainbow = {};
         node.rainbow.logged = false;
         node.rainbow.options = {
@@ -99,8 +99,8 @@ module.exports = function(RED) {
             },
             // Application identifier
             application: {
-                appID: node.credentials.appID, 
-                appSecret: node.credentials.appSecret, 
+                appID: node.credentials.appID,
+                appSecret: node.credentials.appSecret,
             },
             logs: {
 
@@ -255,7 +255,7 @@ module.exports = function(RED) {
             }
         });
     }
-  
+
     function getCnxState(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -291,7 +291,7 @@ module.exports = function(RED) {
                     fct: onGetRainbowSDKConnectionOk
                 });
                 node.log("Rainbow : getCnxState register for event 'rainbow_onconnected'");
-             
+
                 var onLoginConnectionStopped = function onLoginConnectionStopped() {
                     node.status({
                         fill: "grey",
@@ -310,7 +310,7 @@ module.exports = function(RED) {
                     fct: onLoginConnectionStopped
                 });
                 node.log("Rainbow : getCnxState register for event 'rainbow_onstopped'");
-  
+
                 var onGetRainbowSDKConnectionDown = function onGetRainbowSDKConnectionDown() {
                     node.status({
                         fill: "grey",
@@ -328,9 +328,9 @@ module.exports = function(RED) {
                     fct: onGetRainbowSDKConnectionDown
                 });
                 node.log("Rainbow : getCnxState register for event 'rainbow_ondisconnected'");
-                
-  
-            
+
+
+
                 var onGetRainbowSDKConnectionError = function onGetRainbowSDKConnectionError() {
                     node.status({
                         fill: "red",
@@ -405,7 +405,7 @@ module.exports = function(RED) {
                                 allocateSDK(node, node.server);
                                 node.server.rainbow.sdk.start().then(() => {
                                     node.server.rainbow.logged = true;
-                                    
+
                                 });
                             }
                             break;
@@ -424,7 +424,7 @@ module.exports = function(RED) {
                                         node.server.rainbow.logged = false;
                                         delete node.server.rainbow.sdk;
                                         node.server.rainbow.sdk = null;
-                                    
+
                                         var msg = {
                                             payload: "stopped by logout"
                                         };
@@ -467,7 +467,7 @@ module.exports = function(RED) {
             res.sendStatus(404);
         }
     });
-  
+
     function sendMessage(config) {
         RED.nodes.createNode(this, config);
         this.destJid = config.destJid;
@@ -502,7 +502,7 @@ module.exports = function(RED) {
             });
         }
         getRainbowSDKSendMessage();
-	
+
         this.on('input', function(msg) {
             node.status({
                 fill: "orange",
@@ -565,7 +565,7 @@ module.exports = function(RED) {
             });
         });
     }
-  
+
     function getMessage(config) {
         RED.nodes.createNode(this, config);
         this.filter = config.filter;
@@ -657,7 +657,7 @@ module.exports = function(RED) {
                     return;
                 }
             }
-          
+
             // Check if the message comes from a user
             if (message.type === "groupchat") {
                 node.log("Rainbow : Message GROUPCHAT !" + " cnx: " + JSON.stringify(node.server.name));
@@ -672,7 +672,7 @@ module.exports = function(RED) {
                 }
             } else {
                 getFromContactThenSendMsg(message, message.fromJid, null)
-            }	
+            }
         };
         var getRainbowSDKGetMessageGetMessage = function getRainbowSDKGetMessageGetMessage() {
             if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
@@ -886,7 +886,7 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
-  
+
     function ackMessage(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -914,7 +914,7 @@ module.exports = function(RED) {
             });
         });
     }
-  
+
     function getContactsPresence(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -962,7 +962,7 @@ module.exports = function(RED) {
         }
         getRainbowSDKgetContactsPresence();
     }
-  
+
     function setPresence(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -1634,19 +1634,19 @@ module.exports = function(RED) {
     RED.nodes.registerType("Send_IM", sendMessage);
     RED.nodes.registerType("Notified_IM", getMessage);
 
-    RED.nodes.registerType("Send_Makecall", sendMakecall);
+    RED.nodes.registerType("Makecall", sendMakecall);
     RED.nodes.registerType("Notified_CallUpdate", getCallUpdate);
-    RED.nodes.registerType("Send_Releasecall", sendReleasecall);
-    RED.nodes.registerType("Send_Answercall", sendAnswercall);
-    RED.nodes.registerType("Send_Transfertcall", sendTransfertcall);
-    RED.nodes.registerType("Send_ConferenceCall", sendConferenceCall);
-    RED.nodes.registerType("Send_Holdcall", sendHoldcall);
-    RED.nodes.registerType("Send_Retrievecall", sendRetrievecall);
-    RED.nodes.registerType("Send_DeflectCallToVM", sendDeflectCallToVM);
-    RED.nodes.registerType("Send_ForwardToDevice", sendForwardToDevice);
-    RED.nodes.registerType("Send_ForwardToVoicemail", sendForwardToVoicemail);
-    RED.nodes.registerType("Send_CancelForward", sendCancelForward);
-    RED.nodes.registerType("Send_SendDtmf", sendDtmf);
+    RED.nodes.registerType("Releasecall", sendReleasecall);
+    RED.nodes.registerType("Answercall", sendAnswercall);
+    RED.nodes.registerType("Transfertcall", sendTransfertcall);
+    RED.nodes.registerType("ConferenceCall", sendConferenceCall);
+    RED.nodes.registerType("Holdcall", sendHoldcall);
+    RED.nodes.registerType("Retrievecall", sendRetrievecall);
+    RED.nodes.registerType("DeflectCallToVM", sendDeflectCallToVM);
+    RED.nodes.registerType("ForwardToDevice", sendForwardToDevice);
+    RED.nodes.registerType("ForwardToVoicemail", sendForwardToVoicemail);
+    RED.nodes.registerType("CancelForward", sendCancelForward);
+    RED.nodes.registerType("SendDtmf", sendDtmf);
 
 
 
@@ -1686,13 +1686,13 @@ function sendMessageToChannel(config) {
 				let url = (msg.payload.url ? msg.payload.url : null);
 				if (channel != undefined && null != channel && channel.id != undefined && "" !== channel.id) {
 					node.log("Sending to id " + channel.id + " (" + message + " "+ ") cnx: " + JSON.stringify(node.server.name));
-                    
+
                     node.server.rainbow.sdk.channels.publishMessageToChannel(
-                        channel, 
-                        message, 
-                        title, 
+                        channel,
+                        message,
+                        title,
                         url);
-					
+
 					msgSent++;
 					node.status({
 						fill: "green",
@@ -1715,7 +1715,7 @@ function sendMessageToChannel(config) {
             });
         });
     }
-  
+
     function getMessageFromChannel(config) {
         RED.nodes.createNode(this, config);
         this.channelId = config.channelId;
@@ -1724,7 +1724,7 @@ function sendMessageToChannel(config) {
         var cfgTimer = null;
         var node = this;
         var msgGot = 0;
-  
+
         node.log("Rainbow : getMessageFromChannel node initialized :" + " cnx: " + JSON.stringify(node.server.name))
         var rainbow_onchannelmessagereceivedGetMessageFromChannel = function rainbow_onchannelmessagereceivedGetMessageFromChannel(message) {
             node.log("Rainbow : onChannelMessageReceived: " + JSON.stringify(node.server.name))
@@ -1743,9 +1743,9 @@ function sendMessageToChannel(config) {
                 shape: "ring",
                 text: "Nb: " + msgGot
             });
-                
+
             node.log("Rainbow : sending message." + " cnx: " + JSON.stringify(node.server.name));
-                
+
             var msg;
 
             msg = {
@@ -1774,7 +1774,7 @@ function sendMessageToChannel(config) {
             clearTimeout(cfgTimer);
         });
     }
-  
+
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);
     RED.nodes.registerType("Set_Presence", setPresence);
@@ -1782,7 +1782,7 @@ function sendMessageToChannel(config) {
     RED.nodes.registerType("Notified_IM_Read", notifyMessageRead);
     RED.nodes.registerType("Ack_IM_Read", ackMessage);
 
-    RED.nodes.registerType("Send_Channel", sendMessageToChannel);
+    RED.nodes.registerType("Channel", sendMessageToChannel);
     RED.nodes.registerType("Notified_Channel", getMessageFromChannel);
 
     RED.nodes.registerType("CnxState", getCnxState);
