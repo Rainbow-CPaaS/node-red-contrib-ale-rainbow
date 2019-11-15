@@ -19,13 +19,14 @@ module.exports = function(RED) {
     function releaseSDK(node, server) {
         node.log("Removing RainbowSDK (releaseSDK) instance " + " cnx: " + JSON.stringify(server.name));
         if (server.rainbow.sdk === null) {
+            node.log("Removing RainbowSDK (releaseSDK) server.rainbow.sdk is null, cnx: " + JSON.stringify(server.name));
             return
         }
 
-        server.rainbow.sdk.stop().then(() => {
-            delete server.rainbow.sdk;
-            server.rainbow.sdk = null;
-        });
+        //node.log("Removing RainbowSDK (releaseSDK) server.rainbow.sdk stopped, remove it, cnx: " + JSON.stringify(server.name));
+        delete server.rainbow.sdk;
+        server.rainbow.sdk = null;
+        //node.log("Removing RainbowSDK (releaseSDK) exit, cnx: " + JSON.stringify(server.name));
     }
 
     function pauseSDK(node, server, done) {
