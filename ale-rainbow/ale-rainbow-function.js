@@ -20,7 +20,7 @@ module.exports = function(RED) {
     var vm = require("vm");
 
 
-	
+
     function sendResults(node,_msgid,msgs) {
         if (msgs == null) {
             return;
@@ -80,7 +80,7 @@ module.exports = function(RED) {
         this.outstandingTimers = [];
         this.outstandingIntervals = [];
 		this.server = RED.nodes.getNode(config.server);
-		
+
         var sandbox = {
             console:console,
             util:util,
@@ -235,31 +235,36 @@ module.exports = function(RED) {
                         this.status({fill:"yellow",shape:"dot",text:""+converted});
                     }
                 } catch(err) {
+                    let index = 0;
+                    let stack = [];
+                    let errorMessage;
                     //remove unwanted part
-                    var index = err.stack.search(/\n\s*at ContextifyScript.Script.runInContext/);
-                    err.stack = err.stack.slice(0, index).split('\n').slice(0,-1).join('\n');
-                    var stack = err.stack.split(/\r?\n/);
+                    if (err && err.stack) {
+                        index = err.stack.search(/\n\s*at ContextifyScript.Script.runInContext/);
+                        err.stack = err.stack.slice(0, index).split('\n').slice(0, -1).join('\n');
+                        stack = err.stack.split(/\r?\n/);
+                        //store the error in msg to be used in flows
+                        msg.error = err;
 
-                    //store the error in msg to be used in flows
-                    msg.error = err;
+                        let line = 0;
+                        stack = err.stack.split(/\r?\n/);
+                        if (stack.length > 0) {
+                            while (line < stack.length && stack[line].indexOf("ReferenceError") !== 0) {
+                                line++;
+                            }
 
-                    var line = 0;
-                    var errorMessage;
-                    var stack = err.stack.split(/\r?\n/);
-                    if (stack.length > 0) {
-                        while (line < stack.length && stack[line].indexOf("ReferenceError") !== 0) {
-                            line++;
-                        }
-
-                        if (line < stack.length) {
-                            errorMessage = stack[line];
-                            var m = /:(\d+):(\d+)$/.exec(stack[line+1]);
-                            if (m) {
-                                var lineno = Number(m[1])-1;
-                                var cha = m[2];
-                                errorMessage += " (line "+lineno+", col "+cha+")";
+                            if (line < stack.length) {
+                                errorMessage = stack[line];
+                                var m = /:(\d+):(\d+)$/.exec(stack[line + 1]);
+                                if (m) {
+                                    var lineno = Number(m[1]) - 1;
+                                    var cha = m[2];
+                                    errorMessage += " (line " + lineno + ", col " + cha + ")";
+                                }
                             }
                         }
+                    } else {
+                        msg.error = err;
                     }
                     if (!errorMessage) {
                         errorMessage = err.toString();

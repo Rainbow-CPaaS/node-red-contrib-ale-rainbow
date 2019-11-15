@@ -1,7 +1,7 @@
 module.exports = function(RED) {
     var _RainbowSDK = null;
     const util = require('util');
-  
+
     function allocateSDK(node, server) {
         node.log("RainbowSDK instance allocated" + " cnx: " + JSON.stringify(server.name));
         server.rainbow.sdk = new _RainbowSDK(server.rainbow.options);
@@ -15,19 +15,20 @@ module.exports = function(RED) {
             server.rainbow.sdkhandler = [];
         }
     }
-  
+
     function releaseSDK(node, server) {
         node.log("Removing RainbowSDK (releaseSDK) instance " + " cnx: " + JSON.stringify(server.name));
         if (server.rainbow.sdk === null) {
+            node.log("Removing RainbowSDK (releaseSDK) server.rainbow.sdk is null, cnx: " + JSON.stringify(server.name));
             return
         }
 
-        server.rainbow.sdk.stop().then(() => {
-            delete server.rainbow.sdk;
-            server.rainbow.sdk = null;
-        });
+        //node.log("Removing RainbowSDK (releaseSDK) server.rainbow.sdk stopped, remove it, cnx: " + JSON.stringify(server.name));
+        delete server.rainbow.sdk;
+        server.rainbow.sdk = null;
+        //node.log("Removing RainbowSDK (releaseSDK) exit, cnx: " + JSON.stringify(server.name));
     }
-  
+
     function pauseSDK(node, server, done) {
         node.log("****************************************** IN");
         node.log("Removing RainbowSDK (pauseSDK) instance " + " cnx: " + JSON.stringify(server.name));
@@ -50,7 +51,7 @@ module.exports = function(RED) {
             if (typeof done === "function") done();
         });
     }
-  
+
     function removeEventListeners(node, server) {
         node.log("Removing RainbowSDK event listeners for instance " + " cnx: " + JSON.stringify(server.name));
         if (server.rainbow.sdk === null) {
@@ -63,7 +64,7 @@ module.exports = function(RED) {
             handler = server.rainbow.sdkhandler.pop();
         };
     }
-  
+
     function login(config) {
         RED.nodes.createNode(this, config);
         var context = this.context();
@@ -75,7 +76,7 @@ module.exports = function(RED) {
         context.set('RBLoginState', false);
         var successiveCOnnectionFail = 0;
         var node = this;
-  
+
         node.log("login: **************************************************");
         node.log("login: **************************************************");
         node.log("login: " + JSON.stringify(config));
@@ -85,7 +86,7 @@ module.exports = function(RED) {
         node.log("login: " + JSON.stringify(node));
         node.log("login: **************************************************");
         node.log("login: **************************************************");
-  
+
         node.rainbow = {};
         node.rainbow.logged = false;
         node.rainbow.options = {
@@ -99,8 +100,8 @@ module.exports = function(RED) {
             },
             // Application identifier
             application: {
-                appID: node.credentials.appID, 
-                appSecret: node.credentials.appSecret, 
+                appID: node.credentials.appID,
+                appSecret: node.credentials.appSecret,
             },
             logs: {
 
@@ -255,7 +256,7 @@ module.exports = function(RED) {
             }
         });
     }
-  
+
     function getCnxState(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -291,7 +292,7 @@ module.exports = function(RED) {
                     fct: onGetRainbowSDKConnectionOk
                 });
                 node.log("Rainbow : getCnxState register for event 'rainbow_onconnected'");
-             
+
                 var onLoginConnectionStopped = function onLoginConnectionStopped() {
                     node.status({
                         fill: "grey",
@@ -310,7 +311,7 @@ module.exports = function(RED) {
                     fct: onLoginConnectionStopped
                 });
                 node.log("Rainbow : getCnxState register for event 'rainbow_onstopped'");
-  
+
                 var onGetRainbowSDKConnectionDown = function onGetRainbowSDKConnectionDown() {
                     node.status({
                         fill: "grey",
@@ -328,9 +329,9 @@ module.exports = function(RED) {
                     fct: onGetRainbowSDKConnectionDown
                 });
                 node.log("Rainbow : getCnxState register for event 'rainbow_ondisconnected'");
-                
-  
-            
+
+
+
                 var onGetRainbowSDKConnectionError = function onGetRainbowSDKConnectionError() {
                     node.status({
                         fill: "red",
@@ -405,7 +406,7 @@ module.exports = function(RED) {
                                 allocateSDK(node, node.server);
                                 node.server.rainbow.sdk.start().then(() => {
                                     node.server.rainbow.logged = true;
-                                    
+
                                 });
                             }
                             break;
@@ -424,7 +425,7 @@ module.exports = function(RED) {
                                         node.server.rainbow.logged = false;
                                         delete node.server.rainbow.sdk;
                                         node.server.rainbow.sdk = null;
-                                    
+
                                         var msg = {
                                             payload: "stopped by logout"
                                         };
@@ -467,7 +468,7 @@ module.exports = function(RED) {
             res.sendStatus(404);
         }
     });
-  
+
     function sendMessage(config) {
         RED.nodes.createNode(this, config);
         this.destJid = config.destJid;
@@ -502,7 +503,7 @@ module.exports = function(RED) {
             });
         }
         getRainbowSDKSendMessage();
-	
+
         this.on('input', function(msg) {
             node.status({
                 fill: "orange",
@@ -565,7 +566,7 @@ module.exports = function(RED) {
             });
         });
     }
-  
+
     function getMessage(config) {
         RED.nodes.createNode(this, config);
         this.filter = config.filter;
@@ -657,7 +658,7 @@ module.exports = function(RED) {
                     return;
                 }
             }
-          
+
             // Check if the message comes from a user
             if (message.type === "groupchat") {
                 node.log("Rainbow : Message GROUPCHAT !" + " cnx: " + JSON.stringify(node.server.name));
@@ -672,7 +673,7 @@ module.exports = function(RED) {
                 }
             } else {
                 getFromContactThenSendMsg(message, message.fromJid, null)
-            }	
+            }
         };
         var getRainbowSDKGetMessageGetMessage = function getRainbowSDKGetMessageGetMessage() {
             if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
@@ -694,7 +695,7 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
-  
+
     function notifyMessageRead(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -737,7 +738,7 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
-  
+
     function ackMessage(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -765,7 +766,7 @@ module.exports = function(RED) {
             });
         });
     }
-  
+
     function getContactsPresence(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -813,7 +814,7 @@ module.exports = function(RED) {
         }
         getRainbowSDKgetContactsPresence();
     }
-  
+
     function setPresence(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -896,13 +897,13 @@ module.exports = function(RED) {
 				let url = (msg.payload.url ? msg.payload.url : null);
 				if (channel != undefined && null != channel && channel.id != undefined && "" !== channel.id) {
 					node.log("Sending to id " + channel.id + " (" + message + " "+ ") cnx: " + JSON.stringify(node.server.name));
-                    
+
                     node.server.rainbow.sdk.channels.publishMessageToChannel(
-                        channel, 
-                        message, 
-                        title, 
+                        channel,
+                        message,
+                        title,
                         url);
-					
+
 					msgSent++;
 					node.status({
 						fill: "green",
@@ -925,7 +926,7 @@ module.exports = function(RED) {
             });
         });
     }
-  
+
     function getMessageFromChannel(config) {
         RED.nodes.createNode(this, config);
         this.channelId = config.channelId;
@@ -934,7 +935,7 @@ module.exports = function(RED) {
         var cfgTimer = null;
         var node = this;
         var msgGot = 0;
-  
+
         node.log("Rainbow : getMessageFromChannel node initialized :" + " cnx: " + JSON.stringify(node.server.name))
         var rainbow_onchannelmessagereceivedGetMessageFromChannel = function rainbow_onchannelmessagereceivedGetMessageFromChannel(message) {
             node.log("Rainbow : onChannelMessageReceived: " + JSON.stringify(node.server.name))
@@ -953,9 +954,9 @@ module.exports = function(RED) {
                 shape: "ring",
                 text: "Nb: " + msgGot
             });
-                
+
             node.log("Rainbow : sending message." + " cnx: " + JSON.stringify(node.server.name));
-                
+
             var msg;
 
             msg = {
@@ -984,7 +985,7 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
-  
+
 
     RED.nodes.registerType("Send_IM", sendMessage);
     RED.nodes.registerType("Notified_IM", getMessage);
