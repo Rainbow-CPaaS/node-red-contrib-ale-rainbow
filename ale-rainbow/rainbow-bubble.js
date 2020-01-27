@@ -343,15 +343,15 @@ module.exports = function(RED) {
         let currentStep = "";
         try {
           const sdk = this.server.rainbow.sdk;
-          let name = msg.payload.hasOwnProperty("name") ? msg.payload.name: config.bubbleName;
-          let description = ( msg.payload.hasOwnProperty("description") ? msg.payload.description:config.bubbleDescription )|| name;
-          let history = msg.payload.hasOwnProperty("history") ? msg.payload.history : config.history;
-          let forceInvite = msg.payload.hasOwnProperty("forceInvite")?msg.payload.forceInvite :config.forceInvite;
-          let customData = msg.payload.hasOwnProperty("customData")?msg.payload.customData:stringToJson( config.customData );        
-          let users = msg.payload.hasOwnProperty( "users" ) ?  msg.payload.users : (stringToJson(config.users )||[]);
-          let moderators = msg.payload.hasOwnProperty( "moderators" ) ?  msg.payload.moderators : (stringToJson(config.moderators )||[]);
+          let name = ( msg.payload && msg.payload.hasOwnProperty("name") ) ? msg.payload.name: config.bubbleName;
+          let description =( ( msg.payload && msg.payload.hasOwnProperty("description") )? msg.payload.description:config.bubbleDescription )|| name;
+          let history = (msg.payload &&  msg.payload.hasOwnProperty("history")) ? msg.payload.history : config.history;
+          let forceInvite = (msg.payload && msg.payload.hasOwnProperty("forceInvite"))?msg.payload.forceInvite :config.forceInvite;
+          let customData = (msg.payload && msg.payload.hasOwnProperty("customData"))?msg.payload.customData:stringToJson( config.customData );        
+          let users = (msg.payload && msg.payload.hasOwnProperty( "users" )) ?  msg.payload.users : (stringToJson(config.users )||[]);
+          let moderators = (msg.payload && msg.payload.hasOwnProperty( "moderators" )) ?  msg.payload.moderators : (stringToJson(config.moderators )||[]);
           let bubble;
-          let create = msg.payload.hasOwnProperty( "create" ) ? msg.payload.create : config.bubbleCreate;
+          let create = (msg.payload && msg.payload.hasOwnProperty( "create" ))? msg.payload.create : config.bubbleCreate;
           let contactsToRemove;
           
           if( !this.server ){
@@ -452,7 +452,7 @@ module.exports = function(RED) {
         }
         catch( err ){
           node.error("RainbowBubble: failed " + currentStep );
-          node.warn( error );
+          node.warn( err );
         }
  
       });
