@@ -2,6 +2,18 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.69.1] - 2020-03-
+-   update documentation
+-   update cnx node to allow the configuration of the rainbow-node-sdk from the flow : 
+    * sdkLog to activate the log on console and also in a file `YYYY-MM-DD-rainbowsdk.log` in `%TEMP%` folder.
+    * messageMaxLength to set the max size of a message sent in XMPP engine (Note: there is a limitation to 1024 on server side)
+    * sendMessageToConnectedUser to allow the connected user to be the destination of a sent message. When setted to false, it avoid a bot to discuss with himself and deadlock.
+    * conversationsRetrievedFormat to allow to set the quantity of datas retrieved when SDK get conversations from server. Value can be "small" of "full"
+    * storeMessages Define a server side behaviour with the messages sent. When true, the messages are stored, else messages are only available on the fly. They can not be retrieved later.
+    * nbMaxConversations parameter to set the maximum number of conversations to keep (defaut value to 15). Old ones are removed from XMPP server. They are not destroyed. The can be activated again with a send to the conversation again.
+    * rateLimitPerHour to set the maximum count of stanza messages of type `message` sent during one hour. The counter is started at startup, and reseted every hour.
+
+
 ## [1.4.2] - 2019-02-12
 update to rainbow-node-sdk 1.52.0
 
