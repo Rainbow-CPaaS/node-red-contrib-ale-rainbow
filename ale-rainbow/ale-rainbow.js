@@ -72,6 +72,13 @@ module.exports = function(RED) {
         this.proxyPort = config.proxyPort;
         this.proxyProto = config.proxyProto;
         this.ackIM = config.ackIM;
+        this.sdkLog = config.sdkLog;
+        this.messageMaxLength = config.messageMaxLength;
+        this.sendMessageToConnectedUser = config.sendMessageToConnectedUser;
+        this.conversationsRetrievedFormat = config.conversationsRetrievedFormat;
+        this.storeMessages = config.storeMessages;
+        this.nbMaxConversations = config.nbMaxConversations;
+        this.rateLimitPerHour = config.rateLimitPerHour;
         this.autoLogin = config.autoLogin;
         context.set('RBLoginState', false);
         var successiveCOnnectionFail = 0;
@@ -87,48 +94,62 @@ module.exports = function(RED) {
         node.log("login: **************************************************");
         node.log("login: **************************************************");
 
+        // node.log("TEMP: " + JSON.stringify(process.env));
+        let tempDir = process.env["TEMP"];
+        node.log("TEMP: " + tempDir);
+
         node.rainbow = {};
         node.rainbow.logged = false;
         node.rainbow.options = {
-            rainbow: {
+            "rainbow": {
 //                host: "official",
-                host: config.host
+                "host": config.host
             },
-            credentials: {
-                login: node.credentials.username,
-                password: node.credentials.password
+            "credentials": {
+                "login": node.credentials.username,
+                "password": node.credentials.password
             },
             // Application identifier
-            application: {
-                appID: node.credentials.appID,
-                appSecret: node.credentials.appSecret,
+            "application": {
+                "appID": node.credentials.appID,
+                "appSecret": node.credentials.appSecret,
             },
-            logs: {
+            "logs": {
 
-                enableConsoleLogs: false, // Default: false
-//                enableConsoleLogs: false, // Default: false
-                enableFileLogs: false, // Default: false
+                "enableConsoleLogs": config.sdkLog, // Default: false
+//                "enableConsoleLogs": false, // Default: false
+                "enableFileLogs": config.sdkLog, // Default: false
                 "color": true,
                 "level": 'debug',
                 "customLabel": "noderedcontrib",
                 "system-dev": {
-                    "internals": false,
-                    "http": false
+                    "internals": true,
+                    "http": true
                 }, // */
-                file: {
-                    path: '/var/tmp/rainbowsdk/', // Default path used
-                    level: 'info' // Default log level used
+                "file": {
+                    "path": tempDir, // Default path used
+                    "level": 'debug' // Default log level used
                 }
             },
-            proxy: {
-                host: config.proxyHost,
-                port: config.proxyPort,
-                protocol: config.proxyProto
+            "proxy": {
+                "host": config.proxyHost,
+                "port": config.proxyPort,
+                "protocol": config.proxyProto
             },
-            im: {
-                sendReadReceipt: config.ackIM // True to send the the 'read' receipt automatically
+            "im": {
+                "sendReadReceipt": config.ackIM , // True to send the the 'read' receipt automatically
+                "messageMaxLength": config.messageMaxLength,
+                "sendMessageToConnectedUser": config.sendMessageToConnectedUser,
+                "conversationsRetrievedFormat": config.conversationsRetrievedFormat,
+                "storeMessages": config.storeMessages,
+                "nbMaxConversations": config.nbMaxConversations,
+                "rateLimitPerHour": config.rateLimitPerHour,
+                //"messagesDataStore": DataStoreType.NoPermanentStore
             }
         };
+        if (config.sdkLog) {
+            node.log("Rainbow : logs stored in folder : " + JSON.stringify(tempDir));
+        }
         node.log("Rainbow : login node initialized :" + " cnx: " + JSON.stringify(node.name));
         if (_RainbowSDK === null) {
             node.log("Rainbow : login node launch require **********"+ " cnx: " + JSON.stringify(node.name));

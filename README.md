@@ -12,22 +12,30 @@ The Alcatel-Lucent Enterprise (ALE) Rainbow nodes for node-red is a node-red pac
 
 ## Requirements
 
-1. Node.js v4.5.0 and above
-2. Node-RED v0.12.0 and above
+1. Node.js v8.10.0 and above
+2. Node-RED v1.0.4 and above
 
 ## Install via NPM
 
-From inside your node-red directory:
+Install node-red and start it:
+
 ```
-npm install node-red-contrib-ale-rainbow
+
+npm install -g node-red
+node-red
+
 ```
+
+Open the flow in a browser on the url provided in start logs:  
+`30 Mar 14:36:40 - [info] Server now running at` [http://127.0.0.1:1880/](http://127.0.0.1:1880/)   
+Manage palette from right menu to install node-red-contrib-ale-rainbow.
 
 ## What's inside?
 It includes nine nodes:
 
 1. **```RBLogin```** : a unique CONFIG node that holds connection configuration for Rainbow. As a node-red 'config' node, it cannot be added to a graph, but it acts as a singleton object that gets created in the background when you add any other 'ALE Rainbow' node and configure it accordingly. You must configure here the sandbox or official system, and the credentials to be used to connect to Rainbow cloud services and optionnaly, an HTTP Proxy.  
-Since v1.3.0 and it's dependency rainbow-node-sdk v1.39.0 connection to Rainbow is well supported. Thanks to Loic Jehanno for his work.  
-**End of september 2018, a valid AppID/secret will be mandatory**.  Please check the HUB to create one: [HUB](https://hub.openrainbow.com)
+Since v1.3.0 and it's dependency rainbow-node-sdk v1.69.0 connection to Rainbow is well supported.   
+**A valid AppID/secret are mandatory**.  Please check the HUB to create one: [HUB](https://hub.openrainbow.com)
 
 2. **```RBSend_IM```** : Output node to send IM to a Rainbow identity (User or Bubble).  
 You can configure a default recipient for outgoing IM in node parameters.  
