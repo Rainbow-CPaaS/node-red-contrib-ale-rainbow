@@ -2,7 +2,10 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
-## [1.69.1] - 2020-03-
+## [1.69.10] - 2020-04-01
+-   Same as version 1.69.1 (work on build process)
+
+## [1.69.1] - 2020-03-31
 -   update documentation
 -   update cnx node to allow the configuration of the rainbow-node-sdk from the flow : 
     * sdkLog to activate the log on console and also in a file `YYYY-MM-DD-rainbowsdk.log` in `%TEMP%` folder.
