@@ -30,6 +30,8 @@ Open the flow in a browser on the url provided in start logs:
 `30 Mar 14:36:40 - [info] Server now running at` [http://127.0.0.1:1880/](http://127.0.0.1:1880/)   
 Manage palette from right menu to install node-red-contrib-ale-rainbow.
 
+Note: For installation from sources look at DEVELOPER guide file.
+
 ## What's inside?
 It includes nine nodes:
 

@@ -30,6 +30,7 @@ node-red
 Open the flow in a browser on the url provided in start logs:  
 `30 Mar 14:36:40 - [info] Server now running at` [http://127.0.0.1:1880/](http://127.0.0.1:1880/)   
 Manage palette from right menu to install node-red-contrib-ale-rainbow.
+
 ---
 **At this step ALE Rainbow's node are available from official distribution.  
 So You must do a trick to spot on the a cloned sources retrieved from github.** 
@@ -40,6 +41,9 @@ Get sources from github.com:
 git clone https://USERGITLOGIN:USERGITPASSWDURLENCODED@github.com/Rainbow-CPaaS/node-red-contrib-ale-rainbow
 
 ```
+
+At this point, there are two possibles methods:  
+* Add node-red-contrib-ale-rainbow module with "link" to folder.  
 
 Once the repository is cloned, open a cmd and launch the following command in the **project's folder** to install depends and links it to generals npm lib:
 
@@ -67,5 +71,15 @@ Start node red with the ALE Rainbow nodes custom are available:
 ```
 
 node-red
+
+```
+
+* Use node-red-contrib-ale-rainbow as a user folder contenting the modules and flows.
+
+Go to folder where the repo has been cloned and start node-red with user option specified.
+```
+
+cd node-red-contrib-ale-rainbow
+node-red -u .
 
 ```
