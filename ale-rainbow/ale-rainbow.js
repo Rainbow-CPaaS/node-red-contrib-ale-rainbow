@@ -210,7 +210,7 @@ module.exports = function(RED) {
             var onLoginConnectionError = function onLoginConnectionError(error) {
                 var label = (error ? (error.label ? error.label : error) : "unknown");
                 node.log("********************");
-                node.log("onLoginConnectionError() : " + label+ " cnx: " + JSON.stringify(node.name));
+                node.log("onLoginConnectionError() : " + label+ " cnx: " + JSON.stringify(node.name) + ", error : " + JSON.stringify(error));
                 node.log("********************");
                 node.rainbow.logged = false;
                 if (node.autoLogin) {
@@ -223,6 +223,7 @@ module.exports = function(RED) {
                 }
             }
             node.rainbow.sdk.events.on('rainbow_onconnectionerror', onLoginConnectionError);
+            node.rainbow.sdk.events.on('rainbow_onerror', onLoginConnectionError);
             node.rainbow.sdkhandler.push({
                 evt: 'rainbow_onconnectionerror',
                 fct: onLoginConnectionError
