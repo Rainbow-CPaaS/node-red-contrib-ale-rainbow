@@ -4,6 +4,7 @@ module.exports = function(RED) {
 
     function allocateSDK(node, server) {
         node.log("RainbowSDK instance allocated" + " cnx: " + JSON.stringify(server.name));
+        let handler;
         server.rainbow.sdk = new _RainbowSDK(server.rainbow.options);
         if (server.rainbow.sdkhandler != undefined && server.rainbow.sdkhandler.length != 0) {
             node.log("RainbowSDK : Re-registering event handlers");
@@ -13,6 +14,16 @@ module.exports = function(RED) {
             }
         } else {
             server.rainbow.sdkhandler = [];
+        }
+        if (server.rainbow.sdkLoghandler != undefined && server.rainbow.sdkLoghandler.length != 0) {
+            node.log("RainbowSDK : Re-registering event Log handlers");
+            for (var i = 0, len = server.rainbow.sdkLoghandler.length; i < len; i++) {
+                handler = server.rainbow.sdkLoghandler[i];
+                server.rainbow.sdk.events.onLog(handler.evt, handler.fct);
+            }
+        }
+        else {
+            server.rainbow.sdkLoghandler = [];
         }
     }
 
@@ -63,6 +74,12 @@ module.exports = function(RED) {
             server.rainbow.sdk.events.eee.removeListener(handler.evt, handler.fct);
             handler = server.rainbow.sdkhandler.pop();
         };
+        handler = server.rainbow.sdkLoghandler.pop();
+        while (handler) {
+            node.log("Remove Log listenner function :" + handler.fct.name+ " cnx: " + JSON.stringify(server.name));
+            server.rainbow.sdk.events.removeLogListener(handler.evt, handler.fct);
+            handler = server.rainbow.sdkLoghandler.pop();
+        };
     }
 
     function login(config) {
@@ -72,7 +89,9 @@ module.exports = function(RED) {
         this.proxyPort = config.proxyPort;
         this.proxyProto = config.proxyProto;
         this.ackIM = config.ackIM;
-        this.sdkLog = config.sdkLog;
+        this.sdkConsoleLog = config.sdkConsoleLog;
+        this.sdkFileLog = config.sdkFileLog;
+        this.sdkEventsLog = config.sdkEventsLog;
         this.messageMaxLength = config.messageMaxLength;
         this.sendMessageToConnectedUser = config.sendMessageToConnectedUser;
         this.conversationsRetrievedFormat = config.conversationsRetrievedFormat;
@@ -116,9 +135,10 @@ module.exports = function(RED) {
             },
             "logs": {
 
-                "enableConsoleLogs": config.sdkLog, // Default: false
+                "enableConsoleLogs": config.sdkConsoleLog, // Default: false
 //                "enableConsoleLogs": false, // Default: false
-                "enableFileLogs": config.sdkLog, // Default: false
+                "enableFileLogs": config.sdkFileLog, // Default: false
+                "enableEventsLogs": config.sdkEventsLog, // Default: false
                 "color": true,
                 "level": 'debug',
                 "customLabel": "noderedcontrib",
@@ -147,7 +167,7 @@ module.exports = function(RED) {
                 //"messagesDataStore": DataStoreType.NoPermanentStore
             }
         };
-        if (config.sdkLog) {
+        if (config.sdkFileLog) {
             node.log("Rainbow : logs stored in folder : " + JSON.stringify(tempDir));
         }
         node.log("Rainbow : login node initialized :" + " cnx: " + JSON.stringify(node.name));
@@ -314,6 +334,22 @@ module.exports = function(RED) {
                     fct: onGetRainbowSDKConnectionOk
                 });
                 node.log("Rainbow : getCnxState register for event 'rainbow_onconnected'");
+
+                var  onLogReceived = function onLogReceived(data) {
+                    node.log("Rainbow : getCnxState received debug data : " + data);
+                    var msg = {
+                        payload: data
+                    };
+                    node.send([undefined, msg]);
+                };
+                if (node.server.rainbow.sdk.events.onLog) {
+                    node.server.rainbow.sdk.events.onLog('debug', onLogReceived);
+                    node.server.rainbow.sdkLoghandler.push({
+                        evt: 'debug',
+                        fct: onLogReceived
+                    });
+                    node.log("Rainbow : getCnxState register for log event 'debug'");
+                }
 
                 var onLoginConnectionStopped = function onLoginConnectionStopped() {
                     node.status({

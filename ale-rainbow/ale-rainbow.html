@@ -9,7 +9,9 @@
           proxyHost: {value:"", required:false},
           proxyPort: {value:"", required:false},
           proxyProto: {value:"", required:false},
-          sdkLog: {value:false},
+          sdkConsoleLog: {value:false},
+          sdkFileLog: {value:false},
+          sdkEventsLog: {value:false},
           ackIM: {value:false},
           messageMaxLength: {value:1024, required:false},
           sendMessageToConnectedUser: {value:false, required:false},
@@ -136,7 +138,7 @@
             name: {value:""},
         },
         inputs:1,
-        outputs:1,
+        outputs:2,
         icon: "rainbow.png",
         label: function() {
             return this.name||"CnxState";
@@ -477,6 +479,7 @@
             <select id="node-config-input-host" placeholder="Host">
                 <option value="official" selected>production</option>
                 <option value="sandbox">sandbox</option>
+                <option value="openrainbow.net">validation .Net</option>
                 <!-- <option value="vberder.openrainbow.org">vberder</option> -->
             </select>
         </div>
@@ -517,8 +520,16 @@
             <input type="text" id="node-config-input-proxyProto" placeholder="http or https">
         </div>
         <div class="form-row">
-            <label for="node-config-input-sdkLog" title="Activate the log on console and also in a file `YYYY-MM-DD-rainbowsdk.log` in `%TEMP%` folder."><i class="icon-tag"></i> sdkLog</label>
-            <input type="checkbox" id="node-config-input-sdkLog" >
+            <label for="node-config-input-sdkConsoleLog" title="Activate the log on console and also in a file `YYYY-MM-DD-rainbowsdk.log` in `%TEMP%` folder."><i class="icon-tag"></i> sdkConsoleLog</label>
+            <input type="checkbox" id="node-config-input-sdkConsoleLog" >
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-sdkFileLog" title="Activate the log on console and also in a file `YYYY-MM-DD-rainbowsdk.log` in `%TEMP%` folder."><i class="icon-tag"></i> sdkFileLog</label>
+            <input type="checkbox" id="node-config-input-sdkFileLog" >
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-sdkEventsLog" title="Activate the log on console and also in a file `YYYY-MM-DD-rainbowsdk.log` in `%TEMP%` folder."><i class="icon-tag"></i> sdkEventsLog</label>
+            <input type="checkbox" id="node-config-input-sdkEventsLog" >
         </div>
         <div class="form-row">
             <label for="node-config-input-ackIM" title="Automatic acknowledge of incoming IM"><i class="icon-tag"> sendReadReceipt</i> </label>

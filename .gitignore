@@ -1,2 +1,16 @@
 node_modules/
 .idea/
+
+/.config.json
+/.config.json.backup
+/.flows_LD6H9662.json.backup
+/.idea.OLD/misc.xml
+/.idea.OLD/modules.xml
+/.idea.OLD/node-red-contrib-ale-rainbow.iml
+/.idea.OLD/vcs.xml
+/.idea.OLD/workspace.xml
+/flows_LD6H9662.json
+/flows_LD6H9662_cred.json
+/package.json.orig
+/package-lock.json.orig
+/settings.js
