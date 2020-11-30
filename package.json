@@ -6,8 +6,6 @@
     "startnodered": "node-red -v %NODE_DEBUG_OPTION% "
   },
   "dependencies": {
-    "node-red-contrib-tail-file": "~1.2.6",
-    "node-red-dashboard": "~2.24.1",
     "rainbow-node-sdk": "^latest"
   },
   "keywords": [
