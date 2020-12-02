@@ -336,7 +336,7 @@ module.exports = function(RED) {
                 node.log("Rainbow : getCnxState register for event 'rainbow_onconnected'");
 
                 var  onLogReceived = function onLogReceived(data) {
-                    node.log("Rainbow : getCnxState received debug data : " + data);
+                    //node.log("Rainbow : getCnxState received debug data : " + data);
                     var msg = {
                         payload: data
                     };
