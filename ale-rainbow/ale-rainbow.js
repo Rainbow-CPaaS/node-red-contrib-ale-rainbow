@@ -143,8 +143,8 @@ module.exports = function(RED) {
                 "level": 'debug',
                 "customLabel": "noderedcontrib",
                 "system-dev": {
-                    "internals": true,
-                    "http": true
+                    "internals": false,
+                    "http": false
                 }, // */
                 "file": {
                     "path": tempDir, // Default path used
