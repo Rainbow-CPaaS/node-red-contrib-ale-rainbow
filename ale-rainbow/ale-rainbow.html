@@ -12,6 +12,8 @@
           sdkConsoleLog: {value:false},
           sdkFileLog: {value:false},
           sdkEventsLog: {value:false},
+          sdkLogInternals: {value:false},
+          sdkLogHttp: {value:false},
           ackIM: {value:false},
           messageMaxLength: {value:1024, required:false},
           sendMessageToConnectedUser: {value:false, required:false},
@@ -530,6 +532,14 @@
         <div class="form-row">
             <label for="node-config-input-sdkEventsLog" title="Activate the log on console and also in a file `YYYY-MM-DD-rainbowsdk.log` in `%TEMP%` folder."><i class="icon-tag"></i> sdkEventsLog</label>
             <input type="checkbox" id="node-config-input-sdkEventsLog" >
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-sdkLogInternals" title="Activate internals logs when level is debug. For debug only, some data appear in logs, so it is not GPRD compilent."><i class="icon-tag"></i> sdkLogInternals</label>
+            <input type="checkbox" id="node-config-input-sdkLogInternals" >
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-sdkLogHttp" title="Activate the log of network trafic."><i class="icon-tag"></i> sdkLogHttp</label>
+            <input type="checkbox" id="node-config-input-sdkLogHttp" >
         </div>
         <div class="form-row">
             <label for="node-config-input-ackIM" title="Automatic acknowledge of incoming IM"><i class="icon-tag"> sendReadReceipt</i> </label>

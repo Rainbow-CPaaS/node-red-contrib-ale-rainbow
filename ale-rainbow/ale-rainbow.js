@@ -143,8 +143,8 @@ module.exports = function(RED) {
                 "level": 'debug',
                 "customLabel": "noderedcontrib",
                 "system-dev": {
-                    "internals": false,
-                    "http": false
+                    "internals": config.sdkLogInternals,
+                    "http": config.sdkLogHttp
                 }, // */
                 "file": {
                     "path": tempDir, // Default path used
@@ -541,8 +541,8 @@ module.exports = function(RED) {
                 cfgTimer = setTimeout(getRainbowSDKSendMessage, 2000);
             }
         }
-		var sendMessageToBubble = function (content, bubbleJid, lang, alternateContent, subject) {
-            node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject);
+		var sendMessageToBubble = function (content, bubbleJid, lang, alternateContent, subject, mentions, urgency) {
+            node.server.rainbow.sdk.im.sendMessageToBubbleJid(content, bubbleJid, lang, alternateContent, subject, mentions, urgency);
             msgSent++;
             node.status({
                 fill: "green",
@@ -551,8 +551,8 @@ module.exports = function(RED) {
             });
         }
 
-        var sendMessageToContact = function (content, destJid, lang, alternateContent, subject) {
-            node.server.rainbow.sdk.im.sendMessageToJid(content, destJid, lang, alternateContent, subject);
+        var sendMessageToContact = function (content, destJid, lang, alternateContent, subject, urgency) {
+            node.server.rainbow.sdk.im.sendMessageToJid(content, destJid, lang, alternateContent, subject, urgency);
             msgSent++;
             node.status({
                 fill: "green",
@@ -577,11 +577,21 @@ module.exports = function(RED) {
                     text: "not connected"
                 });
             } else {
- 		let destJid = (msg.payload.destJid != undefined ? msg.payload.destJid : (node.destJid != "" ? node.destJid : msg.payload.fromJid));
+                if (!msg || !msg.payload) {
+                    node.status({
+                        fill: "red",
+                        shape: "dot",
+                        text: "no valid payload!"
+                    });
+                    return;
+                }
+ 		        let destJid = (msg.payload.destJid != undefined ? msg.payload.destJid : (node.destJid != "" ? node.destJid : msg.payload.fromJid));
                 let lang = msg.payload.lang ? msg.payload.lang : null;
                 let content = msg.payload.content;
                 let alternateContent = (msg.payload.alternateContent ? msg.payload.alternateContent : null);
                 let subject = (msg.payload.subject ? msg.payload.subject : null);
+                let mentions = (msg.payload.mentions ? msg.payload.mentions : null);
+                let urgency = (msg.payload.urgency ? msg.payload.urgency : null);
                 if (destJid != undefined && "" != destJid) {
                     node.log("Rainbow SDK (" + config.server + " " + content + " " + node.destJid + " " + JSON.stringify(alternateContent) + " cnx: " + JSON.stringify(node.server.name));
                     if (destJid.substring(0, 5) === "room_") {
@@ -591,22 +601,22 @@ module.exports = function(RED) {
                                 if (bubble !== null) {
                                     node.server.rainbow.sdk.bubbles.setBubbleCustomData(bubble, msg.payload.customData).then(function () {
                                         node.log("Rainbow SDK (" + config.server + " setBubbleCustomData " + bubbleJid + " " + JSON.stringify(msg.payload.customData) + " cnx: " + JSON.stringify(node.server.name));
-                                        sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject);
+                                        sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject, mentions, urgency);
 
                                     }, function (error) {
                                         var label = (error ? (error.label ? error.label : error) : "unknown");
                                         node.log("Rainbow SDK (" + config.server + " setBubbleCustomData " + bubbleJid + " failed")
-                                        node.log("Rainbow SDK (" + config.server + "bubble " + JSON.stringify(bubble) + " , error: " + (typeof label == 'object' ? JSON.stringify(label) : label));
-                                        sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject);
+                                        node.log("Rainbow SDK (" + config.server + "bubble " + JSON.stringify(bubble.id) + " , error: " + (typeof label == 'object' ? JSON.stringify(label) : label));
+                                        sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject, mentions, urgency);
                                     });
                                 }
                             });
                         } else {
-                            sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject);
+                            sendMessageToBubble(content, bubbleJid, lang, alternateContent, subject, mentions, urgency);
                         }
 
                     } else {
-                        sendMessageToContact(content, destJid, lang, alternateContent, subject);
+                        sendMessageToContact(content, destJid, lang, alternateContent, subject, urgency);
 
                     }
 
