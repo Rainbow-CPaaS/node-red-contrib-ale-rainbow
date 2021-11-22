@@ -340,7 +340,7 @@
             <li><code>fromBubbleUserJid</code> : The JID of the user who send the message without the JID of the Bubble. (Only for groupchat message),</li>
             <li><code>lang</code> : the langage set by the originator (warning, he may write in another language),</li>
             <li><code>content</code> : IM content</li>
-            <li>Other information about the message, if  like <code>alternativeContentw</code>, may be found in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
+            <li>Other information about the message, if  like <code>alternativeContentw</code>, may be found in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/lts/api/message">Message</a></li>
         </ul>
         <code>msg.contact</code> contains <b>relevant</b> information from the IM sender :<br>
         <ul>
@@ -348,7 +348,7 @@
             <li><code>loginEmail</code> : the sender login email,</li>
             <li><code>companyId</code> : the sender Company Id,</li>
             <li><code>firstname</code>, <code>lastname</code>, ... : provided contact informations</li>
-            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a></li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/lts/api/contact">Contact</a></li>
         </ul>
         Only for groupchat message:<br/>
         <code>msg.bubble</code> some bubble <b>relevant</b> information :<br>
@@ -356,7 +356,7 @@
             <li><code>jid</code> : The JID of the Bubble,</li>
             <li><code>name</code> : The name of the Bubble,</li>
             <li><code>topic</code> : The topic of the Bubble,</li>
-            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/bubble">Bubble</a></li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/lts/api/bubble">Bubble</a></li>
         </ul>
     </script>
 
@@ -364,6 +364,9 @@
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-event"><i class="icon-tag"></i> Event To Listen </label>
             <input type="text" id="node-input-event">
         </div>
         <div class="form-row">
@@ -373,57 +376,24 @@
     </script>
 
     <script type="text/x-red" data-help-name="Notified_Event">
-        <p>Get a instant message from a Rainbow identity</p>
-        <h3>Filters :</h3>
+        <p>Get a event from a Rainbow SDK</p>
+        <h3>Parameters :</h3>
         <dl class="message-properties">
-            <p>either</p>
-            <dt>RegExp Filter<span class="property-type">string</span></dt>
-            <dd>a <code>RegExp</code> the msg sent should match.</dd>
+            <dt> Event To Listen<span class="property-type">string</span></dt>
+            <dd>an <code>Event</code> to filter the ouput to send.</dd>
             <br/>
-            <dt>Contact filter<span class="property-type">string</span></dt>
-            <dd>the user's jid or login email.</dd>
+            <dd>ALL can be selected to let send every events.</dd>
             <br/>
-            <dt>Company filter<span class="property-type">string</span> </dt>
-            <dd>user's compayId (to identify a company id, activate node-red logs and it'll be printed as a message arives from someone).</dd>
-            <br/>
-            <dt>Ignore chat messages </dt>
-            <dd>to ignore one to one messages</dd>
-            <br/>
-            <dt>Ignore groupchat messages </dt>
-            <dd>to ignore messages in Bubbles</dd>
+            <dd>None can be selected to send no events.</dd>
             <br/>
         </dl>
         <h3>Output :</h3>
         <code>msg.payload</code> contains <b>relevant</b> :<br>
         <ul>
-            <li><code>toJid</code> : your JID,</li>
-            <li><code>type</code> : IM type, may be "chat" or "groupchat" (in a Bubble),</li>
-            <li><code>fromJid</code> : </li>
-                <ul>
-                    <li>one to one chat: JID of the originator of the IM,</li>
-                    <li>When in a bubble: the fromJid property contains the identity of the user inside the bubble so follows the pattern jid_room/jid_user</li>
-                </ul>
-            <li><code>fromBubbleUserJid</code> : The JID of the user who send the message without the JID of the Bubble. (Only for groupchat message),</li>
-            <li><code>lang</code> : the langage set by the originator (warning, he may write in another language),</li>
-            <li><code>content</code> : IM content</li>
-            <li>Other information about the message, if  like <code>alternativeContentw</code>, may be found in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
+            <li><code>eventName</code> : The name of the event,</li>
+            <li><code>data</code> : The data returned by the event. It is not detailed here. Please have a look on the official SDK doc on <a href="https://hub.openrainbow.com/#/documentation/doc/sdk/node/lts/api/events"> Events Service Handler </a></li>
         </ul>
-        <code>msg.contact</code> contains <b>relevant</b> information from the IM sender :<br>
-        <ul>
-            <li><code>jid_im</code> : JID of the originator of the IM,</li>
-            <li><code>loginEmail</code> : the sender login email,</li>
-            <li><code>companyId</code> : the sender Company Id,</li>
-            <li><code>firstname</code>, <code>lastname</code>, ... : provided contact informations</li>
-            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a></li>
-        </ul>
-        Only for groupchat message:<br/>
-        <code>msg.bubble</code> some bubble <b>relevant</b> information :<br>
-        <ul>
-            <li><code>jid</code> : The JID of the Bubble,</li>
-            <li><code>name</code> : The name of the Bubble,</li>
-            <li><code>topic</code> : The topic of the Bubble,</li>
-            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/bubble">Bubble</a></li>
-        </ul>
+        <p><code>WARNING</code>events handlers are limited (11 listeners), and every Notified_Event node is listening to all Rainbow SDK events. So do not put much Notified_Event node linked to a single Cnx_State on your flow. Else use the ALL filter and use a selector after..<br>
     </script>
 
     <script type="text/html" data-template-name="event-select">
@@ -464,7 +434,7 @@
         <br>
         <code>msg.payload</code> contains :<br>
         <ul>
-            <li><code>ack</code> : the message, described in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
+            <li><code>ack</code> : the message, described in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/lts/api/message">Message</a></li>
         </ul>
     </script>
 
@@ -483,7 +453,7 @@
         <p>Ack (mark as read) IM received.</p>
         <h3>Input :</h3>
         <ul>
-            ⚠<code>msg.payload</code> should contain the <b>complete <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">message</a> received</b> with Notified_IM node.
+            ⚠<code>msg.payload</code> should contain the <b>complete <a href="https://hub.openrainbow.com/#/documentation/doc/node/lts/api/message">message</a> received</b> with Notified_IM node.
             <br/>
         </ul>
         <h3>Node :</h3>
@@ -507,7 +477,7 @@
 
     <script type="text/x-red" data-help-name="Notified_Presence">
         <p>Get presence update of given user<br/>
-            Full <code>msg.payload</code> provided is described in the HUB in <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a>'s model.<p>
+            Full <code>msg.payload</code> provided is described in the HUB in <a href="https://hub.openrainbow.com/#/documentation/doc/node/lts/api/contact">Contact</a>'s model.<p>
         <h3>Output :</h3>
         <dl class="message-properties">
             <p><code>msg.payload</code> contains relevant :</p>
@@ -750,7 +720,7 @@
         The message with
         <ul>
             <li><code>{String} messageId</code> : the id of the message,</li>
-            <li><code>{Channel} channel</code> : the channel, see <a href="https://hub.openrainbow.com/#/documentation/doc/sdk/node/api/channel">Channel</a>,</li>
+            <li><code>{Channel} channel</code> : the channel, see <a href="https://hub.openrainbow.com/#/documentation/doc/sdk/node/lts/api/channel">Channel</a>,</li>
             <li><code>{String} fromJid</code> : the sender Jid,</li>
             <li><code>{String} message</code> : message if any,</li>
             <li><code>{String} title</code> : title if any,</li>
