@@ -1,5 +1,5 @@
 module.exports = function(RED) {
-    var _RainbowSDK = null;
+    let _RainbowSDK = null;
     const util = require('util');
 
     function allocateSDK(node, server) {
@@ -263,6 +263,7 @@ module.exports = function(RED) {
                     }, 5000);
                 }
             };
+            node.rainbow.sdk.events.on('rainbow_onfailed', onLoginRainbowError);
             node.rainbow.sdk.events.on('rainbow_onerror', onLoginRainbowError);
             node.rainbow.sdkhandler.push({
                 evt: 'rainbow_onerror',
@@ -504,6 +505,7 @@ module.exports = function(RED) {
             clearTimeout(cfgTimer);
         });
     }
+    
     RED.httpAdmin.post("/Login/:id", RED.auth.needsPermission("Notified_CnxState.write"), function(req, res) {
         var node = RED.nodes.getNode(req.params.id);
         var state = req.params.state;
@@ -1054,9 +1056,143 @@ module.exports = function(RED) {
         });
     }
 
+    function notifyEventReceived(config) {
+        RED.nodes.createNode(this, config);
+        this.server = RED.nodes.getNode(config.server);
+        this.event = RED.nodes.getNode(config.event);
+        let cfgTimer = null;
+        let node = this;
+        node.log("Rainbow : notifyMessageRead node initialized :" + JSON.stringify(node.server.name))
+        let getCallback_onevent = function (eventName) {
+            return function (data) {
+                node.log("Rainbow : rainbow_oneventreceived for event : " + eventName)
+                if (node.event && node.event.event !== "NONE" && ( node.event.event === eventName || node.event.event === "ALL")) {
+                    node.log("Rainbow : send event : " + eventName)
+                    let msg = {
+                        payload: {
+                            eventName,
+                            data
+                        }
+                    };
+                    node.send(msg);
+                } else {
+                    node.log("Rainbow : ignore event : " + eventName)
+                }
+            }
+        };
+        
+        let getRainbowSDKnotifyEventReceived = function getRainbowSDKnotifyEventReceived() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")");
+                cfgTimer = setTimeout(getRainbowSDK, 2000);
+            } else {
+                node.log("Rainbow : notifyEventReceived will register for events.");
+                let sdkPublicEventsName = node.server.rainbow.sdk.events.sdkPublicEventsName;
+                for (const configKey in sdkPublicEventsName) {
+                    let sdkEventName = sdkPublicEventsName[configKey];
+                    let fn_rainbow_oneventreceived = getCallback_onevent(sdkEventName);
+                    node.server.rainbow.sdk.events.on(sdkEventName, fn_rainbow_oneventreceived);
+                    node.server.rainbow.sdkhandler.push({
+                        evt: sdkEventName,
+                        fct: fn_rainbow_oneventreceived
+                    });
+                    node.log("Rainbow : notifyEventReceived register for event : " + sdkEventName);
+                }
+            }
+        }
+        getRainbowSDKnotifyEventReceived();
+        this.on('close', function() {
+            // tidy up any state
+            clearTimeout(cfgTimer);
+        });
+    }
 
+    function eventSelectNode(n) {
+        RED.nodes.createNode(this,n);
+        this.event = n.event;
+    }
+
+    RED.httpAdmin.get("/rainbowsdkevents", function(req,res) {
+        let node = this;
+
+       // node.log("Rainbow : rainbowsdkevents will get events names.");
+        let options = {
+            "rainbow": {
+                "host": "sandbox",
+                "mode": "xmpp",
+            },
+            "xmpp": {
+                "host": "",
+                "port": "443",
+                "protocol": "wss",
+                "timeBetweenXmppRequests": "20",
+                "raiseLowLevelXmppInEvent": false,
+                "raiseLowLevelXmppOutReq": false
+            },
+            "credentials": {
+                "login": "", 
+                "password": "",
+            },
+            "application": {
+                "appID": "",
+                "appSecret": ""
+
+            },
+            proxy: {
+                host: undefined,
+                port: 8080,
+                protocol: undefined,
+                user: undefined,
+                password: undefined,
+                secureProtocol: undefined //"SSLv3_method"
+            },
+            "logs": {
+                "enableConsoleLogs": false,
+                "enableFileLogs": false,
+                "enableEventsLogs": false,
+                "color": false,
+                //"level": "info",
+                "level": "info",
+                "customLabel": "RainbowNone",
+                "system-dev": {
+                    "internals": false,
+                    "http": false,
+                },
+                "file": {
+                    "path": "c:/temp/",
+                    "customFileName": "R-SDK-Node-None",
+                    "zippedArchive": false 
+                }
+            },
+            "testOutdatedVersion": false,
+            "intervalBetweenCleanMemoryCache": 1000 * 60 * 60 * 6, // Every 6 hours.
+            "requestsRate":{
+                "maxReqByIntervalForRequestRate": 600, // nb requests during the interval.
+                "intervalForRequestRate": 60, // nb of seconds used for the calcul of the rate limit.
+                "timeoutRequestForRequestRate": 600 // nb seconds Request stay in queue before being rejected if queue is full.
+            },
+            // IM options
+            "im": {
+            },
+            "servicesToStart": {
+            } 
+        };
+        let sdkInstance = new _RainbowSDK(options);
+        let sdkPublicEventsName = [];
+        if ((sdkInstance === undefined) || (sdkInstance === null)) {
+            //node.log("Rainbow SDK not ready (" + ")");
+            sdkPublicEventsName = [];
+        } else {
+            //node.log("Rainbow : rainbowsdkevents will get events names.");
+            sdkPublicEventsName = sdkInstance.events.sdkPublicEventsName;
+        }
+        res.json(sdkPublicEventsName);
+    });
+    
     RED.nodes.registerType("Send_IM", sendMessage);
     RED.nodes.registerType("Notified_IM", getMessage);
+    RED.nodes.registerType("event-select",eventSelectNode);
+    RED.nodes.registerType("Notified_Event", notifyEventReceived);
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);
     RED.nodes.registerType("Set_Presence", setPresence);

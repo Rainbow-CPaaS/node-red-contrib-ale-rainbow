@@ -287,6 +287,8 @@ module.exports = function(RED) {
             this.error(err);
         }
     }
+    
     RED.nodes.registerType("Rainbow_function",FunctionNode);
     RED.library.register("Rainbow_function");
+    
 }

@@ -69,6 +69,38 @@
             return this.name||"Notified_IM";
         }
     });
+    RED.nodes.registerType('Notified_Event',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            event: {value:"", type:"event-select"},
+        },
+        inputs:0,
+        outputs:1,
+        icon: "Notified_Event.png",
+        label: function() {
+            return this.name||"Notified_Event";
+        }
+    });
+
+    RED.nodes.registerType('event-select',{
+        category: 'config',
+        defaults: {
+            event: {value:"",required:true},
+        },
+        label: function() {
+            return this.event;
+        },
+        oneditprepare: function() {
+            $.getJSON('/rainbowsdkevents',function(data) {
+                for (let i = 0; i < data.length; i++) {
+                    $('#node-config-input-event').append('<option value="' + data[i] + '">' + data[i] + '</option>');
+                }
+            });
+        }
+    });
 
     RED.nodes.registerType('Notified_IM_Read',{
         category: 'ALE Rainbow',
@@ -198,7 +230,7 @@
         outputs:1,
         icon: "Notified_Channel.png",
         label: function() {
-            return this.name||"Notified_IM";
+            return this.name||"Notified_Channel";
         }
     });
 </script>
@@ -326,6 +358,83 @@
             <li><code>topic</code> : The topic of the Bubble,</li>
             <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/bubble">Bubble</a></li>
         </ul>
+    </script>
+
+    <script type="text/x-red" data-template-name="Notified_Event">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+            <input type="text" id="node-input-event">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+
+    <script type="text/x-red" data-help-name="Notified_Event">
+        <p>Get a instant message from a Rainbow identity</p>
+        <h3>Filters :</h3>
+        <dl class="message-properties">
+            <p>either</p>
+            <dt>RegExp Filter<span class="property-type">string</span></dt>
+            <dd>a <code>RegExp</code> the msg sent should match.</dd>
+            <br/>
+            <dt>Contact filter<span class="property-type">string</span></dt>
+            <dd>the user's jid or login email.</dd>
+            <br/>
+            <dt>Company filter<span class="property-type">string</span> </dt>
+            <dd>user's compayId (to identify a company id, activate node-red logs and it'll be printed as a message arives from someone).</dd>
+            <br/>
+            <dt>Ignore chat messages </dt>
+            <dd>to ignore one to one messages</dd>
+            <br/>
+            <dt>Ignore groupchat messages </dt>
+            <dd>to ignore messages in Bubbles</dd>
+            <br/>
+        </dl>
+        <h3>Output :</h3>
+        <code>msg.payload</code> contains <b>relevant</b> :<br>
+        <ul>
+            <li><code>toJid</code> : your JID,</li>
+            <li><code>type</code> : IM type, may be "chat" or "groupchat" (in a Bubble),</li>
+            <li><code>fromJid</code> : </li>
+                <ul>
+                    <li>one to one chat: JID of the originator of the IM,</li>
+                    <li>When in a bubble: the fromJid property contains the identity of the user inside the bubble so follows the pattern jid_room/jid_user</li>
+                </ul>
+            <li><code>fromBubbleUserJid</code> : The JID of the user who send the message without the JID of the Bubble. (Only for groupchat message),</li>
+            <li><code>lang</code> : the langage set by the originator (warning, he may write in another language),</li>
+            <li><code>content</code> : IM content</li>
+            <li>Other information about the message, if  like <code>alternativeContentw</code>, may be found in the HUB: <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/message">Message</a></li>
+        </ul>
+        <code>msg.contact</code> contains <b>relevant</b> information from the IM sender :<br>
+        <ul>
+            <li><code>jid_im</code> : JID of the originator of the IM,</li>
+            <li><code>loginEmail</code> : the sender login email,</li>
+            <li><code>companyId</code> : the sender Company Id,</li>
+            <li><code>firstname</code>, <code>lastname</code>, ... : provided contact informations</li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/contact">Contact</a></li>
+        </ul>
+        Only for groupchat message:<br/>
+        <code>msg.bubble</code> some bubble <b>relevant</b> information :<br>
+        <ul>
+            <li><code>jid</code> : The JID of the Bubble,</li>
+            <li><code>name</code> : The name of the Bubble,</li>
+            <li><code>topic</code> : The topic of the Bubble,</li>
+            <li>Other information, if provided, are described in the HUB <a href="https://hub.openrainbow.com/#/documentation/doc/node/api/bubble">Bubble</a></li>
+        </ul>
+    </script>
+
+    <script type="text/html" data-template-name="event-select">
+        <div class="form-row">
+            <label for="node-config-input-event"><i class="icon-bookmark"></i> Event to listen </label>
+            <!-- input type="text" id="node-config-input-event"> -->
+            <select id="node-config-input-event">
+                 <option value="ALL" >ALL</option>
+                 <option value="NONE" >NONE</option>
+            </select>
+        </div>
     </script>
 
     <script type="text/x-red" data-template-name="Notified_IM_Read">
