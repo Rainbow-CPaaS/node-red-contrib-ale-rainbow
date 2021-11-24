@@ -394,6 +394,7 @@
             <li><code>data</code> : The data returned by the event. It is not detailed here. Please have a look on the official SDK doc on <a href="https://hub.openrainbow.com/#/documentation/doc/sdk/node/lts/api/events"> Events Service Handler </a></li>
         </ul>
         <p><code>WARNING</code> : events handlers are limited (11 listeners), and every Notified_Event node is listening to all Rainbow SDK events. So do not put much Notified_Event node linked to a single Cnx_State on your flow. Else use the ALL filter and use a selector/dispatch after.<br>
+        also note that this node require an 2.6.2 or earlier version of RainbowNodeSDK. </p>
     </script>
 
     <script type="text/html" data-template-name="event-select">
