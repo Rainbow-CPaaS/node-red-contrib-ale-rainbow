@@ -14,3 +14,12 @@ node_modules/
 /package.json.orig
 /package-lock.json.orig
 /settings.js
+/.config.modules.json
+/.config.nodes.json
+/.config.nodes.json.backup
+/.config.projects.json
+/.config.runtime.json
+/.config.users.json
+/.flows_LPF2N153B.json.backup
+/flows_LPF2N153B.json
+/flows_LPF2N153B_cred.json
