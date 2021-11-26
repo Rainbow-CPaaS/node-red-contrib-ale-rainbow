@@ -210,7 +210,7 @@ pipeline {
                     #echo "Build's  shell the Rainbow-Node-SDK : ${RAINBOWNODEREDSDKVERSION} "
                         
                     echo ---------- Set the GIT config to be able to upload to server :
-                    git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
+                    #git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
                     git config --global user.email "vincent.berder@al-enterprise.com"
                     git config --global user.name "vincent.berder@al-enterprise.com"
                         
