@@ -27,7 +27,7 @@ pipeline {
     }
     
     parameters {
-        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.87.0-test.16', description: 'What is the version of the STS SDK to build?')
+        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.81.0', description: 'What is the version of the STS SDK to build?')
     }
      environment {
                 MJAPIKEY = credentials('2f8c39d0-35d5-4b67-a68a-f60aaa7084ad') // 6f119214480245deed79c5a45c59bae6/****** (MailJet API Key to post emails)
