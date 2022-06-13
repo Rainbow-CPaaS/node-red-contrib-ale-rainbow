@@ -269,6 +269,29 @@ module.exports = function(RED) {
                 evt: 'rainbow_onerror',
                 fct: onLoginRainbowError
             });
+            node.log("Rainbow : login register for event 'rainbow_onxmpperror'"+ " cnx: " + JSON.stringify(node.name));
+            var onLoginRainbowXMPPError = function onLoginRainbowXMPPError(error) {
+                var label = (error ? (error.label ? error.label : error) : "unknown");
+                let errorStr = util.inspect(error); 
+                node.log("////////////////////");
+                node.log("onLoginRainbowXMPPError() : " + label + " cnx: " + JSON.stringify(node.name) + ", error : " + errorStr);
+                node.log("////////////////////");
+                /*
+                node.rainbow.logged = false;
+                if (node.autoLogin) {
+                    ConnectionFail();
+                    node.connectTimer = setTimeout(function() {
+                        releaseSDK(node, node);
+                        allocateSDK(node, node);
+                    }, 5000);
+                }
+                // */
+            };
+            node.rainbow.sdk.events.on('rainbow_onxmpperror', onLoginRainbowXMPPError);
+            node.rainbow.sdkhandler.push({
+                evt: 'rainbow_onxmpperror',
+                fct: onLoginRainbowXMPPError
+            });
             node.log("Rainbow : login register for event 'rainbow_onerror'"+ " cnx: " + JSON.stringify(node.name));
             if (node.autoLogin) {
                 node.log("RainbowSDK instance for autostart " + " cnx: " + JSON.stringify(node.name));
@@ -446,8 +469,8 @@ module.exports = function(RED) {
         }
         //Eventy from Button to triger Login
         this.on("input", function(msg) {
-            node.log("Got API order " + util.inspect(msg));
-            node.log("Rainbow : GetCnxState input event: " + util.inspect(msg));
+            node.log("Got API order : " + util.inspect(msg));
+            node.log("Rainbow : GetCnxState input event : " + util.inspect(msg));
             node.log("Rainbow : node: " + JSON.stringify(node.server.name));
             try {
                 switch (msg.payload) {
@@ -981,7 +1004,7 @@ module.exports = function(RED) {
 						text: "Nb sent: " + msgSent
 					});
 				} else {
-                    let errorTxt = "no valid destination channel/id, looks like " + util.inspect(channel);
+                    let errorTxt = "no valid destination channel/id, looks like : " + util.inspect(channel);
 					node.status({
 						fill: "red",
 						shape: "dot",
@@ -1064,21 +1087,27 @@ module.exports = function(RED) {
         let node = this;
         node.log("Rainbow : notifyMessageRead node initialized :" + JSON.stringify(node.server.name))
         let getCallback_onevent = function (eventName) {
-            return function (data) {
+            return function (...args) {
                 node.log("Rainbow : rainbow_oneventreceived for event : " + eventName)
                 if (node.event && node.event.event !== "NONE" && ( node.event.event === eventName || node.event.event === "ALL")) {
+                    /*
+                    let dataStr = util.inspect(arguments);
+                    node.log("////////////////////");
+                    node.log("rainbow_oneventreceived() : " + eventName + " cnx: " + JSON.stringify(node.name) + ", data : " + dataStr);
+                    node.log("////////////////////");
+                    // */
                     node.log("Rainbow : send event : " + eventName)
                     let msg = {
                         payload: {
                             eventName,
-                            data
+                            "data" : args
                         }
                     };
                     node.send(msg);
                 } else {
                     node.log("Rainbow : ignore event : " + eventName)
                 }
-            }
+            };
         };
         
         let getRainbowSDKnotifyEventReceived = function getRainbowSDKnotifyEventReceived() {

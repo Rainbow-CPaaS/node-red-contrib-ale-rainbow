@@ -7,6 +7,7 @@ Here is the list of the changes and features provided by the **node-red-contrib-
 -   Add sdkLogHttp boolean to manage the option "internals" provided to Rainbow Node SDK (only with earlier SDK LTS 2.1.0 and STS 2.6)
 -   Add urgency parameter to sendMessage component (only with earlier SDK LTS 2.1.0 and STS 2.6).
 -   Add a new node to listen every rainbow SDK public event. It needs Rainbow Node SDK 2.6.2 or earlier.
+-   Add logs when a `rainbow_onxmpperror` event is received.
 
 ## [1.80.0] - 2020-11-30
 -   Add in node CnxState a second output with the log of the law layer Rainbow Node SDK (The logs are retrieved from an event publisher).
