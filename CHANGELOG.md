@@ -2,6 +2,9 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.82.1] - 2022-06-15
+-   Update for jenkins.
+
 ## [1.82.0] - 2022-06-15
 -   Add logs when a `rainbow_onxmpperror` event is received.
 

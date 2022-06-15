@@ -253,6 +253,11 @@ pipeline {
                         
                     echo ---------- STEP publish :
                     npm publish 
+
+                   echo ---------- PUSH tags AND files :
+                   git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
+                   git push  origin HEAD:${env.BRANCH_NAME}
+                   git push --tags origin HEAD:${env.BRANCH_NAME}
                         
                     more ~/.npmrc.sav > ~/.npmrc
                     
