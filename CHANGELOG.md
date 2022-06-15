@@ -2,7 +2,7 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
-## [1.81.0] - 2021-11-24
+## [1.81.0] - 2022-06-15
 -   Add sdkLogInternals boolean to manage the option "internals" provided to Rainbow Node SDK (only with earlier SDK LTS 2.1.0 and STS 2.6)
 -   Add sdkLogHttp boolean to manage the option "internals" provided to Rainbow Node SDK (only with earlier SDK LTS 2.1.0 and STS 2.6)
 -   Add urgency parameter to sendMessage component (only with earlier SDK LTS 2.1.0 and STS 2.6).
