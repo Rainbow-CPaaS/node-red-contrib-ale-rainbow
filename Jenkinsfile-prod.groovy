@@ -28,7 +28,7 @@ pipeline {
     
     parameters {
         string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.81.0', description: 'What is the version of the STS SDK to build?')
-        booleanParam(name: 'PUBLISHTONPM', defaultValue: true, description: 'Publish the sts SDK built to npmjs.')
+        booleanParam(name: 'PUBLISHTONPM', defaultValue: false, description: 'Publish the sts SDK built to npmjs.')
         booleanParam(name: 'PUSHTAGSONGIT', defaultValue: true, description: 'Push tags on git.')
     }
      environment {
@@ -37,7 +37,6 @@ pipeline {
                 GITLABVBERDER = credentials('b04ca5f5-3666-431d-aaf4-c6c239121510') // gitlab credential of vincent berder.
                 VBERDERRB = credentials('5bf46f68-1d87-4091-9aba-c337198503c8') // (vberder - OFFICIAL).
                 APP = credentials('25181a6c-2586-477d-9b95-0a1cc456c831') // (Rainbow Official Vberder AppId).
-                
     }
     stages {
             stage('Show for parameters') {
@@ -213,10 +212,10 @@ pipeline {
                     #echo "Build's  shell the Rainbow-Node-SDK : ${RAINBOWNODEREDSDKVERSION} "
                         
                     echo ---------- Set the GIT config to be able to upload to server :
-                    // git@github.com:Rainbow-CPaaS/node-red-contrib-ale-rainbow
-                    // git config --global user.email "vincent.berder@al-enterprise.com"
-                    // git config --global user.name "vincent.berder@al-enterprise.com"
-                        
+                    git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
+                    git config --global user.email "vincent.berder@al-enterprise.com"
+                    git config --global user.name "vincent.berder@al-enterprise.com"
+                    
                     #echo ---------- Create a specific branch :
                     #git branch "delivered${RAINBOWNODEREDSDKVERSION}" 
                     #git checkout "delivered${RAINBOWNODEREDSDKVERSION}"
