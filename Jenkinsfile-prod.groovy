@@ -260,7 +260,7 @@ pipeline {
                     
                     git status
                 """
-                /*
+                
                 withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'SSH_KEY')]) {
                     sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
                     sh 'chmod +x local_ssh.sh'
