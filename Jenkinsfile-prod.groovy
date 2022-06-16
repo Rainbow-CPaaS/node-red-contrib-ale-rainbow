@@ -266,7 +266,7 @@ pipeline {
                     sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
                     sh 'chmod +x local_ssh.sh'
                     withEnv(['GIT_SSH=./local_ssh.sh']) {
-                        sh script """
+                        sh """
                            echo ---------- PUSH tags AND files :
                            ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
                            ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME}
