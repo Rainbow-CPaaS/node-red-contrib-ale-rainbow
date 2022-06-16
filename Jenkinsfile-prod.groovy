@@ -215,8 +215,8 @@ pipeline {
                     echo ---------- Set the GIT config to be able to upload to server :
                     // git@github.com:Rainbow-CPaaS/node-red-contrib-ale-rainbow
                     // git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
-                    git config --global user.email "vincent.berder@al-enterprise.com"
-                    git config --global user.name "vincent.berder@al-enterprise.com"
+                    // git config --global user.email "vincent.berder@al-enterprise.com"
+                    // git config --global user.name "vincent.berder@al-enterprise.com"
                         
                     #echo ---------- Create a specific branch :
                     #git branch "delivered${RAINBOWNODEREDSDKVERSION}" 
@@ -262,6 +262,7 @@ pipeline {
                     
                     git status
                 """
+                /*
                 withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'SSH_KEY')]) {
                     sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
                     sh 'chmod +x local_ssh.sh'
@@ -274,6 +275,7 @@ pipeline {
                         """
                     }
                 }
+                // */
                 }                
             }
     }
