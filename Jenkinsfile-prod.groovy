@@ -214,7 +214,6 @@ pipeline {
                         
                     echo ---------- Set the GIT config to be able to upload to server :
                     // git@github.com:Rainbow-CPaaS/node-red-contrib-ale-rainbow
-                    // git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
                     // git config --global user.email "vincent.berder@al-enterprise.com"
                     // git config --global user.name "vincent.berder@al-enterprise.com"
                         
