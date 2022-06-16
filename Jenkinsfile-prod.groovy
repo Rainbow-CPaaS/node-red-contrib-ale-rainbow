@@ -214,7 +214,7 @@ pipeline {
                         
                     echo ---------- Set the GIT config to be able to upload to server :
                     // git@github.com:Rainbow-CPaaS/node-red-contrib-ale-rainbow
-                    git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
+                    // git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
                     git config --global user.email "vincent.berder@al-enterprise.com"
                     git config --global user.name "vincent.berder@al-enterprise.com"
                         
@@ -266,7 +266,7 @@ pipeline {
                     sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
                     sh 'chmod +x local_ssh.sh'
                     withEnv(['GIT_SSH=./local_ssh.sh']) {
-                        sh """
+                        sh script """
                            echo ---------- PUSH tags AND files :
                            ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
                            ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME}
