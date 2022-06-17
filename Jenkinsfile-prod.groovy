@@ -284,7 +284,7 @@ pipeline {
                 
                 }
                 
-                    sh """
+                    sh script:"""
                     echo ---------- send emails  :
                     export MJ_APIKEY_PUBLIC="${MJAPIKEY_USR}" 
                     export MJ_APIKEY_PRIVATE="${MJAPIKEY_PSW}"
