@@ -261,10 +261,10 @@ pipeline {
                     git status
                 """
                 
-                withCredentials([sshUserPrivateKey(credentialsId: ‘c75fd541-3fca-4399-b551-ab8288126dec’, keyFileVariable: ‘private_key’, passphraseVariable: ”, usernameVariable: ”)]){
+                withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'private_key', passphraseVariable: '', usernameVariable: '')]){
                 
                     // start ssh-agent
-                    sh ‘ssh-agent /bin/bash’
+                    sh 'ssh-agent /bin/bash'
                 
                     // add private key to ssh-agent, check if private key is successfully added and git clone using the private key
                 
