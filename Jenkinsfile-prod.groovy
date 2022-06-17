@@ -261,7 +261,7 @@ pipeline {
                     git status
                 """
                 
-                withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'private_key', passphraseVariable: '', usernameVariable: '')]){
+                withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'private_key', passphraseVariable: 'passphrase_value', usernameVariable: '')]){
                 
                     // start ssh-agent
                     sh 'ssh-agent /bin/bash'
@@ -271,8 +271,8 @@ pipeline {
                     sh """
                            echo ---------- PUSH tags AND files :
                            ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
-                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && ssh-add ${private_key} && ssh-add -l &&  git push  origin HEAD:${env.BRANCH_NAME} 
-                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && ssh-add ${private_key} && ssh-add -l && git push --tags origin HEAD:${env.BRANCH_NAME}
+                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l &&  git push  origin HEAD:${env.BRANCH_NAME} 
+                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l && git push --tags origin HEAD:${env.BRANCH_NAME}
                     """
                 
                 }
