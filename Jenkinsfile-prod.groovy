@@ -261,10 +261,26 @@ pipeline {
                     git status
                 """
                 
+                withCredentials([sshUserPrivateKey(credentialsId: ‘c75fd541-3fca-4399-b551-ab8288126dec’, keyFileVariable: ‘private_key’, passphraseVariable: ”, usernameVariable: ”)]){
+                
+                    // start ssh-agent
+                    sh ‘ssh-agent /bin/bash’
+                
+                    // add private key to ssh-agent, check if private key is successfully added and git clone using the private key
+                
+                    sh """
+                        eval $(ssh-agent) && ssh-add ${private_key} && ssh-add -l 
+                           ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
+                           ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME}
+                           ${PUSHTAGSONGIT} && git push --tags origin HEAD:${env.BRANCH_NAME}
+                    """
+                
+                }
+                /*
                 withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'SSH_KEY')]) {
                     sh 'set -x '
                     sh 'echo  SSH_KEY : $SSH_KEY > ressshkey.txt'
-                    sh "bash -xc 'more ressshkey.txt |grep -i ssh'"
+                    sh 'more ressshkey.txt |grep -i ssh'
                     sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
                     sh 'chmod +x local_ssh.sh'
                     withEnv(['GIT_SSH=./local_ssh.sh']) {
