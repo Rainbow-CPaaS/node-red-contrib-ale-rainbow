@@ -277,7 +277,7 @@ pipeline {
 
                     # To send the mailing only to vincent.berder@al-enterprise.com . 
                     ${SENDEMAILTOVBERDER} && node mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com
-                    ${SENDEMAIL} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW} channelName=RNodeSdkChangeLog 
+                    ${SENDEMAILTOVBERDER} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW} channelName=RNodeSdkChangeLog 
                     
                     cd ${WORKSPACE}
                 """
