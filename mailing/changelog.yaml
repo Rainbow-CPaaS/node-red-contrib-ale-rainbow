@@ -1,0 +1,13 @@
+fromEmail: "noreply@openrainbow.com"
+fromName: "Rainbow CPAAS Team"
+toEmail: "rainbow-deliveries@al-enterprise.com"
+toName: "Rainbow Deliveries"
+ccEmail: "rainbowcpaas@al-enterprise.com"
+ccName: "Rainbow CPAAS"
+subject: "[Rainbow Node Red Contrib] Version "
+component: "Rainbow Node Red Contrib"
+preproduction: "STS-PRODUCTION"
+production: "PRODUCTION"
+deliveries:
+    - "title": "Rainbow Node Red Contrib"
+      "path": "../CHANGELOG.md"

@@ -269,15 +269,19 @@ pipeline {
                     yarn add git+https://github.com/Rainbow-CPaaS/rainbow-node-sdk.git
                     cd ${WORKSPACE}/node_modules/rainbow-node-sdk/
                     yarn install 
-                    cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
+                    grunt debugDeliveryBuild --verbose
+                        
+                    #cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
                     #pwd
 
                     ${SENDEMAIL} && node mailChangelog.js notify -e preproduction
+                    #cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
                     ${SENDEMAIL} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
 
                     # To send the mailing only to vincent.berder@al-enterprise.com . 
-                    ${SENDEMAILTOVBERDER} && node mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com
-                    ${SENDEMAILTOVBERDER} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW} channelName=RNodeSdkChangeLog 
+                    ${SENDEMAILTOVBERDER} && cd ${WORKSPACE}/mailing && node mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com
+                    #cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
+                    ${SENDEMAILTOVBERDER} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing && node ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW} channelName=RNodeSdkChangeLog changeLog=${WORKSPACE}/CHANGELOG.md changeLogTitle="Rainbow Node NodeRed Contrib" packageJson=${WORKSPACE}/package.json
                     
                     cd ${WORKSPACE}
                 """
