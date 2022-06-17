@@ -270,15 +270,14 @@ pipeline {
                     cd ${WORKSPACE}/node_modules/rainbow-node-sdk/
                     yarn install 
                     cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
-                    pwd
-                    #${SENDEMAIL} && npm run-script sendmailPreProduction
+                    #pwd
+
                     ${SENDEMAIL} && node mailChangelog.js notify -e preproduction
                     ${SENDEMAIL} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
-                    #${SENDEMAIL} && node mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
 
                     # To send the mailing only to vincent.berder@al-enterprise.com . 
                     ${SENDEMAILTOVBERDER} && node mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com
-                    #${SENDEMAILTOVBERDER} && npm run-script sendmailProductionTest
+                    ${SENDEMAIL} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW} channelName=RNodeSdkChangeLog 
                     
                     cd ${WORKSPACE}
                 """
@@ -298,6 +297,7 @@ pipeline {
                            ${PUSHTAGSONGIT} && git push --tags origin HEAD:${env.BRANCH_NAME}
                            # ${PUSHTAGSONGIT} && eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l &&  git push  origin HEAD:${env.BRANCH_NAME} 
                            # ${PUSHTAGSONGIT} && eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l && git push --tags origin HEAD:${env.BRANCH_NAME}
+                           git ls-remote
                     """
                 
                 }
