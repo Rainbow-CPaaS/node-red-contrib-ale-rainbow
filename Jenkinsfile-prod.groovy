@@ -273,13 +273,14 @@ pipeline {
                         
                     #cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
                     #pwd
+                    cp ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing/mailChangelog.js ${WORKSPACE}/mailing/ 
 
                     ${SENDEMAIL} && node mailChangelog.js notify -e preproduction
                     #cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
                     ${SENDEMAIL} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
 
                     # To send the mailing only to vincent.berder@al-enterprise.com . 
-                    ${SENDEMAILTOVBERDER} && cd ${WORKSPACE}/mailing && node ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing/mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com
+                    ${SENDEMAILTOVBERDER} && cd ${WORKSPACE}/mailing && node mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com
                     #cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
                     ${SENDEMAILTOVBERDER} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing && node ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW} channelName=RNodeSdkChangeLog changeLog=${WORKSPACE}/CHANGELOG.md changeLogTitle="Rainbow Node NodeRed Contrib" packageJson=${WORKSPACE}/package.json
                     
