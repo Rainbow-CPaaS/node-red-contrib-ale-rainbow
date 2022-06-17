@@ -27,7 +27,7 @@ pipeline {
     }
     
     parameters {
-        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.81.0', description: 'What is the version of the STS SDK to build?')
+        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.82.1', description: 'What is the version of the STS SDK to build?')
         booleanParam(name: 'PUBLISHTONPM', defaultValue: false, description: 'Publish the sts SDK built to npmjs.')
         booleanParam(name: 'PUSHTAGSONGIT', defaultValue: true, description: 'Push tags on git.')
     }
@@ -263,7 +263,7 @@ pipeline {
                 
                 withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'SSH_KEY')]) {
                     sh 'echo  SSH_KEY : $SSH_KEY > ressshkey.txt'
-                    sh 'more ressshkey.txt'
+                    sh 'more ressshkey.txt |grep -i ssh'
                     sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
                     sh 'chmod +x local_ssh.sh'
                     withEnv(['GIT_SSH=./local_ssh.sh']) {
