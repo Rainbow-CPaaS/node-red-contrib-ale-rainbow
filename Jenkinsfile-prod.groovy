@@ -267,6 +267,8 @@ pipeline {
                     export MJ_APIKEY_PUBLIC="${MJAPIKEY_USR}" 
                     export MJ_APIKEY_PRIVATE="${MJAPIKEY_PSW}"
                     yarn add git+https://github.com/Rainbow-CPaaS/rainbow-node-sdk.git
+                    cd ${WORKSPACE}/node_modules/rainbow-node-sdk/
+                    yarn install 
                     cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
                     pwd
                     #${SENDEMAIL} && npm run-script sendmailPreProduction
