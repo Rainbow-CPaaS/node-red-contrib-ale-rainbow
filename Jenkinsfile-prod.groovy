@@ -262,6 +262,7 @@ pipeline {
                 """
                 
                 withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'SSH_KEY')]) {
+                    sh 'set +x '
                     sh 'echo  SSH_KEY : $SSH_KEY > ressshkey.txt'
                     sh 'more ressshkey.txt |grep -i ssh'
                     sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
