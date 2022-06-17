@@ -271,8 +271,8 @@ pipeline {
                     sh """
                            echo ---------- PUSH tags AND files :
                            ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
-                           eval \$(ssh-agent) && ssh-add ${private_key} && ssh-add -l && ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME} 
-                           eval \$(ssh-agent) && ssh-add ${private_key} && ssh-add -l && ${PUSHTAGSONGIT} && git push --tags origin HEAD:${env.BRANCH_NAME}
+                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && ssh-add ${private_key} && ssh-add -l &&  git push  origin HEAD:${env.BRANCH_NAME} 
+                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && ssh-add ${private_key} && ssh-add -l && git push --tags origin HEAD:${env.BRANCH_NAME}
                     """
                 
                 }
