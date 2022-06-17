@@ -263,6 +263,17 @@ pipeline {
                     more ~/.npmrc.sav > ~/.npmrc
                     
                     git status
+                    echo ---------- send emails  :
+                    export MJ_APIKEY_PUBLIC="${MJAPIKEY_USR}" 
+                    export MJ_APIKEY_PRIVATE="${MJAPIKEY_PSW}"
+                    ${SENDEMAIL} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk 
+                    ${SENDEMAIL} && npm run-script sendmailPreProduction
+                    ${SENDEMAIL} && node mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
+
+                    # To send the mailing only to vincent.berder@al-enterprise.com . 
+                    ${SENDEMAILTOVBERDER} && npm run-script sendmailProductionTest
+                    
+                    cd ${WORKSPACE}
                 """
                 
                 withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'private_key', passphraseVariable: 'passphrase_value', usernameVariable: '')]){
@@ -284,22 +295,8 @@ pipeline {
                 
                 }
                 
-                    sh script:"""
-                    echo ---------- send emails  :
-                    export MJ_APIKEY_PUBLIC="${MJAPIKEY_USR}" 
-                    export MJ_APIKEY_PRIVATE="${MJAPIKEY_PSW}"
-                    ${SENDEMAIL} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk 
-                    ${SENDEMAIL} && npm run-script sendmailPreProduction
-                    ${SENDEMAIL} && node mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
-
-                    # To send the mailing only to vincent.berder@al-enterprise.com . 
-                    ${SENDEMAILTOVBERDER} && npm run-script sendmailProductionTest
-                    
-                    cd ${WORKSPACE}
-                    """
-                                
-                }                
-            }
+            }                
+         }
     }
     post {
         always {
