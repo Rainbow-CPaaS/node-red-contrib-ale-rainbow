@@ -267,13 +267,16 @@ pipeline {
                     export MJ_APIKEY_PUBLIC="${MJAPIKEY_USR}" 
                     export MJ_APIKEY_PRIVATE="${MJAPIKEY_PSW}"
                     yarn add rainbow-node-sdk
-                    cd ${WORKSPACE}/node_modules/rainbow-node-sdk 
+                    cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
                     pwd
-                    ${SENDEMAIL} && npm run-script sendmailPreProduction
-                    ${SENDEMAIL} && node mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
+                    #${SENDEMAIL} && npm run-script sendmailPreProduction
+                    ${SENDEMAIL} && node mailChangelog.js notify -e preproduction
+                    ${SENDEMAIL} && node postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
+                    #${SENDEMAIL} && node mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
 
                     # To send the mailing only to vincent.berder@al-enterprise.com . 
-                    ${SENDEMAILTOVBERDER} && npm run-script sendmailProductionTest
+                    ${SENDEMAILTOVBERDER} && node mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com
+                    #${SENDEMAILTOVBERDER} && npm run-script sendmailProductionTest
                     
                     cd ${WORKSPACE}
                 """
