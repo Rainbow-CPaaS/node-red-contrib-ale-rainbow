@@ -269,7 +269,7 @@ pipeline {
                     // add private key to ssh-agent, check if private key is successfully added and git clone using the private key
                 
                     sh """
-                        eval $(ssh-agent) && ssh-add ${private_key} && ssh-add -l 
+                        eval \\$(ssh-agent) && ssh-add ${private_key} && ssh-add -l 
                            ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
                            ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME}
                            ${PUSHTAGSONGIT} && git push --tags origin HEAD:${env.BRANCH_NAME}
