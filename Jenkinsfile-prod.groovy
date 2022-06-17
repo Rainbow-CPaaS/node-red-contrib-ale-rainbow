@@ -27,9 +27,12 @@ pipeline {
     }
     
     parameters {
-        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.82.1', description: 'What is the version of the STS SDK to build?')
+        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.82.2', description: 'What is the version of the STS SDK to build?')
+        booleanParam(name: 'SENDEMAIL', defaultValue: false, description: 'Send email after publish ?')
+        booleanParam(name: 'SENDEMAILTOVBERDER', defaultValue: false, description: 'Send email after publish to vincent.berder@al-enterprise.com only ?')
         booleanParam(name: 'PUBLISHTONPM', defaultValue: false, description: 'Publish the sts SDK built to npmjs.')
         booleanParam(name: 'PUSHTAGSONGIT', defaultValue: true, description: 'Push tags on git.')
+        
     }
      environment {
                 MJAPIKEY = credentials('2f8c39d0-35d5-4b67-a68a-f60aaa7084ad') // 6f119214480245deed79c5a45c59bae6/****** (MailJet API Key to post emails)
@@ -37,6 +40,7 @@ pipeline {
                 GITLABVBERDER = credentials('b04ca5f5-3666-431d-aaf4-c6c239121510') // gitlab credential of vincent berder.
                 VBERDERRB = credentials('5bf46f68-1d87-4091-9aba-c337198503c8') // (vberder - OFFICIAL).
                 APP = credentials('25181a6c-2586-477d-9b95-0a1cc456c831') // (Rainbow Official Vberder AppId).
+                
     }
     stages {
             stage('Show for parameters') {
@@ -270,29 +274,30 @@ pipeline {
                 
                     sh """
                            echo ---------- PUSH tags AND files :
+                           eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l 
                            ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
-                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l &&  git push  origin HEAD:${env.BRANCH_NAME} 
-                           ${PUSHTAGSONGIT} &&eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l && git push --tags origin HEAD:${env.BRANCH_NAME}
+                           ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME} 
+                           ${PUSHTAGSONGIT} && git push --tags origin HEAD:${env.BRANCH_NAME}
+                           # ${PUSHTAGSONGIT} && eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l &&  git push  origin HEAD:${env.BRANCH_NAME} 
+                           # ${PUSHTAGSONGIT} && eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l && git push --tags origin HEAD:${env.BRANCH_NAME}
                     """
                 
                 }
-                /*
-                withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'SSH_KEY')]) {
-                    sh 'set -x '
-                    sh 'echo  SSH_KEY : $SSH_KEY > ressshkey.txt'
-                    sh 'more ressshkey.txt |grep -i ssh'
-                    sh 'echo ssh -i $SSH_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > local_ssh.sh'
-                    sh 'chmod +x local_ssh.sh'
-                    withEnv(['GIT_SSH=./local_ssh.sh']) {
-                        sh """
-                           echo ---------- PUSH tags AND files :
-                           ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
-                           ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME}
-                           ${PUSHTAGSONGIT} && git push --tags origin HEAD:${env.BRANCH_NAME}
-                        """
-                    }
-                }
-                // */
+                
+                    sh """
+                    echo ---------- send emails  :
+                    export MJ_APIKEY_PUBLIC="${MJAPIKEY_USR}" 
+                    export MJ_APIKEY_PRIVATE="${MJAPIKEY_PSW}"
+                    ${SENDEMAIL} && cd node_modules/rainbow-node-sdk/ 
+                    ${SENDEMAIL} && npm run-script sendmailPreProduction
+                    ${SENDEMAIL} && node mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}
+
+                    # To send the mailing only to vincent.berder@al-enterprise.com . 
+                    ${SENDEMAILTOVBERDER} && npm run-script sendmailProductionTest
+                    
+                    cd ../..
+                    """
+                                
                 }                
             }
     }

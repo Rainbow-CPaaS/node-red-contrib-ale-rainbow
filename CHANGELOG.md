@@ -2,6 +2,9 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.82.2] - 2022-06-177
+-   Update for jenkins.
+
 ## [1.82.1] - 2022-06-15
 -   Update for jenkins.
 
