@@ -8,6 +8,3 @@ subject: "[Rainbow Node Red Contrib] Version "
 component: "Rainbow Node Red Contrib"
 preproduction: "STS-PRODUCTION"
 production: "PRODUCTION"
-deliveries:
-    - "title": "Rainbow Node Red Contrib"
-      "path": "../CHANGELOG.md"
