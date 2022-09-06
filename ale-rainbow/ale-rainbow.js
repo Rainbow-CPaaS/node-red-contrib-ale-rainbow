@@ -97,7 +97,7 @@ module.exports = function (RED) {
         this.sdkConsoleLog = config.sdkConsoleLog;
         this.sdkFileLog = config.sdkFileLog;
         this.sdkEventsLog = config.sdkEventsLog;
-        this.useErrorMsgBuffer = config.useErrorMsgBuffer;
+        this.sendRetryOnReconnect = config.sendRetryOnReconnect;
         this.messageMaxLength = config.messageMaxLength;
         this.sendMessageToConnectedUser = config.sendMessageToConnectedUser;
         this.conversationsRetrievedFormat = config.conversationsRetrievedFormat;
@@ -208,13 +208,25 @@ module.exports = function (RED) {
             allocateSDK(node, node);
             node.log("login: **** SDK allocated" + " cnx: " + JSON.stringify(node.name));
             node.log("login: **** SDK allocated version: " + node.rainbow.sdk.version);
+
             var onLoginConnectionReady = function onLoginConnectionReady() {
                 node.log("++++++++++++++++++++");
                 node.log("onLoginConnectionReady()" + " cnx: " + JSON.stringify(node.name));
                 node.log("++++++++++++++++++++");
                 successiveCOnnectionFail = 0;
                 node.rainbow.logged = true;
+
+                // We flush the message buffer
+                if (node.sendRetryOnReconnect && errorMsgBuffer.length > 0) {
+                    let content = null;
+
+                    node.log("Rainbow : node: " + JSON.stringify(node.name) + ' flushing message buffer');
+                    while (content = errorMsgBuffer.shift()) {
+                        content.node.emit('input', content.msg);
+                    }
+                }
             };
+
             node.rainbow.sdk.events.on('rainbow_onready', onLoginConnectionReady);
             node.rainbow.sdkhandler.push({
                 evt: 'rainbow_onready',
@@ -496,7 +508,8 @@ module.exports = function (RED) {
                                 node.server.rainbow.logged = true;
 
                                 // We flush the message buffer
-                                if (node.server.useErrorMsgBuffer && errorMsgBuffer.length > 0) {
+                                /*
+                                if (node.server.sendRetryOnReconnect && errorMsgBuffer.length > 0) {
                                     let content = null;
 
                                     node.log("Rainbow : node: " + JSON.stringify(node.server.name) + ' flushing message buffer');
@@ -504,6 +517,8 @@ module.exports = function (RED) {
                                         content.node.emit('input', content.msg);
                                     }
                                 }
+
+                                 */
                             });
                         }
                         break;
@@ -626,8 +641,8 @@ module.exports = function (RED) {
                 /**
                  * Do we use message buffer to keep them and wait for connection up ?
                  */
-                if (msg && msg.payload && node.server.useErrorMsgBuffer) {
-                    node.info("Connection is not ready, we push the msg to buffer");
+                if (msg && msg.payload && node.server.sendRetryOnReconnect) {
+                    node.log("Connection is not ready, we push the msg to buffer");
                     if (errorMsgBuffer.length >= maxBufferLength) {
                         node.warn("Buffer has reached its limit, so we drop the oldest message !");
                     }

@@ -14,7 +14,7 @@
           sdkEventsLog: {value:false},
           sdkLogInternals: {value:false},
           sdkLogHttp: {value:false},
-          useErrorMsgBuffer: {value: false},
+          sendRetryOnReconnect: {value: false},
           ackIM: {value:false},
           messageMaxLength: {value:1024, required:false},
           sendMessageToConnectedUser: {value:false, required:false},
@@ -628,8 +628,8 @@
             <input type="checkbox" id="node-config-input-sdkLogHttp" >
         </div>
         <div class="form-row">
-            <label for="node-config-input-useErrorMsgBuffer" title="When the connection is down, we buffer the msg to send and wait for connection to be up again. A prefix will be added to content, to show that message sending has been delayed."><i class="icon-tag"></i> useErrorMsgBuffer</label>
-            <input type="checkbox" id="node-config-input-useErrorMsgBuffer" >
+            <label for="node-config-input-sendRetryOnReconnect" title="When the connection is down, we buffer the msg to send and wait for connection to be up again. A prefix will be added to content, to show that message sending has been delayed."><i class="icon-tag"></i> sendRetryOnReconnect</label>
+            <input type="checkbox" id="node-config-input-sendRetryOnReconnect" >
         </div>
         <div class="form-row">
             <label for="node-config-input-ackIM" title="Automatic acknowledge of incoming IM"><i class="icon-tag"> sendReadReceipt</i> </label>
