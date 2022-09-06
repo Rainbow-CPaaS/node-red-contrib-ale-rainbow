@@ -14,6 +14,7 @@
           sdkEventsLog: {value:false},
           sdkLogInternals: {value:false},
           sdkLogHttp: {value:false},
+          useErrorMsgBuffer: {value: false},
           ackIM: {value:false},
           messageMaxLength: {value:1024, required:false},
           sendMessageToConnectedUser: {value:false, required:false},
@@ -546,7 +547,7 @@
         </p>
         <h3>Output :</h3>
         <h4>First output:</h4>
-        
+
         <p><code>msg.payload</code> contains connection status (string).<br>
         It can be :</p>
         <ul>
@@ -557,7 +558,7 @@
         </ul>
         <h4>Second output:</h4>
         This output is used to get SDK logs. It needs the "sdkEventsLog" checkbox to be checked in the window with authentication to rainbow. Note that it is a process that can dry resources, so it would be used in tests only.
-		
+
     </script>
 
     <script type="text/x-red" data-template-name="Login">
@@ -625,6 +626,10 @@
         <div class="form-row">
             <label for="node-config-input-sdkLogHttp" title="Activate the log of network trafic."><i class="icon-tag"></i> sdkLogHttp</label>
             <input type="checkbox" id="node-config-input-sdkLogHttp" >
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-useErrorMsgBuffer" title="When the connection is down, we buffer the msg to send and wait for connection to be up again. A prefix will be added to content, to show that message sending has been delayed."><i class="icon-tag"></i> useErrorMsgBuffer</label>
+            <input type="checkbox" id="node-config-input-useErrorMsgBuffer" >
         </div>
         <div class="form-row">
             <label for="node-config-input-ackIM" title="Automatic acknowledge of incoming IM"><i class="icon-tag"> sendReadReceipt</i> </label>
