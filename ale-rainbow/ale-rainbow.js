@@ -647,7 +647,7 @@ module.exports = function (RED) {
                         node.warn("Buffer has reached its limit, so we drop the oldest message !");
                     }
 
-                    if (msg.payload.content.search('Delayed msg :') === -1) {
+                    if (msg.payload.content && msg.payload.content.search('Delayed msg :') === -1) {
                         msg.payload.content = 'Delayed msg : ' + new Date().toUTCString() + '\n' + msg.payload.content;
                     }
                     errorMsgBuffer.push({msg: msg, node: node});
