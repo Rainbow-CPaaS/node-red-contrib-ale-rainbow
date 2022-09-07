@@ -8,7 +8,7 @@ module.exports = function (RED) {
         node.log("RainbowSDK instance allocated" + " cnx: " + JSON.stringify(server.name));
         let handler;
         server.rainbow.sdk = new _RainbowSDK(server.rainbow.options);
-        if (server.rainbow.sdkhandler != undefined && server.rainbow.sdkhandler.length != 0) {
+        if (server.rainbow.sdkhandler !== undefined && server.rainbow.sdkhandler.length !== 0) {
             node.log("RainbowSDK : Re-registering event handlers");
             for (var i = 0, len = server.rainbow.sdkhandler.length; i < len; i++) {
                 handler = server.rainbow.sdkhandler[i];
@@ -17,7 +17,7 @@ module.exports = function (RED) {
         } else {
             server.rainbow.sdkhandler = [];
         }
-        if (server.rainbow.sdkLoghandler != undefined && server.rainbow.sdkLoghandler.length != 0) {
+        if (server.rainbow.sdkLoghandler !== undefined && server.rainbow.sdkLoghandler.length !== 0) {
             node.log("RainbowSDK : Re-registering event Log handlers");
             for (var i = 0, len = server.rainbow.sdkLoghandler.length; i < len; i++) {
                 handler = server.rainbow.sdkLoghandler[i];
@@ -47,7 +47,7 @@ module.exports = function (RED) {
         if (server.rainbow.sdk === null) {
             return
         }
-        ;
+
         server.rainbow.sdk.stop().catch(function (e) {
             node.log("catched error during pauseSDK stop : " + " cnx: " + JSON.stringify(e)); // "zut !"
             if (typeof done === "function") done();
@@ -70,21 +70,21 @@ module.exports = function (RED) {
         if (server.rainbow.sdk === null) {
             return
         }
-        ;
+
         var handler = server.rainbow.sdkhandler.pop();
         while (handler) {
             node.log("Remove listenner function :" + handler.fct.name + " cnx: " + JSON.stringify(server.name));
             server.rainbow.sdk.events.eee.removeListener(handler.evt, handler.fct);
             handler = server.rainbow.sdkhandler.pop();
         }
-        ;
+
         handler = server.rainbow.sdkLoghandler.pop();
         while (handler) {
             node.log("Remove Log listenner function :" + handler.fct.name + " cnx: " + JSON.stringify(server.name));
             server.rainbow.sdk.events.removeLogListener(handler.evt, handler.fct);
             handler = server.rainbow.sdkLoghandler.pop();
         }
-        ;
+
     }
 
     function login(config) {
@@ -164,7 +164,7 @@ module.exports = function (RED) {
                 "protocol": config.proxyProto
             },
             "im": {
-                "sendReadReceipt": config.ackIM, // True to send the the 'read' receipt automatically
+                "sendReadReceipt": config.ackIM, // True to send the 'read' receipt automatically
                 "messageMaxLength": config.messageMaxLength,
                 "sendMessageToConnectedUser": config.sendMessageToConnectedUser,
                 "conversationsRetrievedFormat": config.conversationsRetrievedFormat,
@@ -187,15 +187,15 @@ module.exports = function (RED) {
         node.log("ENV : https_proxy=" + process.env.https_proxy + " cnx: " + JSON.stringify(node.name));
         var ConnectionFail = function ConnectionFail() {
             successiveCOnnectionFail++;
-            if (config.proxyHost != "") {
+            if (config.proxyHost !== "") {
                 //We are configure to work behind a proxy.
-                if (successiveCOnnectionFail == 5) {
+                if (successiveCOnnectionFail === 5) {
                     // 5 successive fail, let's try to change proxy config
                     node.rainbow.options.proxy.host = "";
                     node.rainbow.options.proxy.port = "";
                     node.rainbow.options.proxy.proto = "";
                 }
-                if (successiveCOnnectionFail == 10) {
+                if (successiveCOnnectionFail === 10) {
                     // Still failling, let's retry on default config
                     successiveCOnnectionFail = 0;
                     node.rainbow.options.proxy.host = config.proxyHost;
@@ -670,18 +670,18 @@ module.exports = function (RED) {
                     });
                     return;
                 }
-                let destJid = (msg.payload.destJid != undefined ? msg.payload.destJid : (node.destJid != "" ? node.destJid : msg.payload.fromJid));
+                let destJid = (msg.payload.destJid !== undefined ? msg.payload.destJid : (node.destJid !== "" ? node.destJid : msg.payload.fromJid));
                 let lang = msg.payload.lang ? msg.payload.lang : null;
                 let content = msg.payload.content;
                 let alternateContent = (msg.payload.alternateContent ? msg.payload.alternateContent : null);
                 let subject = (msg.payload.subject ? msg.payload.subject : null);
                 let mentions = (msg.payload.mentions ? msg.payload.mentions : null);
                 let urgency = (msg.payload.urgency ? msg.payload.urgency : null);
-                if (destJid != undefined && "" != destJid) {
+                if (destJid !== undefined && "" !== destJid) {
                     node.log("Rainbow SDK (" + config.server + " " + content + " " + node.destJid + " " + JSON.stringify(alternateContent) + " cnx: " + JSON.stringify(node.server.name));
                     if (destJid.substring(0, 5) === "room_") {
                         var bubbleJid = destJid.split("/")[0]
-                        if (msg.payload.customData != undefined) {
+                        if (msg.payload.customData !== undefined) {
                             node.server.rainbow.sdk.bubbles.getBubbleByJid(bubbleJid).then(bubble => {
                                 if (bubble !== null) {
                                     node.server.rainbow.sdk.bubbles.setBubbleCustomData(bubble, msg.payload.customData).then(function () {
@@ -750,7 +750,7 @@ module.exports = function (RED) {
             node.server.rainbow.sdk.contacts.getContactByJid(fromJID).then((contact) => {
                 if (contact) {
                     // Contact filter ?
-                    if ((node.filterContact != '') && (node.filterContact != undefined)) {
+                    if ((node.filterContact !== '') && (node.filterContact !== undefined)) {
                         if ((node.filterContact === contact.loginEmail) || (node.filterContact === contact.jid_im)) {
                             node.log("Rainbow : Contact filter OK !" + " cnx: " + JSON.stringify(node.server.name));
                         } else {
@@ -759,7 +759,7 @@ module.exports = function (RED) {
                         }
                     }
                     // Company filter ?
-                    if ((node.filterCompany != '') && (node.filterCompany != undefined)) {
+                    if ((node.filterCompany !== '') && (node.filterCompany !== undefined)) {
                         if (node.filterCompany === contact.companyId) {
                             node.log("Rainbow : Company id filter OK !" + " cnx: " + JSON.stringify(node.server.name));
                         } else {
@@ -797,7 +797,7 @@ module.exports = function (RED) {
                 return;
             }
             // RegExp filter ?
-            if ((node.filter != '') && (node.filter != undefined)) {
+            if ((node.filter != '') && (node.filter !== undefined)) {
                 var regexp = new RegExp(node.filter, 'img');
                 node.log("Rainbow : Apply filter :" + node.filter + " cnx: " + JSON.stringify(node.server.name));
                 var res = JSON.stringify(message.content).match(regexp);
@@ -855,7 +855,7 @@ module.exports = function (RED) {
         node.log("Rainbow : notifyMessageRead node initialized :" + JSON.stringify(node.server.name))
         var rainbow_onmessagereceiptreadreceived_notifyMessageRead = function (message) {
             node.log("Rainbow : onMessageReceiptReadReceived")
-            if ((node.filter != '') && (node.filter != undefined)) {
+            if ((node.filter !== '') && (node.filter !== undefined)) {
                 var regexp = new RegExp(node.filter, 'img');
                 node.log("Rainbow : Apply filter :" + node.filter);
                 var res = JSON.stringify(contact).match(regexp);
@@ -926,7 +926,7 @@ module.exports = function (RED) {
         node.log("Rainbow : getContactsPresence node initialized :" + JSON.stringify(node.server.name))
         var rainbow_oncontactpresencechanged_getContactsPresence = function rainbow_oncontactpresencechanged_getContactsPresence(contact) {
             node.log("Rainbow : onContactPresenceChanged");
-            if ((node.filter != '') && (node.filter != undefined)) {
+            if ((node.filter !== '') && (node.filter !== undefined)) {
                 var regexp = new RegExp(node.filter, 'img');
                 node.log("Rainbow : Apply filter :" + node.filter);
                 node.log("Rainbow : on content :" + util.inspect(contact));
@@ -1042,11 +1042,11 @@ module.exports = function (RED) {
                     text: "not connected"
                 });
             } else {
-                let channel = (msg.payload.channel != undefined ? msg.payload.channel : (node.channelId != "" ? {id: node.channelId} : null));
+                let channel = (msg.payload.channel !== undefined ? msg.payload.channel : (node.channelId !== "" ? {id: node.channelId} : null));
                 let message = msg.payload.content;
                 let title = (msg.payload.title ? msg.payload.title : null);
                 let url = (msg.payload.url ? msg.payload.url : null);
-                if (channel != undefined && null != channel && channel.id != undefined && "" !== channel.id) {
+                if (channel !== undefined && null != channel && channel.id !== undefined && "" !== channel.id) {
                     node.log("Sending to id " + channel.id + " (" + message + " " + ") cnx: " + JSON.stringify(node.server.name));
 
                     node.server.rainbow.sdk.channels.publishMessageToChannel(
@@ -1091,7 +1091,7 @@ module.exports = function (RED) {
         var rainbow_onchannelmessagereceivedGetMessageFromChannel = function rainbow_onchannelmessagereceivedGetMessageFromChannel(message) {
             node.log("Rainbow : onChannelMessageReceived: " + JSON.stringify(node.server.name))
 
-            if (node.channelId != undefined && node.channelId != "") {
+            if (node.channelId !== undefined && node.channelId !== "") {
                 if (node.channelId !== message.channelId) {
                     // Not wanted channel, filtering
                     node.log("Rainbow : onChannelMessageReceived: ignoring message as not from good channel id");
