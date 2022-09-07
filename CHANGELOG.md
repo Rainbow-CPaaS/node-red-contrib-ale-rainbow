@@ -8,6 +8,8 @@ Here is the list of the changes and features provided by the **node-red-contrib-
 - Implementation of a new option : sendRetryOnReconnect
   Keep message to send in a buffer when the connection is down and re-send it when connection is up again.
   The buffer length is limited to 500 entries.
+  The resent message content can be prefixed with a configurable text. The keywork :DATE: can be used inside and will be
+  replaced by the date of initial message.
 
 ## [1.82.1] - 2022-06-15
 
