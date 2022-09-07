@@ -797,7 +797,7 @@ module.exports = function (RED) {
                 return;
             }
             // RegExp filter ?
-            if ((node.filter != '') && (node.filter !== undefined)) {
+            if ((node.filter !== '') && (node.filter !== undefined)) {
                 var regexp = new RegExp(node.filter, 'img');
                 node.log("Rainbow : Apply filter :" + node.filter + " cnx: " + JSON.stringify(node.server.name));
                 var res = JSON.stringify(message.content).match(regexp);
