@@ -15,6 +15,7 @@
           sdkLogInternals: {value:false},
           sdkLogHttp: {value:false},
           sendRetryOnReconnect: {value: false},
+          retryPrefixTemplate: {type:"text", value: "Delayed message: :DATE:"},
           ackIM: {value:false},
           messageMaxLength: {value:1024, required:false},
           sendMessageToConnectedUser: {value:false, required:false},
@@ -630,6 +631,10 @@
         <div class="form-row">
             <label for="node-config-input-sendRetryOnReconnect" title="When the connection is down, we buffer the msg to send and wait for connection to be up again. A prefix will be added to content, to show that message sending has been delayed."><i class="icon-tag"></i> sendRetryOnReconnect</label>
             <input type="checkbox" id="node-config-input-sendRetryOnReconnect" >
+        </div>
+         <div class="form-row">
+            <label for="node-config-input-retryPrefixTemplate" title="Retry prefix text template, :DATE: keyword will be replaced with UTC date of message. Keep empty to disable it."><i class="icon-tag"></i> Retry prefix label</label>
+            <input type="text" id="node-config-input-retryPrefixTemplate">
         </div>
         <div class="form-row">
             <label for="node-config-input-ackIM" title="Automatic acknowledge of incoming IM"><i class="icon-tag"> sendReadReceipt</i> </label>

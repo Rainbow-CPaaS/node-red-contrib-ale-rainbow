@@ -98,6 +98,7 @@ module.exports = function (RED) {
         this.sdkFileLog = config.sdkFileLog;
         this.sdkEventsLog = config.sdkEventsLog;
         this.sendRetryOnReconnect = config.sendRetryOnReconnect;
+        this.retryPrefixTemplate = config.retryPrefixTemplate;
         this.messageMaxLength = config.messageMaxLength;
         this.sendMessageToConnectedUser = config.sendMessageToConnectedUser;
         this.conversationsRetrievedFormat = config.conversationsRetrievedFormat;
@@ -221,8 +222,12 @@ module.exports = function (RED) {
                     let content = null;
 
                     node.log("Rainbow : node: " + JSON.stringify(node.name) + ' flushing message buffer');
+                    let inc = 0;
                     while (content = errorMsgBuffer.shift()) {
-                        content.node.emit('input', content.msg);
+                        setTimeout((arg) => {
+                            arg.node.emit('input', arg.msg);
+                        }, inc * 5, content);
+                        inc++;
                     }
                 }
             };
@@ -647,8 +652,12 @@ module.exports = function (RED) {
                         node.warn("Buffer has reached its limit, so we drop the oldest message !");
                     }
 
-                    if (msg.payload.content && msg.payload.content.search('Delayed msg :') === -1) {
-                        msg.payload.content = 'Delayed msg : ' + new Date().toUTCString() + '\n' + msg.payload.content;
+                    if (node.server.retryPrefixTemplate && node.server.retryPrefixTemplate !== '') {
+                        // Is msg already prefixed ?
+                        if (!msg.payload.isRetryPrefixed) {
+                            msg.payload.content = node.server.retryPrefixTemplate.replace(':DATE:', new Date().toUTCString()) + '\n' + msg.payload.content;
+                            msg.payload.isRetryPrefixed = true;
+                        }
                     }
                     errorMsgBuffer.push({msg: msg, node: node});
                 }
