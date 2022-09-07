@@ -2,7 +2,7 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
-## [1.82.2] - 2022-09-06
+## [1.82.3] - 2022-09-06
 
 - Fixing Rainbow SDK dependency (2.10.0-lts.10)
 - Implementation of a new option : sendRetryOnReconnect
