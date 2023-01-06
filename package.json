@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-ale-rainbow",
-  "version": "1.82.4",
+  "version": "1.82.5",
   "description": "Alcatel-Lucent Enterprise Rainbow Nodes for Node Red",
   "scripts": {
     "startnodered": "node-red -v %NODE_DEBUG_OPTION% "
@@ -8,7 +8,7 @@
   "dependencies": {
     "colors": "^1.4.0",
     "node-red-dashboard": "~3.1.7",
-    "rainbow-node-sdk": "2.16.0-lts.0"
+    "rainbow-node-sdk": "2.16.1-lts.3"
   },
   "keywords": [
     "node-red",
