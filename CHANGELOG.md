@@ -2,6 +2,10 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.82.6] - 2023-04-15
+
+- Update Rainbow SDK dependency (2.21.0-lts.0)
+
 ## [1.82.5] - 2023-01-06
 
 - Update Rainbow SDK dependency (2.16.1-lts.3)
