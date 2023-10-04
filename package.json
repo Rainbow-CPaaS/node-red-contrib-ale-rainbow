@@ -11,7 +11,7 @@
     "colors": "^1.4.0",
     "moment-timezone": "^0.5.43",
     "node-red": "^3.0.2",
-    "node-red-dashboard": "~3.1.7",
+    "node-red-dashboard": "~3.6.0",
     "rainbow-node-sdk": "latest",
     "safe-stable-stringify": "^2.4.3"
   },

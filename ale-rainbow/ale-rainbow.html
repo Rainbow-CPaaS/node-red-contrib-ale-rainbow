@@ -104,6 +104,39 @@
         }
     });
 
+    RED.nodes.registerType('Call_Bubbles',{
+        category: 'ALE Rainbow',
+        color: '#a6bbcf',
+        defaults: {
+            server: {value:"", type:"Login"},
+            name: {value:""},
+            apis: {value:"", type:"methodBubbles-select"},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "Call_Bubbles.png",
+        label: function() {
+            return this.name||"Call_Bubbles";
+        }
+    });
+
+    RED.nodes.registerType('methodBubbles-select',{
+        category: 'config',
+        defaults: {
+            apis: {value:"",required:true},
+        },
+        label: function() {
+            return this.apis;
+        },
+        oneditprepare: function() {
+            $.getJSON('/rainbowsdkbubblesapi',function(data) {
+                for (let i = 0; i < data.length; i++) {
+                    $('#node-config-input-bubbles').append('<option value="' + data[i] + '">' + data[i] + '</option>');
+                }
+            });
+        }
+    });
+
     RED.nodes.registerType('Notified_IM_Read',{
         category: 'ALE Rainbow',
         color: '#a6bbcf',
@@ -404,6 +437,54 @@
             <label for="node-config-input-event"><i class="icon-bookmark"></i> Event to listen </label>
             <!-- input type="text" id="node-config-input-event"> -->
             <select id="node-config-input-event">
+                 <option value="ALL" >ALL</option>
+                 <option value="NONE" >NONE</option>
+            </select>
+        </div>
+    </script>
+
+    <script type="text/x-red" data-template-name="Call_Bubbles">
+        <div class="form-row">
+            <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
+            <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-apis"><i class="icon-tag"></i> APIS To Call </label>
+            <input type="text" id="node-input-apis">
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+    </script>
+
+    <script type="text/x-red" data-help-name="Call_Bubbles">
+        <p>Get a event from a Rainbow SDK</p>
+        <h3>Parameters :</h3>
+        <dl class="message-properties">
+            <dt> APIS To Call <span class="property-type">string</span></dt>
+            <dd>an <code>Event</code> to filter the ouput to send.</dd>
+            <br/>
+            <dd>ALL can be selected to let send every events.</dd>
+            <br/>
+            <dd>None can be selected to send no events.</dd>
+            <br/>
+        </dl>
+        <h3>Output :</h3>
+        <code>msg.payload</code> contains <b>relevant</b> :<br>
+        <ul>
+            <li><code>eventName</code> : The name of the event,</li>
+            <li><code>data</code> : The data is an array of parameters returned by the event. It is not detailed here. Please have a look on the official SDK doc on <a href="https://hub.openrainbow.com/#/documentation/doc/sdk/node/lts/api/events"> Events Service Handler </a></li>
+        </ul>
+        <p><code>WARNING</code> : events handlers are limited (11 listeners), and every Call_Bubbles node is listening to all Rainbow SDK events. So do not put much Call_Bubbles node linked to a single Cnx_State on your flow. Else use the ALL filter and use a selector/dispatch after.<br>
+        also note that this node require an 2.6.2 or earlier version of RainbowNodeSDK. </p>
+    </script>
+
+    <script type="text/html" data-template-name="methodBubbles-select">
+        <div class="form-row">
+            <label for="node-config-input-bubbles"><i class="icon-bookmark"></i> BubblesService API to call </label>
+            <!-- input type="text" id="node-config-input-bubbles"> -->
+            <select id="node-config-input-bubbles">
                  <option value="ALL" >ALL</option>
                  <option value="NONE" >NONE</option>
             </select>

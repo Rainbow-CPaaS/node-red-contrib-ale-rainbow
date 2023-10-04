@@ -1,6 +1,7 @@
 module.exports = function (RED) {
     let _RainbowSDK = null;
     const util = require('util');
+    const path = require('path');
     let errorMsgBuffer = [];
     const maxBufferLength = 500;
 
@@ -1373,118 +1374,119 @@ module.exports = function (RED) {
             },
             // IM options
             "im": {},
-            "servicesToStart": {}
+            "servicesToStart": {
                 s2s: {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._settings);
                 presence: {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._settings);
-                contacts:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                contacts: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                conversations :  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:true
+                conversations: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: true
                 }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._fileStorage, that._fileServer);
-                im :  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:true
+                im: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: true
                 }, //need services :  (that._xmpp, that._conversations, that._bubbles, that._fileStorage);
-                profiles :  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                profiles: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                groups :  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                groups: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
 
-                bubbles:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                bubbles: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                telephony:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                telephony: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._profiles);
-                channels:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                channels: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                admin:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                admin: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                fileServer:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                fileServer: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest, that._fileStorage);
-                fileStorage:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                fileStorage: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest, that._fileServer, that._conversations);
-                calllog:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                calllog: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest, that._contacts, that._profiles, that._telephony);
-                favorites:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                favorites: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                alerts:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                alerts: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                invitation:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                invitation: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services :  (that._xmpp, that._rest);
-                settings:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                settings: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services : ( XMPPService, _rest : RESTService)
-                webinar:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                webinar: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services : ( )
-                rbvoice:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                rbvoice: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services : ( )
-                httpoverxmpp:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                httpoverxmpp: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 }, //need services : ( )
-                rpcoverxmpp:  {
-                    start_up:true,
-                    optional:true,
-                    logEntryParameters:false
+                rpcoverxmpp: {
+                    start_up: true,
+                    optional: true,
+                    logEntryParameters: false
                 } //need services : ( )
+            }
         };
         let sdkInstance = new _RainbowSDK(options);
         let sdkPublicEventsName = [];
@@ -1498,10 +1500,105 @@ module.exports = function (RED) {
         res.json(sdkPublicEventsName);
     });
 
+    function callBubbles(config) {
+        RED.nodes.createNode(this, config);
+        this.server = RED.nodes.getNode(config.server);
+        this.apis = RED.nodes.getNode(config.apis);
+        let cfgTimer = null;
+        let node = this;
+        node.log("Rainbow : callBubbles node initialized :" + JSON.stringify(node.server.name));
+        /*
+        let getCallback_onevent = function (eventName) {
+            return function (...args) {
+                node.log("Rainbow : rainbow_oneventreceived for event : " + eventName)
+                if (node.event && node.event.event !== "NONE" && (node.event.event === eventName || node.event.event === "ALL")) {
+                    node.log("Rainbow : send event : " + eventName);
+                    let msg = {
+                        payload: {
+                            eventName,
+                            "data": args
+                        }
+                    };
+                    node.send(msg);
+                } else {
+                    node.log("Rainbow : ignore event : " + eventName)
+                }
+            };
+        };
+
+        let getRainbowSDKnotifyEventReceived = function getRainbowSDKnotifyEventReceived() {
+            if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
+                node.log("Rainbow SDK not ready (" + config.server + ")");
+                cfgTimer = setTimeout(getRainbowSDK, 2000);
+            } else {
+                node.log("Rainbow : notifyEventReceived will register for events.");
+                let sdkPublicEventsName = node.server.rainbow.sdk.events.sdkPublicEventsName;
+                for (const configKey in sdkPublicEventsName) {
+                    let sdkEventName = sdkPublicEventsName[configKey];
+                    let fn_rainbow_oneventreceived = getCallback_onevent(sdkEventName);
+                    node.server.rainbow.sdk.events.on(sdkEventName, fn_rainbow_oneventreceived);
+                    node.server.rainbow.sdkhandler.push({
+                        evt: sdkEventName,
+                        fct: fn_rainbow_oneventreceived
+                    });
+                    node.log("Rainbow : notifyEventReceived register for event : " + sdkEventName);
+                }
+            }
+        }
+        getRainbowSDKnotifyEventReceived();
+        this.on('close', function () {
+            // tidy up any state
+            clearTimeout(cfgTimer);
+        }); // */
+    }
+
+    function methodBubblesSelectNode(n) {
+        RED.nodes.createNode(this, n);
+        this.apis = n.apis;
+    }
+
+    RED.httpAdmin.get("/rainbowsdkbubblesapi", function (req, res) {
+        let node = this;
+
+        console.log("Rainbow : rainbowsdkbubblesapi will get API Methods names from BubblesService.");
+        let sdkPublic = ["api1", "api2"];
+        let pathJson = path.join(__dirname,'../node_modules/rainbow-node-sdk/build/JSONDOCS/BubblesService.json');
+        console.log("Rainbow pathJson : ", pathJson);
+        //const path = require("path");
+        let bubblesServiceDocJSONTab = require( pathJson);
+        
+        // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+        // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+
+        for (let i = 0; i < bubblesServiceDocJSONTab.length; i++) {
+            let bubblesServiceDocJSON = bubblesServiceDocJSONTab[i];
+            if (bubblesServiceDocJSON.tags) {
+
+                let bubblesServiceDocJSONNodeRed = bubblesServiceDocJSON.tags.find((item) => {
+                    //console.log("Rainbow BubblesService item : ", item);
+                    return (item.title === "nodered" && (item.value==="true" || item.value===true));
+                });
+                if (bubblesServiceDocJSONNodeRed ) {
+                    //console.log("Rainbow BubblesService bubblesServiceDocJSONNodeRed JSON : ", bubblesServiceDocJSONNodeRed);
+                    if ((bubblesServiceDocJSONNodeRed.value==="true" || bubblesServiceDocJSONNodeRed.value===true) && (bubblesServiceDocJSON["kind"]==="function" || bubblesServiceDocJSON["kind"]==="method")) {
+                        console.log("Rainbow BubblesService bubblesServiceDocJSON JSON : ", bubblesServiceDocJSON);
+                        sdkPublic.push(bubblesServiceDocJSON.name);
+                    }
+                }
+            }
+        }
+        
+        //sdkPublic.add();
+        res.json(sdkPublic);
+    });
+
     RED.nodes.registerType("Send_IM", sendMessage);
     RED.nodes.registerType("Notified_IM", getMessage);
     RED.nodes.registerType("event-select", eventSelectNode);
     RED.nodes.registerType("Notified_Event", notifyEventReceived);
+
+    RED.nodes.registerType("methodBubbles-select", methodBubblesSelectNode);
+    RED.nodes.registerType("Call_Bubbles", callBubbles);
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);
     RED.nodes.registerType("Set_Presence", setPresence);
