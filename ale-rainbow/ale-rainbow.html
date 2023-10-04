@@ -103,22 +103,37 @@
             });
         }
     });
+    
+    RED.nodes.registerType('Call_Bubbles', function() {
+        let apisArray = [];
+        $.getJSON('/rainbowsdkbubblesapi',function(data) {
+            console.log("Call_Bubbles /rainbowsdkbubblesapi readed ");
+            for (let i = 0; i < data.length; i++) {
+                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                console.log("Call_Bubbles methodBubbles-select : ",methodObj);
+                apisArray.push(methodObj);
+                // $('#node-config-input-bubbles').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+            }
+        });
 
-    RED.nodes.registerType('Call_Bubbles',{
-        category: 'ALE Rainbow',
-        color: '#a6bbcf',
-        defaults: {
-            server: {value:"", type:"Login"},
-            name: {value:""},
-            apis: {value:"", type:"methodBubbles-select"},
-        },
-        inputs:1,
-        outputs:1,
-        icon: "Call_Bubbles.png",
-        label: function() {
-            return this.name||"Call_Bubbles";
-        }
-    });
+        let result = {
+            category: 'ALE Rainbow',
+            color: '#a6bbcf',
+            defaults: {
+                server: {value: "", type: "Login"},
+                name: {value: ""},
+                apis: {value: "", type: "methodBubbles-select"},
+            },
+            inputs: 1,
+            outputs: 1,
+            icon: "Call_Bubbles.png",
+            label: function () {
+                return this.name || "Call_Bubbles";
+            }
+        };
+        
+        return result;
+    }());
 
     RED.nodes.registerType('methodBubbles-select',{
         category: 'config',
@@ -129,11 +144,22 @@
             return this.apis;
         },
         oneditprepare: function() {
+            /*
+            for (let i = 0; i < data.length; i++) {
+                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                console.log("methodBubbles-select : ",methodObj);
+
+                $('#node-config-input-bubbles').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+            }
+            // */
             $.getJSON('/rainbowsdkbubblesapi',function(data) {
                 for (let i = 0; i < data.length; i++) {
-                    $('#node-config-input-bubbles').append('<option value="' + data[i] + '">' + data[i] + '</option>');
+                    let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                    console.log("methodBubbles-select : ",methodObj);
+
+                    $('#node-config-input-bubbles').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
                 }
-            });
+            }); // */
         }
     });
 
@@ -455,6 +481,10 @@
         <div class="form-row">
             <label for="node-input-name"><i class="icon-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row" style="display: none;">
+            <label for="node-input-apisArray"><i class="icon-tag"></i> ApisArray</label>
+            <input type="text" id="node-input-apisArray" placeholder="Apis"  >
         </div>
     </script>
 

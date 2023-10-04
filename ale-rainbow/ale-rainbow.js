@@ -4,6 +4,7 @@ module.exports = function (RED) {
     const path = require('path');
     let errorMsgBuffer = [];
     const maxBufferLength = 500;
+    let apisArray = [];
 
     function allocateSDK(node, server) {
         node.log("RainbowSDK instance allocated" + " cnx: " + JSON.stringify(server.name));
@@ -1559,33 +1560,43 @@ module.exports = function (RED) {
 
     RED.httpAdmin.get("/rainbowsdkbubblesapi", function (req, res) {
         let node = this;
+        let sdkPublic = [{name: "api1"}, {name: "api2"}];
+         
 
-        console.log("Rainbow : rainbowsdkbubblesapi will get API Methods names from BubblesService.");
-        let sdkPublic = ["api1", "api2"];
-        let pathJson = path.join(__dirname,'../node_modules/rainbow-node-sdk/build/JSONDOCS/BubblesService.json');
-        console.log("Rainbow pathJson : ", pathJson);
-        //const path = require("path");
-        let bubblesServiceDocJSONTab = require( pathJson);
-        
-        // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
-        // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+        if (apisArray.length > 0) {
+            sdkPublic = apisArray;
+        } else {
+            console.log("Rainbow : rainbowsdkbubblesapi will get API Methods names from BubblesService.");
+            let pathJson = path.join(__dirname, '../node_modules/rainbow-node-sdk/build/JSONDOCS/BubblesService.json');
+            console.log("Rainbow pathJson : ", pathJson);
+            //const path = require("path");
+            let bubblesServiceDocJSONTab = require(pathJson);
 
-        for (let i = 0; i < bubblesServiceDocJSONTab.length; i++) {
-            let bubblesServiceDocJSON = bubblesServiceDocJSONTab[i];
-            if (bubblesServiceDocJSON.tags) {
+            // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+            // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
 
-                let bubblesServiceDocJSONNodeRed = bubblesServiceDocJSON.tags.find((item) => {
-                    //console.log("Rainbow BubblesService item : ", item);
-                    return (item.title === "nodered" && (item.value==="true" || item.value===true));
-                });
-                if (bubblesServiceDocJSONNodeRed ) {
-                    //console.log("Rainbow BubblesService bubblesServiceDocJSONNodeRed JSON : ", bubblesServiceDocJSONNodeRed);
-                    if ((bubblesServiceDocJSONNodeRed.value==="true" || bubblesServiceDocJSONNodeRed.value===true) && (bubblesServiceDocJSON["kind"]==="function" || bubblesServiceDocJSON["kind"]==="method")) {
-                        console.log("Rainbow BubblesService bubblesServiceDocJSON JSON : ", bubblesServiceDocJSON);
-                        sdkPublic.push(bubblesServiceDocJSON.name);
+            for (let i = 0; i < bubblesServiceDocJSONTab.length; i++) {
+                let bubblesServiceDocJSON = bubblesServiceDocJSONTab[i];
+                if (bubblesServiceDocJSON.tags) {
+
+                    let bubblesServiceDocJSONNodeRed = bubblesServiceDocJSON.tags.find((item) => {
+                        //console.log("Rainbow BubblesService item : ", item);
+                        return (item.title === "nodered" && (item.value === "true" || item.value === true));
+                    });
+                    if (bubblesServiceDocJSONNodeRed) {
+                        //console.log("Rainbow BubblesService bubblesServiceDocJSONNodeRed JSON : ", bubblesServiceDocJSONNodeRed);
+                        if ((bubblesServiceDocJSONNodeRed.value === "true" || bubblesServiceDocJSONNodeRed.value === true) && (bubblesServiceDocJSON["kind"] === "function" || bubblesServiceDocJSON["kind"] === "method")) {
+                            console.log("Rainbow BubblesService bubblesServiceDocJSON JSON : ", bubblesServiceDocJSON);
+                            let methodObj = {};
+                            methodObj.name = bubblesServiceDocJSON.name;
+                            methodObj.description = bubblesServiceDocJSON.description;
+                            methodObj.params = bubblesServiceDocJSON.params ? bubblesServiceDocJSON.params : [];
+                            sdkPublic.push(methodObj);
+                        }
                     }
                 }
             }
+            apisArray = sdkPublic ;
         }
         
         //sdkPublic.add();
