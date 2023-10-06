@@ -2,10 +2,16 @@ module.exports = function (RED) {
     let _RainbowSDK = null;
     const util = require('util');
     const path = require('path');
+    const utilTypes = require('util').types
     let errorMsgBuffer = [];
     const maxBufferLength = 500;
     let apisArray = [];
 
+    function isPromise (x) {
+        let isProm = utilTypes.isPromise(x) || x.constructor.name === 'Promise' || x.constructor.name === 'AsyncFunction';
+        return isProm ;
+    }
+    
     function allocateSDK(node, server) {
         node.log("RainbowSDK instance allocated" + " cnx: " + JSON.stringify(server.name));
         let handler;
@@ -1505,52 +1511,120 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
         this.apis = RED.nodes.getNode(config.apis);
+        let msgSent = 0;
         let cfgTimer = null;
         let node = this;
         node.log("Rainbow : callBubbles node initialized :" + JSON.stringify(node.server.name));
-        /*
-        let getCallback_onevent = function (eventName) {
-            return function (...args) {
-                node.log("Rainbow : rainbow_oneventreceived for event : " + eventName)
-                if (node.event && node.event.event !== "NONE" && (node.event.event === eventName || node.event.event === "ALL")) {
-                    node.log("Rainbow : send event : " + eventName);
-                    let msg = {
-                        payload: {
-                            eventName,
-                            "data": args
-                        }
-                    };
-                    node.send(msg);
-                } else {
-                    node.log("Rainbow : ignore event : " + eventName)
-                }
-            };
-        };
-
-        let getRainbowSDKnotifyEventReceived = function getRainbowSDKnotifyEventReceived() {
+        var getRainbowSDKcallBubbles = function getRainbowSDKcallBubbles() {
             if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
-                node.log("Rainbow SDK not ready (" + config.server + ")");
-                cfgTimer = setTimeout(getRainbowSDK, 2000);
-            } else {
-                node.log("Rainbow : notifyEventReceived will register for events.");
-                let sdkPublicEventsName = node.server.rainbow.sdk.events.sdkPublicEventsName;
-                for (const configKey in sdkPublicEventsName) {
-                    let sdkEventName = sdkPublicEventsName[configKey];
-                    let fn_rainbow_oneventreceived = getCallback_onevent(sdkEventName);
-                    node.server.rainbow.sdk.events.on(sdkEventName, fn_rainbow_oneventreceived);
-                    node.server.rainbow.sdkhandler.push({
-                        evt: sdkEventName,
-                        fct: fn_rainbow_oneventreceived
-                    });
-                    node.log("Rainbow : notifyEventReceived register for event : " + sdkEventName);
-                }
+                node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                cfgTimer = setTimeout(getRainbowSDKcallBubbles, 2000);
             }
         }
-        getRainbowSDKnotifyEventReceived();
-        this.on('close', function () {
-            // tidy up any state
-            clearTimeout(cfgTimer);
-        }); // */
+        getRainbowSDKcallBubbles();
+        this.on('input', function (msg) {
+            let sdkApiName = node.apis?node.apis.apis:"";
+            if (sdkApiName != "") {
+                node.status({
+                    fill: "orange",
+                    shape: "dot",
+                    text: "will call bubble api "
+                });
+                node.log("Rainbow : callBubbles to cnx: " + JSON.stringify(node.server.name) + ", node.apis.apis : " + sdkApiName);
+                if (node.server.rainbow.logged === false) {
+                    node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
+                    node.status({
+                        fill: "red",
+                        shape: "dot",
+                        text: "not connected"
+                    });
+                }
+                else {
+                    node.log("Calling API : " + sdkApiName + " cnx: " + JSON.stringify(node.server.name));
+
+                    let resultApiCall = node.server.rainbow.sdk.bubbles[sdkApiName]()
+                    if (isPromise(resultApiCall)) {
+                        Promise.race(resultApiCall).then((result) => {
+                            msgSent++;
+                            node.status({
+                                fill: "green",
+                                shape: "dot",
+                            text: "Nb Api calls: " + msgSent 
+                            });
+                            let msg = {
+                                payload: {
+                                    "apiName": sdkApiName,
+                                    "apiResult": result
+                                }
+                            };
+                            node.send([msg, undefined]);
+                        }).catch((result) => {
+                            msgSent++;
+                            node.status({
+                                fill: "orange",
+                                shape: "dot",
+                                text: "Nb Api calls: " + msgSent
+                            });
+                            let msg = {
+                                payload: {
+                                    "apiName": sdkApiName,
+                                    "apiResult": result
+                                }
+                            };
+                            node.send([undefined, msg]);
+                        });
+                    } else {
+                        node.status({
+                            fill: "green",
+                            shape: "dot",
+                            text: "Nb Api calls: " + msgSent 
+                        });
+                        let msg = {
+                            payload: {
+                                "apiName": sdkApiName,
+                                "apiResult": resultApiCall                            
+                            }
+                        };
+                        node.send([msg, undefined]);
+                    }
+
+                    /* let channel = (msg.payload.channel !== undefined ? msg.payload.channel : (node.channelId !== "" ? {id: node.channelId} : null));
+                     let message = msg.payload.content;
+                     let title = (msg.payload.title ? msg.payload.title : null);
+                     let url = (msg.payload.url ? msg.payload.url : null);
+                     if (channel !== undefined && null != channel && channel.id !== undefined && "" !== channel.id) {
+                         node.log("Sending to id " + channel.id + " (" + message + " " + ") cnx: " + JSON.stringify(node.server.name));
+     
+                         node.server.rainbow.sdk.bubbles.publishMessageToChannel(
+                             channel,
+                             message,
+                             title,
+                             url);
+     
+                         msgSent++;
+                         node.status({
+                             fill: "green",
+                             shape: "dot",
+                             text: "Nb sent: " + msgSent
+                         });
+                     } else {
+                         let errorTxt = "no valid destination channel/id, looks like : " + util.inspect(channel);
+                         node.status({
+                             fill: "red",
+                             shape: "dot",
+                             text: errorTxt
+                         });
+                         node.error("Can't send to Channel: " + errorTxt);
+                     }
+                     // */
+                }
+            }
+            this.on('close', function () {
+                // tidy up any state
+                clearTimeout(cfgTimer);
+            });
+        });
+
     }
 
     function methodBubblesSelectNode(n) {
@@ -1560,7 +1634,8 @@ module.exports = function (RED) {
 
     RED.httpAdmin.get("/rainbowsdkbubblesapi", function (req, res) {
         let node = this;
-        let sdkPublic = [{name: "api1"}, {name: "api2"}];
+        //let sdkPublic = [{name: "api1"}, {name: "api2"}];
+        let sdkPublic = [];
          
 
         if (apisArray.length > 0) {

@@ -112,10 +112,24 @@
                 let methodObj = data[i] ? data[i] : {}; // {name, description, params}
                 console.log("Call_Bubbles methodBubbles-select : ",methodObj);
                 apisArray.push(methodObj);
-                // $('#node-config-input-bubbles').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+                // $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
             }
         });
 
+        function getApiFromName(apiName) {
+            let apiObject = apisArray.find((item) => {
+                console.log("getApiFromName - item.name : " + item? item.name:"" + ", apiName : ", apiName);
+                return (item? (item.name === apiName) : false);
+            })
+            if (Array.isArray(apiObject)) {
+                console.log("getApiFromName - first item of Array apiObject : ", apiObject[0]);
+                return apiObject[0];
+            } else {
+                console.log("getApiFromName - apiObject : ", apiObject);
+                return apiObject ;
+            }
+        }
+        
         let result = {
             category: 'ALE Rainbow',
             color: '#a6bbcf',
@@ -125,10 +139,49 @@
                 apis: {value: "", type: "methodBubbles-select"},
             },
             inputs: 1,
-            outputs: 1,
+            outputs: 2,
             icon: "Call_Bubbles.png",
             label: function () {
                 return this.name || "Call_Bubbles";
+            },
+            oneditprepare: function() {
+                let that = this;
+                console.log("Call_Bubbles oneditprepare - 1")
+                
+                //$("#node-input-apis").on('focus', function () { nodeName = this.value; }).change(function() {
+                $("#node-input-apis").change(function() {
+                    console.log("Call_Bubbles oneditprepare - change");
+                    let nodeName = $("#node-input-name").val();
+                    console.log("Call_Bubbles oneditprepare change - 2 nodeName : ", nodeName);
+                    let apisSelected = $("#node-input-apis option:selected" ).text();
+                    console.log("Call_Bubbles oneditprepare - apisSelected : ", apisSelected );
+                    if (nodeName == undefined || nodeName == null || nodeName === "" || nodeName.indexOf("methodBubbles-select") > 0) {
+                        console.log("Call_Bubbles oneditprepare - nodeName is null, so fill it.");
+                        if (apisSelected.indexOf("methodBubbles-select") < 0) {
+                            $("#node-input-name").val(apisSelected);
+                            //nodeName = apisSelected;
+                        }
+                    } else {
+                        console.log("Call_Bubbles oneditprepare - nodeName is not null, so do nothing : ", nodeName);
+                    }
+                    if (apisSelected.indexOf("methodBubbles-select") < 0) {
+                        let apiObject = getApiFromName(apisSelected);
+                        console.log("Call_Bubbles oneditprepare - update api description & params from : ", apiObject);
+                        $("#label-description").val(apiObject.description);
+                        let str = $("#label-description").val();
+                        let regex = /<br\s*[\/]?>/gi;
+                        $("#label-description").val(str.replace(regex, "\n"));
+                        
+                        if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
+                            $("#label-params").val(JSON.stringify(apiObject.params, null,  '\t'));
+                            let str = $("#label-params").val();
+                            let regex = /<br\s*[\/]?>/gi;
+                            $("#label-params").val(str.replace(regex, "\n"));
+                        } else {
+                            $("#label-params").val("--");
+                        }
+                    }
+                });
             }
         };
         
@@ -149,7 +202,7 @@
                 let methodObj = data[i] ? data[i] : {}; // {name, description, params}
                 console.log("methodBubbles-select : ",methodObj);
 
-                $('#node-config-input-bubbles').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+                $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
             }
             // */
             $.getJSON('/rainbowsdkbubblesapi',function(data) {
@@ -157,7 +210,7 @@
                     let methodObj = data[i] ? data[i] : {}; // {name, description, params}
                     console.log("methodBubbles-select : ",methodObj);
 
-                    $('#node-config-input-bubbles').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+                    $('#node-config-input-apis').append('<option value=\'' + methodObj.name + '\'>' + methodObj.name + '</option>');
                 }
             }); // */
         }
@@ -242,10 +295,10 @@
             onclick: function() {
                 var node = this;
                 $.ajax({
-                    url: "Login/"+this.id,
+                    url: "Login/"+node.id,
                     type:"POST",
                     success: function(resp) {
-                        RED.notify(node._("CnxState.success",{label:label}),"success");
+                        RED.notify(node._("CnxState.success",{label:node.label}),"success");
                     },
                     error: function(jqXHR,textStatus,errorThrown) {
                         if (jqXHR.status == 404) {
@@ -476,46 +529,62 @@
         </div>
         <div class="form-row">
             <label for="node-input-apis"><i class="icon-tag"></i> APIS To Call </label>
-            <input type="text" id="node-input-apis">
+            <input type="text" id="node-input-apis" >
+        </div>
+        <div class="form-row">
+            <label for="label-description"><i class="icon-tag"></i> API Description </label>
+            <!-- input type="text" id="label-description" -->
+            <textarea name="" id="label-description" cols="60" rows="10" readonly></textarea>
+        </div>
+        <div class="form-row">
+            <label for="label-params"><i class="icon-tag"></i> API Params </label>
+            <textarea name="" id="label-params" cols="60" rows="30" readonly></textarea>
         </div>
         <div class="form-row">
             <label for="node-input-name"><i class="icon-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">
         </div>
-        <div class="form-row" style="display: none;">
-            <label for="node-input-apisArray"><i class="icon-tag"></i> ApisArray</label>
-            <input type="text" id="node-input-apisArray" placeholder="Apis"  >
-        </div>
     </script>
 
     <script type="text/x-red" data-help-name="Call_Bubbles">
-        <p>Get a event from a Rainbow SDK</p>
+        <p>Call an API from BubblesService of Rainbow SDK</p>
         <h3>Parameters :</h3>
         <dl class="message-properties">
             <dt> APIS To Call <span class="property-type">string</span></dt>
-            <dd>an <code>Event</code> to filter the ouput to send.</dd>
+            <dd>an <code>API Name</code> to be called on the SDK service.</dd>
+            <dd>None can be selected to not use any method.</dd>
             <br/>
-            <dd>ALL can be selected to let send every events.</dd>
+            <dt> API Description <span class="property-type">string</span></dt>
+            <dd>The <code>description</code> of the SDK's API method selected in <code>APIS To Call</code>.</dd>
             <br/>
-            <dd>None can be selected to send no events.</dd>
+            <dt> API Params <span class="property-type">string</span></dt>
+            <dd>The description of <code>parameters</code> provided to API when called  of the SDK's API method selected in <code>APIS To Call</code>.</dd>
+            <ul>
+            <li>The parameters are expected to be in an array.</li> 
+            <li>This array is in <code>params</code> property of the payload.</li>
+            <li>The parameters are provided to SDK's API in the array order.</li>
+            </ul> 
+            <pre>
+   msg.payload = {
+       params:[...]
+   };
+            </pre>
             <br/>
         </dl>
         <h3>Output :</h3>
         <code>msg.payload</code> contains <b>relevant</b> :<br>
         <ul>
-            <li><code>eventName</code> : The name of the event,</li>
-            <li><code>data</code> : The data is an array of parameters returned by the event. It is not detailed here. Please have a look on the official SDK doc on <a href="https://hub.openrainbow.com/#/documentation/doc/sdk/node/lts/api/events"> Events Service Handler </a></li>
+            <li><code>apiName</code> : The name of the SDK's api called,</li>
+            <li><code>apiResult</code> : The result returned by the SDK's api call.</li>
         </ul>
-        <p><code>WARNING</code> : events handlers are limited (11 listeners), and every Call_Bubbles node is listening to all Rainbow SDK events. So do not put much Call_Bubbles node linked to a single Cnx_State on your flow. Else use the ALL filter and use a selector/dispatch after.<br>
-        also note that this node require an 2.6.2 or earlier version of RainbowNodeSDK. </p>
+        <p><code>WARNING</code> : The result is the data provided by the api call, if it SDK's API is a promise, then the node wait for the result (even success or fail) of the SDK's API call.</p>
     </script>
 
     <script type="text/html" data-template-name="methodBubbles-select">
         <div class="form-row">
-            <label for="node-config-input-bubbles"><i class="icon-bookmark"></i> BubblesService API to call </label>
-            <!-- input type="text" id="node-config-input-bubbles"> -->
-            <select id="node-config-input-bubbles">
-                 <option value="ALL" >ALL</option>
+            <label for="node-config-input-apis"><i class="icon-bookmark"></i> BubblesService API to call </label>
+            <!-- input type="text" id="node-config-input-apis"> -->
+            <select id="node-config-input-apis">
                  <option value="NONE" >NONE</option>
             </select>
         </div>
