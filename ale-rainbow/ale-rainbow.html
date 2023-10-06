@@ -108,6 +108,7 @@
         let apisArray = [];
         $.getJSON('/rainbowsdkbubblesapi',function(data) {
             console.log("Call_Bubbles /rainbowsdkbubblesapi readed ");
+            apisArray.push({name: "NONE", description:"--"});
             for (let i = 0; i < data.length; i++) {
                 let methodObj = data[i] ? data[i] : {}; // {name, description, params}
                 console.log("Call_Bubbles methodBubbles-select : ",methodObj);
@@ -167,7 +168,7 @@
                     if (apisSelected.indexOf("methodBubbles-select") < 0) {
                         let apiObject = getApiFromName(apisSelected);
                         console.log("Call_Bubbles oneditprepare - update api description & params from : ", apiObject);
-                        $("#label-description").val(apiObject.description);
+                        $("#label-description").val(apiObject.description?apiObject.description:"--");
                         let str = $("#label-description").val();
                         let regex = /<br\s*[\/]?>/gi;
                         $("#label-description").val(str.replace(regex, "\n"));
@@ -206,6 +207,7 @@
             }
             // */
             $.getJSON('/rainbowsdkbubblesapi',function(data) {
+                $('#node-config-input-apis').append('<option value=\'NONE\'>NONE</option>');
                 for (let i = 0; i < data.length; i++) {
                     let methodObj = data[i] ? data[i] : {}; // {name, description, params}
                     console.log("methodBubbles-select : ",methodObj);
@@ -582,10 +584,10 @@
 
     <script type="text/html" data-template-name="methodBubbles-select">
         <div class="form-row">
-            <label for="node-config-input-apis"><i class="icon-bookmark"></i> BubblesService API to call </label>
+            <label for="node-config-input-apis"><i class="icon-bookmark"></i>BubblesService API to call </label>
             <!-- input type="text" id="node-config-input-apis"> -->
             <select id="node-config-input-apis">
-                 <option value="NONE" >NONE</option>
+                 <!-- option value='NONE' >NONE</option -->
             </select>
         </div>
     </script>
