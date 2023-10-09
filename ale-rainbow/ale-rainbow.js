@@ -1587,36 +1587,6 @@ module.exports = function (RED) {
                         };
                         node.send([msg, undefined]);
                     }
-
-                    /* let channel = (msg.payload.channel !== undefined ? msg.payload.channel : (node.channelId !== "" ? {id: node.channelId} : null));
-                     let message = msg.payload.content;
-                     let title = (msg.payload.title ? msg.payload.title : null);
-                     let url = (msg.payload.url ? msg.payload.url : null);
-                     if (channel !== undefined && null != channel && channel.id !== undefined && "" !== channel.id) {
-                         node.log("Sending to id " + channel.id + " (" + message + " " + ") cnx: " + JSON.stringify(node.server.name));
-     
-                         node.server.rainbow.sdk.bubbles.publishMessageToChannel(
-                             channel,
-                             message,
-                             title,
-                             url);
-     
-                         msgSent++;
-                         node.status({
-                             fill: "green",
-                             shape: "dot",
-                             text: "Nb sent: " + msgSent
-                         });
-                     } else {
-                         let errorTxt = "no valid destination channel/id, looks like : " + util.inspect(channel);
-                         node.status({
-                             fill: "red",
-                             shape: "dot",
-                             text: errorTxt
-                         });
-                         node.error("Can't send to Channel: " + errorTxt);
-                     }
-                     // */
                 }
             }
             this.on('close', function () {
