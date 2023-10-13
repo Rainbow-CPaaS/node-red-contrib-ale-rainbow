@@ -77,7 +77,7 @@
         defaults: {
             server: {value:"", type:"Login"},
             name: {value:""},
-            event: {value:"", type:"event-select"},
+            event: {value:"", type:"Event-select"},
         },
         inputs:0,
         outputs:1,
@@ -87,7 +87,7 @@
         }
     });
 
-    RED.nodes.registerType('event-select',{
+    RED.nodes.registerType('Event-select',{
         category: 'config',
         defaults: {
             event: {value:"",required:true},
@@ -104,18 +104,31 @@
         }
     });
     
-    RED.nodes.registerType('Call_Bubbles', function() {
+    RED.nodes.registerType('Call_ServicesApis', function() {
         let apisArray = [];
-        $.getJSON('/rainbowsdkbubblesapi',function(data) {
-            console.log("Call_Bubbles /rainbowsdkbubblesapi readed ");
+        let apisService = [];
+        let servicesSelected = "";
+        $.getJSON('/rainbowsdkservices',function(data) {
+            console.log("Call_ServicesApis /rainbowsdkservices readed ");
+            apisService.push({name: "NONE", description:"--"});
+            for (let i = 0; i < data.length; i++) {
+                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                console.log("Call_ServicesApis /rainbowsdkservices methodObj : ", methodObj);
+                apisService.push(methodObj);
+                // $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+            }
+        });
+        /*$.getJSON('/rainbowsdkservices?serviceType=BubblesService',function(data) {
+            console.log("Call_ServicesApis /rainbowsdkservices readed ");
             apisArray.push({name: "NONE", description:"--"});
             for (let i = 0; i < data.length; i++) {
                 let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                console.log("Call_Bubbles methodBubbles-select : ",methodObj);
+                console.log("Call_ServicesApis /rainbowsdkservices methodObj : ", methodObj);
                 apisArray.push(methodObj);
                 // $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
             }
         });
+        // */
 
         function getApiFromName(apiName) {
             let apiObject = apisArray.find((item) => {
@@ -136,50 +149,84 @@
             color: '#a6bbcf',
             defaults: {
                 server: {value: "", type: "Login"},
-                name: {value: ""},
-                apis: {value: "", type: "methodBubbles-select"},
+                servicesName: {value: "", type: "SdkServices-select"},
+                apis: {value: "", type: "MethodApis-select"},
+                name: {value: ""}
             },
             inputs: 1,
             outputs: 2,
-            icon: "Call_Bubbles.png",
+            icon: "Call_ServicesApis.png",
             label: function () {
-                return this.name || "Call_Bubbles";
+                return this.name || "Call_ServicesApis";
             },
             oneditprepare: function() {
                 let that = this;
-                console.log("Call_Bubbles oneditprepare - 1")
+                console.log("Call_ServicesApis oneditprepare - 1")
                 
                 //$("#node-input-apis").on('focus', function () { nodeName = this.value; }).change(function() {
+                $("#node-input-servicesName").change(function() {
+                    console.log("Call_ServicesApis oneditprepare - change");
+                    //let servicesSelected = $("#node-input-services option:selected" ).text();
+                    servicesSelected = $("#node-input-servicesName option:selected" ).text();
+                    console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected );
+                    /* if (servicesSelected.indexOf("SdkServices-select") < 0) {
+                        $.getJSON('/rainbowsdkapis?serviceType=' + servicesSelected, function (data) {
+                            console.log("Call_ServicesApis /rainbowsdkapis readed ");
+                            apisArray.push({name: "NONE", description: "--"});
+                            for (let i = 0; i < data.length; i++) {
+                                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                                console.log("Call_ServicesApis /rainbowsdkapis methodObj : ", methodObj);
+                                apisArray.push(methodObj);
+                                // $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+                            }
+                        });
+                    } // */
+                    $("#node-input-apis" ).empty();
+                    /* $("#label-params").val("--");
+                    $("#label-description").val("--");
+                    // */
+
+                    /* if (servicesSelected.indexOf("SdkServices-select") < 0) {
+                        console.log("Call_ServicesApis oneditprepare - update list of API methods from.");
+                    } //*/
+                });
+                
                 $("#node-input-apis").change(function() {
-                    console.log("Call_Bubbles oneditprepare - change");
+                    console.log("Call_ServicesApis oneditprepare - change");
                     let nodeName = $("#node-input-name").val();
-                    console.log("Call_Bubbles oneditprepare change - 2 nodeName : ", nodeName);
+                    console.log("Call_ServicesApis oneditprepare change - 2 nodeName : ", nodeName);
                     let apisSelected = $("#node-input-apis option:selected" ).text();
-                    console.log("Call_Bubbles oneditprepare - apisSelected : ", apisSelected );
-                    if (nodeName == undefined || nodeName == null || nodeName === "" || nodeName.indexOf("methodBubbles-select") > 0) {
-                        console.log("Call_Bubbles oneditprepare - nodeName is null, so fill it.");
-                        if (apisSelected.indexOf("methodBubbles-select") < 0) {
+                    console.log("Call_ServicesApis oneditprepare - apisSelected : ", apisSelected );
+                    if (nodeName == undefined || nodeName == null || nodeName === "" || nodeName.indexOf("MethodApis-select") > 0) {
+                        console.log("Call_ServicesApis oneditprepare - nodeName is null, so fill it.");
+                        if (apisSelected.indexOf("MethodApis-select") < 0) {
                             $("#node-input-name").val(apisSelected);
                             //nodeName = apisSelected;
                         }
                     } else {
-                        console.log("Call_Bubbles oneditprepare - nodeName is not null, so do nothing : ", nodeName);
+                        console.log("Call_ServicesApis oneditprepare - nodeName is not null, so do nothing : ", nodeName);
                     }
-                    if (apisSelected.indexOf("methodBubbles-select") < 0) {
+                    if (apisSelected.indexOf("MethodApis-select") < 0) {
                         let apiObject = getApiFromName(apisSelected);
-                        console.log("Call_Bubbles oneditprepare - update api description & params from : ", apiObject);
-                        $("#label-description").val(apiObject.description?apiObject.description:"--");
-                        let str = $("#label-description").val();
-                        let regex = /<br\s*[\/]?>/gi;
-                        $("#label-description").val(str.replace(regex, "\n"));
-                        
-                        if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
-                            $("#label-params").val(JSON.stringify(apiObject.params, null,  '\t'));
-                            let str = $("#label-params").val();
+                        console.log("Call_ServicesApis oneditprepare - update api description & params from : ", apiObject);
+                        if (apiObject) {
+                            $("#label-description").val(apiObject.description ? apiObject.description : "--");
+                            let str = $("#label-description").val();
                             let regex = /<br\s*[\/]?>/gi;
-                            $("#label-params").val(str.replace(regex, "\n"));
+                            $("#label-description").val(str.replace(regex, "\n"));
+
+                            if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
+                                $("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
+                                let str = $("#label-params").val();
+                                let regex = /<br\s*[\/]?>/gi;
+                                $("#label-params").val(str.replace(regex, "\n"));
+                            }
+                            else {
+                                $("#label-params").val("--");
+                            }
                         } else {
                             $("#label-params").val("--");
+                            $("#label-description").val("--");
                         }
                     }
                 });
@@ -189,7 +236,7 @@
         return result;
     }());
 
-    RED.nodes.registerType('methodBubbles-select',{
+    RED.nodes.registerType('MethodApis-select',{
         category: 'config',
         defaults: {
             apis: {value:"",required:true},
@@ -198,21 +245,66 @@
             return this.apis;
         },
         oneditprepare: function() {
+            let node = this;
+            //alert("hello");
             /*
             for (let i = 0; i < data.length; i++) {
                 let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                console.log("methodBubbles-select : ",methodObj);
+                console.log("MethodApis-select : ",methodObj);
 
                 $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
             }
             // */
-            $.getJSON('/rainbowsdkbubblesapi',function(data) {
-                $('#node-config-input-apis').append('<option value=\'NONE\'>NONE</option>');
+            //let servicesSelected = $("#node-input-services option:selected").text();
+            $.getJSON('/getserviceselected?id=' + (node?node.id:""), function (serviceObj) {
+                let servicesSelected = serviceObj ? serviceObj.name : "";
+                console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected);
+                if (servicesSelected && servicesSelected.indexOf("SdkServices-select") < 0) {
+                    console.log("Call_ServicesApis oneditprepare - update list of API methods from.");
+
+
+                    $.getJSON('/rainbowsdkapis?serviceType=' + servicesSelected, function (data) {
+                        $('#node-config-input-apis').empty();
+                        $('#node-config-input-apis').append('<option value=\'NONE\'>NONE</option>');
+                        for (let i = 0; i < data.length; i++) {
+                            let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                            console.log("MethodApis-select /rainbowsdkapis : ", methodObj);
+
+                            $('#node-config-input-apis').append('<option value=\'' + methodObj.name + '\'>' + methodObj.name + '</option>');
+                        }
+                    }); // */
+                }
+            }).catch((err) => {
+                console.log("Error while getJSON getserviceselected err : ", err);
+            });
+        }
+    });
+
+    RED.nodes.registerType('SdkServices-select',{
+        category: 'config',
+        defaults: {
+            servicesName: {value:"",required:true},
+        },
+        label: function() {
+            return this.servicesName;
+        },
+        oneditprepare: function() {
+            /*
+            for (let i = 0; i < data.length; i++) {
+                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                console.log("SdkServices-select : ",methodObj);
+
+                $('#node-config-input-services').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+            }
+            // */
+            $.getJSON('/rainbowsdkservices',function(data) {
+                $('#node-config-input-servicesName').empty();
+                $('#node-config-input-servicesName').append('<option value=\'NONE\'>NONE</option>');
                 for (let i = 0; i < data.length; i++) {
                     let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                    console.log("methodBubbles-select : ",methodObj);
+                    console.log("SdkServices-select : ",methodObj);
 
-                    $('#node-config-input-apis').append('<option value=\'' + methodObj.name + '\'>' + methodObj.name + '</option>');
+                    $('#node-config-input-servicesName').append('<option value=\'' + methodObj.typeService + '\'>' + methodObj.typeService + '</option>');
                 }
             }); // */
         }
@@ -513,7 +605,7 @@
         also note that this node require an 2.6.2 or earlier version of RainbowNodeSDK. </p>
     </script>
 
-    <script type="text/html" data-template-name="event-select">
+    <script type="text/html" data-template-name="Event-select">
         <div class="form-row">
             <label for="node-config-input-event"><i class="icon-bookmark"></i> Event to listen </label>
             <!-- input type="text" id="node-config-input-event"> -->
@@ -524,10 +616,14 @@
         </div>
     </script>
 
-    <script type="text/x-red" data-template-name="Call_Bubbles">
+    <script type="text/x-red" data-template-name="Call_ServicesApis">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
             <input type="text" id="node-input-server">
+        </div>
+        <div class="form-row">
+            <label for="node-input-servicesName"><i class="icon-tag"></i> SERVICES To Call </label>
+            <input type="text" id="node-input-servicesName" >
         </div>
         <div class="form-row">
             <label for="node-input-apis"><i class="icon-tag"></i> APIS To Call </label>
@@ -548,7 +644,7 @@
         </div>
     </script>
 
-    <script type="text/x-red" data-help-name="Call_Bubbles">
+    <script type="text/x-red" data-help-name="Call_ServicesApis">
         <p>Call an API from BubblesService of Rainbow SDK</p>
         <h3>Parameters :</h3>
         <dl class="message-properties">
@@ -582,9 +678,19 @@
         <p><code>WARNING</code> : The result is the data provided by the api call, if it SDK's API is a promise, then the node wait for the result (even success or fail) of the SDK's API call.</p>
     </script>
 
-    <script type="text/html" data-template-name="methodBubbles-select">
+    <script type="text/html" data-template-name="SdkServices-select">
         <div class="form-row">
-            <label for="node-config-input-apis"><i class="icon-bookmark"></i>BubblesService API to call </label>
+            <label for="node-config-input-servicesName"><i class="icon-bookmark"></i>Services to call </label>
+            <!-- input type="text" id="node-config-input-services"> -->
+            <select id="node-config-input-servicesName">
+                 <!-- option value='NONE' >NONE</option -->
+            </select>
+        </div>
+    </script>
+
+    <script type="text/html" data-template-name="MethodApis-select">
+        <div class="form-row">
+            <label for="node-config-input-apis"><i class="icon-bookmark"></i>Methods API to call </label>
             <!-- input type="text" id="node-config-input-apis"> -->
             <select id="node-config-input-apis">
                  <!-- option value='NONE' >NONE</option -->

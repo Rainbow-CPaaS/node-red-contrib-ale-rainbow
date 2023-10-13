@@ -1,16 +1,54 @@
 module.exports = function (RED) {
     let _RainbowSDK = null;
+    const debugHttp = require("debug-http");
     const util = require('util');
     const path = require('path');
     const utilTypes = require('util').types
+    const Request = require("request");
     let errorMsgBuffer = [];
     const maxBufferLength = 500;
     let apisArray = [];
+    let servicesArray = [];
 
     function isPromise (x) {
         let isProm = utilTypes.isPromise(x) || x.constructor.name === 'Promise' || x.constructor.name === 'AsyncFunction';
         return isProm ;
     }
+
+/*    Request.debug = true;
+
+    function debugHandler(request, options, cb) {
+        options = typeof options === "string" ? urlParse(options) : options;
+
+        let url = options.href || (options.protocol || "http:") + "//" + (options.host || options.hostname) + options.path;
+        let method = (options.method || "GET").toUpperCase();
+        let signature = method + " " + url;
+        let start = new Date();
+        let wasHandled = typeof cb === "function";
+
+        //setImmediate(console.log, chalk.gray('      → ' + signature));
+        console.log("      → " + signature + " : " + JSON.stringify(options.headers, null, "  "));
+
+        return request(options, cb)
+        .on("response", function (response) {
+            // Workaround for res._dump in Node.JS http client
+            // https://github.com/nodejs/node/blob/20285ad17755187ece16b8a5effeaa87f5407da2/lib/_http_client.js#L421-L427
+            if (!wasHandled && EventEmitter.listenerCount(response.req, "response") === 0) {
+                response.resume();
+            }
+
+            let status = response.statusCode;
+            let s = status / 100 | 0;
+            console.log((status) + " ← " + signature + " " + (time(start)));
+        })
+         .on("error", function (err) {
+            console.log(("xxx") + " ← " + signature + " " + (err.message));
+        });
+    }
+
+    debugHttp(debugHandler);
+
+// */
     
     function allocateSDK(node, server) {
         node.log("RainbowSDK instance allocated" + " cnx: " + JSON.stringify(server.name));
@@ -1507,22 +1545,25 @@ module.exports = function (RED) {
         res.json(sdkPublicEventsName);
     });
 
-    function callBubbles(config) {
+    function callServicesApis(config) {
         RED.nodes.createNode(this, config);
-        this.server = RED.nodes.getNode(config.server);
-        this.apis = RED.nodes.getNode(config.apis);
+        let node = this;
+        node.server = RED.nodes.getNode(config.server);
+        node.servicesName = RED.nodes.getNode(config.servicesName);
+        node.apis = RED.nodes.getNode(config.apis);
         let msgSent = 0;
         let cfgTimer = null;
-        let node = this;
-        node.log("Rainbow : callBubbles node initialized :" + JSON.stringify(node.server.name));
-        var getRainbowSDKcallBubbles = function getRainbowSDKcallBubbles() {
+        node.log("Rainbow : callServicesApis node initialized :" + JSON.stringify(node.server?node.server.name:{}));
+        
+        var getRainbowSDKcallServicesApis = function getRainbowSDKcallServicesApis() {
             if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
                 node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
-                cfgTimer = setTimeout(getRainbowSDKcallBubbles, 2000);
+                cfgTimer = setTimeout(getRainbowSDKcallServicesApis, 2000);
             }
         }
-        getRainbowSDKcallBubbles();
+        getRainbowSDKcallServicesApis();
         this.on('input', function (msg) {
+            let sdkServiceName = node.servicesName?node.servicesName.servicesName:"";
             let sdkApiName = node.apis?node.apis.apis:"";
             if (sdkApiName != "") {
                 node.status({
@@ -1530,7 +1571,7 @@ module.exports = function (RED) {
                     shape: "dot",
                     text: "will call bubble api "
                 });
-                node.log("Rainbow : callBubbles to cnx: " + JSON.stringify(node.server.name) + ", node.apis.apis : " + sdkApiName);
+                node.log("Rainbow : callServicesApis to cnx: " + JSON.stringify(node.server.name) + ", sdkServiceName : " + sdkServiceName + ", sdkApiName : " + sdkApiName);
                 if (node.server.rainbow.logged === false) {
                     node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
                     node.status({
@@ -1597,22 +1638,25 @@ module.exports = function (RED) {
 
     }
 
-    function methodBubblesSelectNode(n) {
+    function methodApisSelectNode(n) {
         RED.nodes.createNode(this, n);
         this.apis = n.apis;
     }
 
-    RED.httpAdmin.get("/rainbowsdkbubblesapi", function (req, res) {
+    RED.httpAdmin.get("/rainbowsdkapis", function (req, res) {
         let node = this;
         //let sdkPublic = [{name: "api1"}, {name: "api2"}];
         let sdkPublic = [];
-         
+        console.log("Rainbow : rainbowsdkapis will get API Methods names from Service.");
+        
+        let serviceType = req.query.serviceType?req.query.serviceType:"BubblesService";
+        console.log("Rainbow : rainbowsdkapis will get API Methods names from Service : " + serviceType);
 
-        if (apisArray.length > 0) {
+        /*if (apisArray.length > 0) {
             sdkPublic = apisArray;
-        } else {
-            console.log("Rainbow : rainbowsdkbubblesapi will get API Methods names from BubblesService.");
-            let pathJson = path.join(__dirname, '../node_modules/rainbow-node-sdk/build/JSONDOCS/BubblesService.json');
+        } else { / */
+            console.log("Rainbow : rainbowsdkapis will get API Methods names from Service : " + serviceType);
+            let pathJson = path.join(__dirname, '../node_modules/rainbow-node-sdk/build/JSONDOCS/' + serviceType + '.json');
             console.log("Rainbow pathJson : ", pathJson);
             //const path = require("path");
             let bubblesServiceDocJSONTab = require(pathJson);
@@ -1642,19 +1686,92 @@ module.exports = function (RED) {
                 }
             }
             apisArray = sdkPublic ;
+      //  }
+        
+        //sdkPublic.add();
+        res.json(sdkPublic);
+    });
+
+    function sdkServicesSelectNode(n) {
+        RED.nodes.createNode(this, n);
+        this.servicesName = n.servicesName;
+    }
+
+    RED.httpAdmin.get("/rainbowsdkservices", function (req, res) {
+        let node = this;
+        //let sdkPublic = [{name: "api1"}, {name: "api2"}];
+        let sdkPublic = [];
+         
+
+        if (servicesArray.length > 0) {
+            sdkPublic = servicesArray;
+        } else {
+            console.log("Rainbow : rainbowsdkservices will get SDK Services names and types Service from NodeSDK.");
+            let pathJson = path.join(__dirname, '../node_modules/rainbow-node-sdk/build/JSONDOCS/NodeSDK.json');
+            console.log("Rainbow pathJson : ", pathJson);
+            //const path = require("path");
+            let NodeSDKServiceDocJSONTab = require(pathJson);
+
+            // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+            // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+
+            for (let i = 0; i < NodeSDKServiceDocJSONTab.length; i++) {
+                let NodeSDKServiceDocJSON = NodeSDKServiceDocJSONTab[i];
+                if (NodeSDKServiceDocJSON.tags) {
+
+                    let NodeSDKServiceDocJSONNodeRed = NodeSDKServiceDocJSON.tags.find((item) => {
+                        //console.log("Rainbow BubblesService item : ", item);
+                        return (item.title === "nodered" && (item.value === "true" || item.value === true));
+                    });
+                    let NodeSDKServiceDocJSONService = NodeSDKServiceDocJSON.tags.find((item) => {
+                        //console.log("Rainbow BubblesService item : ", item);
+                        return (item.title === "service" && (item.value === "true" || item.value === true));
+                    });
+                    if (NodeSDKServiceDocJSONNodeRed && NodeSDKServiceDocJSONService) {
+                        //console.log("Rainbow BubblesService NodeSDKServiceDocJSONNodeRed JSON : ", NodeSDKServiceDocJSONNodeRed);
+                        if ((NodeSDKServiceDocJSONNodeRed.value === "true" || NodeSDKServiceDocJSONNodeRed.value === true) && (NodeSDKServiceDocJSONService.value === "true" || NodeSDKServiceDocJSONService.value === true) && (NodeSDKServiceDocJSON["kind"] === "member")) {
+                            console.log("Rainbow NodeSDKServiceDocJSON JSON : ", NodeSDKServiceDocJSON);
+                            console.log("Rainbow NodeSDKServiceDocJSON properties : ", NodeSDKServiceDocJSON.properties);
+                            let serviceObj = {};
+                            if (Array.isArray(NodeSDKServiceDocJSON.properties) && NodeSDKServiceDocJSON.properties[0] != undefined) {
+                                serviceObj.name = NodeSDKServiceDocJSON.properties[0].name;
+                                serviceObj.typeService = NodeSDKServiceDocJSON.properties[0].type? NodeSDKServiceDocJSON.properties[0].type.names[0]: "";
+                            }
+                            sdkPublic.push(serviceObj);
+                        }
+                    }
+                }
+            }
+            servicesArray = sdkPublic ;
         }
         
         //sdkPublic.add();
         res.json(sdkPublic);
     });
 
+    RED.httpAdmin.get("/getserviceselected", function (req, res) {
+        let idNode = req.query?req.query.id:null;
+        let serviceObj = {};
+        console.log("callServicesApis : getserviceselected  get service name from Service.");
+        if (idNode) {
+            let nodeinstance = RED.nodes.getNode(idNode);
+            if (nodeinstance) {
+                serviceObj.name = nodeinstance.servicesName ? nodeinstance.servicesName.servicesName : "";
+                console.log("callServicesApis : getserviceselected  get service name : " + serviceObj.name);
+            }
+        }
+
+        res.json(serviceObj);
+    });
+
     RED.nodes.registerType("Send_IM", sendMessage);
     RED.nodes.registerType("Notified_IM", getMessage);
-    RED.nodes.registerType("event-select", eventSelectNode);
+    RED.nodes.registerType("Event-select", eventSelectNode);
     RED.nodes.registerType("Notified_Event", notifyEventReceived);
 
-    RED.nodes.registerType("methodBubbles-select", methodBubblesSelectNode);
-    RED.nodes.registerType("Call_Bubbles", callBubbles);
+    RED.nodes.registerType("MethodApis-select", methodApisSelectNode);
+    RED.nodes.registerType("SdkServices-select", sdkServicesSelectNode);
+    RED.nodes.registerType("Call_ServicesApis", callServicesApis);
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);
     RED.nodes.registerType("Set_Presence", setPresence);
