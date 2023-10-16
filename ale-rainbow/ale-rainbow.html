@@ -150,7 +150,7 @@
             defaults: {
                 server: {value: "", type: "Login"},
                 servicesName: {value: "", type: "SdkServices-select"},
-                apis: {value: "", type: "MethodApis-select"},
+                apis: {value: ""},
                 name: {value: ""}
             },
             inputs: 1,
@@ -181,7 +181,77 @@
                             }
                         });
                     } // */
-                    $("#node-input-apis" ).empty();
+                    //$("#node-input-apis" ).empty();
+                    $("#label-params").val("--");
+                    $("#label-description").val("--");
+                    if (servicesSelected !== undefined && servicesSelected !== null && servicesSelected !== "" && servicesSelected !== "NONE" && servicesSelected.indexOf("new SdkServices-select") < 0) {
+                        console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected, " load the Apis." );
+                        $.getJSON('/rainbowsdkapis?serviceType=' + servicesSelected, function (data) {
+                            console.log("/rainbowsdkapis returned data : ", data);
+                            $('#apis-select').empty();
+                            $('#apis-select').append('<option value=\'NONE\'>NONE</option>');
+                            for (let i = 0; i < data.length; i++) {
+                                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                                console.log("/rainbowsdkapis : ", methodObj);
+                                apisArray.push(methodObj);
+                                $('#apis-select').append('<option value=\'' + methodObj.name + '\'>' + methodObj.name + '</option>');
+                            }
+
+                            let selectedApisDomObj = document.getElementById("node-input-apis");
+                            let selectApisName=selectedApisDomObj.value;
+                            // alert("selection change : " + selectApisName);
+                            // Recherche de l'option s&eacute;lectionn&eacute;e
+                            let apisFoundInSelect = false;
+                            let listApisDomObj = document.getElementById("apis-select");
+                            for (i=0; i < listApisDomObj.options.length; i++) {
+                                if (listApisDomObj.options[i].value === selectApisName) {
+                                    //alert("option found at id : " + i);
+                                    console.log("Api found in option with value " + selectApisName + " at id : " + i);
+
+                                    apisFoundInSelect = true;
+                                    listApisDomObj.options[i].selected = true;
+
+                                    let apiObject = getApiFromName(selectApisName);
+                                    console.log("update api description & params from : ", apiObject);
+                                    if (apiObject) {
+                                        $("#label-description").val(apiObject.description ? apiObject.description : "--");
+                                        let str = $("#label-description").val();
+                                        let regex = /<br\s*[\/]?>/gi;
+                                        $("#label-description").val(str.replace(regex, "\n"));
+
+                                        if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
+                                            $("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
+                                            let str = $("#label-params").val();
+                                            let regex = /<br\s*[\/]?>/gi;
+                                            $("#label-params").val(str.replace(regex, "\n"));
+                                        }
+                                        else {
+                                            $("#label-params").val("--");
+                                        }
+                                    } else {
+                                        $("#label-params").val("--");
+                                        $("#label-description").val("--");
+                                    }
+                                }
+                            }
+                            
+                            if (!apisFoundInSelect) {
+                                console.log("Api not found in option with value : " + apisFoundInSelect + " so clean list of apis.");
+                                $("#node-input-apis").empty();
+                                if (listApisDomObj && listApisDomObj.options) {
+                                    listApisDomObj.options = [];
+                                    console.log("Clean Api option.");
+                                }
+                            }
+                        }).fail((err)=> {
+                            $('#apis-select').empty();
+                            $("#node-input-apis" ).empty();
+                            console.log("fail to getJSON /rainbowsdkapis ");
+                        }); // */
+                    } else {
+                        console.log("Service value to ignore : " + servicesSelected + ", will not search Apis.");
+                        $("#node-input-apis" ).empty();
+                    }
                     /* $("#label-params").val("--");
                     $("#label-description").val("--");
                     // */
@@ -191,12 +261,13 @@
                     } //*/
                 });
                 
-                $("#node-input-apis").change(function() {
+                $("#apis-select").change(function() {
                     console.log("Call_ServicesApis oneditprepare - change");
                     let nodeName = $("#node-input-name").val();
                     console.log("Call_ServicesApis oneditprepare change - 2 nodeName : ", nodeName);
-                    let apisSelected = $("#node-input-apis option:selected" ).text();
+                    let apisSelected = $("#apis-select option:selected" ).text();
                     console.log("Call_ServicesApis oneditprepare - apisSelected : ", apisSelected );
+                    $("#node-input-apis").val(apisSelected);
                     if (nodeName == undefined || nodeName == null || nodeName === "" || nodeName.indexOf("MethodApis-select") > 0) {
                         console.log("Call_ServicesApis oneditprepare - nodeName is null, so fill it.");
                         if (apisSelected.indexOf("MethodApis-select") < 0) {
@@ -258,7 +329,7 @@
             //let servicesSelected = $("#node-input-services option:selected").text();
             $.getJSON('/getserviceselected?id=' + (node?node.id:""), function (serviceObj) {
                 let servicesSelected = serviceObj ? serviceObj.name : "";
-                console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected);
+                console.log("MethodApis-select oneditprepare - servicesSelected : ", servicesSelected);
                 if (servicesSelected && servicesSelected.indexOf("SdkServices-select") < 0) {
                     console.log("Call_ServicesApis oneditprepare - update list of API methods from.");
 
@@ -616,6 +687,92 @@
         </div>
     </script>
 
+    <SCRIPT>
+        function LireLesSelections() {
+
+            /*var Parametre = location.search.substring(1).split("&");
+
+            var temp = Parametre[0].split("=");
+
+            varSelection = unescape(temp[0]);
+
+            if(varSelection == "") return;
+
+            value = unescape(temp[1]);
+
+            alert(varSelection + "=" + value);
+            
+             */
+            /*
+               // Recherche de l'option s&eacute;lectionn&eacute;e
+
+                         for (i=0; i < document.forms[0].elements[0].options.length; i++) {
+
+                         if (document.forms[0].elements[0].options[i].selected)
+
+                         alert ("Votre Recherche de S&eacute;lection est le N&deg; " + i);
+
+                 }
+             */
+
+            let selectedApisDomObj = document.getElementById("node-input-apis");
+            let selectApisName=selectedApisDomObj.value;
+            alert("selection change : " + selectApisName);
+            
+            // Recherche de l'option s&eacute;lectionn&eacute;e
+            let listApisDomObj = document.getElementById("apis-select");
+            for (i=0; i < listApisDomObj.options.length; i++) {
+                if (listApisDomObj.options[i].value === selectApisName) {
+                    alert("option found at id : " + i);
+                    listApisDomObj.options[i].selected = true;
+                }
+            }
+        }
+
+        //window.onload=LireLesSelections;
+
+        function domGet( id , rootNode ) {
+            if ( !id ) return null;
+
+            if ( rootNode === undefined ) {
+
+                // rel to doc base
+                var o = document.getElementById( id );
+                return o;
+
+            } else {
+
+                // rel to current node
+                var nodes = [];
+                nodes.push(rootNode);
+                while ( nodes && nodes.length > 0 ) {
+                    var children = [];
+                    for ( var i = 0; i<nodes.length; i++ ) {
+                        var node = nodes[i];
+                        if ( node && node['id'] !== undefined ) {
+                            if ( node.id == id ) {
+                                return node; // found!
+                            }
+                        }
+
+                        // else keep searching
+                        var childNodes = node.childNodes;
+                        if ( childNodes && childNodes.length > 0 ) {
+                            for ( var j = 0 ; j < childNodes.length; j++ ) {
+                                children.push( childNodes[j] );
+                            }
+                        }
+                    }
+                    nodes = children;
+                }
+
+                // nothing found
+                return null;
+            }
+        }
+        
+    </SCRIPT>
+
     <script type="text/x-red" data-template-name="Call_ServicesApis">
         <div class="form-row">
             <label for="node-input-server"><i class="icon-tag"></i> Rainbow Broker</label>
@@ -627,7 +784,11 @@
         </div>
         <div class="form-row">
             <label for="node-input-apis"><i class="icon-tag"></i> APIS To Call </label>
-            <input type="text" id="node-input-apis" >
+            <input type="text" id="node-input-apis" style="display: hidden">
+            <select id="apis-select">
+                 <!-- option value='NONE' >NONE</option -->
+            </select>
+            <input type="button" onClick="LireLesSelections()">
         </div>
         <div class="form-row">
             <label for="label-description"><i class="icon-tag"></i> API Description </label>

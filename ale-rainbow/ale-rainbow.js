@@ -9,6 +9,7 @@ module.exports = function (RED) {
     const maxBufferLength = 500;
     let apisArray = [];
     let servicesArray = [];
+    let isFunction = require("node:util").isFunction;
 
     function isPromise (x) {
         let isProm = utilTypes.isPromise(x) || x.constructor.name === 'Promise' || x.constructor.name === 'AsyncFunction';
@@ -1550,11 +1551,13 @@ module.exports = function (RED) {
         let node = this;
         node.server = RED.nodes.getNode(config.server);
         node.servicesName = RED.nodes.getNode(config.servicesName);
-        node.apis = RED.nodes.getNode(config.apis);
+        //node.apis = RED.nodes.getNode(config.apis);
         let msgSent = 0;
         let cfgTimer = null;
         node.log("Rainbow : callServicesApis node initialized :" + JSON.stringify(node.server?node.server.name:{}));
+        loadServices();
         
+        /*
         var getRainbowSDKcallServicesApis = function getRainbowSDKcallServicesApis() {
             if ((node.server.rainbow.sdk === undefined) || (node.server.rainbow.sdk === null)) {
                 node.log("Rainbow SDK not ready (" + config.server + ")" + " cnx: " + JSON.stringify(node.server.name));
@@ -1562,10 +1565,15 @@ module.exports = function (RED) {
             }
         }
         getRainbowSDKcallServicesApis();
+        // */
         this.on('input', function (msg) {
-            let sdkServiceName = node.servicesName?node.servicesName.servicesName:"";
-            let sdkApiName = node.apis?node.apis.apis:"";
-            if (sdkApiName != "") {
+            let sdkServiceName = RED.nodes.getNode(config.servicesName)? RED.nodes.getNode(config.servicesName).servicesName:"";
+            let accessorServiceNameTab = servicesArray.filter((item)=>{
+                return (item.typeService === sdkServiceName);
+            });
+            let accessorServiceName = (accessorServiceNameTab && Array.isArray(accessorServiceNameTab)) ? accessorServiceNameTab[0]:"";
+            let sdkApiName = config.apis;
+            if (accessorServiceName !== undefined && accessorServiceName !== "" && sdkApiName !== undefined && sdkApiName !== "") {
                 node.status({
                     fill: "orange",
                     shape: "dot",
@@ -1579,54 +1587,59 @@ module.exports = function (RED) {
                         shape: "dot",
                         text: "not connected"
                     });
-                }
-                else {
+                } else {
                     node.log("Calling API : " + sdkApiName + " cnx: " + JSON.stringify(node.server.name));
-
-                    let resultApiCall = node.server.rainbow.sdk.bubbles[sdkApiName]()
-                    if (isPromise(resultApiCall)) {
-                        Promise.race(resultApiCall).then((result) => {
-                            msgSent++;
+                    let serviceSdkObj = node.server.rainbow.sdk[accessorServiceName.name]; 
+                    if (serviceSdkObj && isFunction(serviceSdkObj[sdkApiName])) {
+                        let resultApiCall = serviceSdkObj[sdkApiName]();
+                        if (isPromise(resultApiCall)) {
+                            Promise.race(resultApiCall).then((result) => {
+                                msgSent++;
+                                node.status({
+                                    fill: "green",
+                                    shape: "dot",
+                                    text: "Nb Api calls: " + msgSent
+                                });
+                                let msg = {
+                                    payload: {
+                                        "serviceName": sdkServiceName,
+                                        "apiName": sdkApiName,
+                                        "apiResult": result
+                                    }
+                                };
+                                node.send([msg, undefined]);
+                            }).catch((result) => {
+                                msgSent++;
+                                node.status({
+                                    fill: "orange",
+                                    shape: "dot",
+                                    text: "Nb Api calls: " + msgSent
+                                });
+                                let msg = {
+                                    payload: {
+                                        "serviceName": sdkServiceName,
+                                        "apiName": sdkApiName,
+                                        "apiResult": result
+                                    }
+                                };
+                                node.send([undefined, msg]);
+                            });
+                        }
+                        else {
                             node.status({
                                 fill: "green",
-                                shape: "dot",
-                            text: "Nb Api calls: " + msgSent 
-                            });
-                            let msg = {
-                                payload: {
-                                    "apiName": sdkApiName,
-                                    "apiResult": result
-                                }
-                            };
-                            node.send([msg, undefined]);
-                        }).catch((result) => {
-                            msgSent++;
-                            node.status({
-                                fill: "orange",
                                 shape: "dot",
                                 text: "Nb Api calls: " + msgSent
                             });
                             let msg = {
                                 payload: {
+                                    "serviceName": sdkServiceName,
                                     "apiName": sdkApiName,
-                                    "apiResult": result
+                                    "apiResult": resultApiCall
                                 }
                             };
-                            node.send([undefined, msg]);
-                        });
-                    } else {
-                        node.status({
-                            fill: "green",
-                            shape: "dot",
-                            text: "Nb Api calls: " + msgSent 
-                        });
-                        let msg = {
-                            payload: {
-                                "apiName": sdkApiName,
-                                "apiResult": resultApiCall                            
-                            }
-                        };
-                        node.send([msg, undefined]);
+                            node.send([msg, undefined]);
+                        }
                     }
                 }
             }
@@ -1697,12 +1710,8 @@ module.exports = function (RED) {
         this.servicesName = n.servicesName;
     }
 
-    RED.httpAdmin.get("/rainbowsdkservices", function (req, res) {
-        let node = this;
-        //let sdkPublic = [{name: "api1"}, {name: "api2"}];
+    function loadServices() {
         let sdkPublic = [];
-         
-
         if (servicesArray.length > 0) {
             sdkPublic = servicesArray;
         } else {
@@ -1744,7 +1753,58 @@ module.exports = function (RED) {
             }
             servicesArray = sdkPublic ;
         }
-        
+        return sdkPublic;
+    }
+    
+    RED.httpAdmin.get("/rainbowsdkservices", function (req, res) {
+        let node = this;
+        //let sdkPublic = [{name: "api1"}, {name: "api2"}];
+        let sdkPublic = [];
+         
+
+      /*  if (servicesArray.length > 0) {
+            sdkPublic = servicesArray;
+        } else {
+            console.log("Rainbow : rainbowsdkservices will get SDK Services names and types Service from NodeSDK.");
+            let pathJson = path.join(__dirname, '../node_modules/rainbow-node-sdk/build/JSONDOCS/NodeSDK.json');
+            console.log("Rainbow pathJson : ", pathJson);
+            //const path = require("path");
+            let NodeSDKServiceDocJSONTab = require(pathJson);
+
+            // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+            // console.log("Rainbow BubblesService JSON : ", util.inspect(bubblesServiceDocJSONTab));
+
+            for (let i = 0; i < NodeSDKServiceDocJSONTab.length; i++) {
+                let NodeSDKServiceDocJSON = NodeSDKServiceDocJSONTab[i];
+                if (NodeSDKServiceDocJSON.tags) {
+
+                    let NodeSDKServiceDocJSONNodeRed = NodeSDKServiceDocJSON.tags.find((item) => {
+                        //console.log("Rainbow BubblesService item : ", item);
+                        return (item.title === "nodered" && (item.value === "true" || item.value === true));
+                    });
+                    let NodeSDKServiceDocJSONService = NodeSDKServiceDocJSON.tags.find((item) => {
+                        //console.log("Rainbow BubblesService item : ", item);
+                        return (item.title === "service" && (item.value === "true" || item.value === true));
+                    });
+                    if (NodeSDKServiceDocJSONNodeRed && NodeSDKServiceDocJSONService) {
+                        //console.log("Rainbow BubblesService NodeSDKServiceDocJSONNodeRed JSON : ", NodeSDKServiceDocJSONNodeRed);
+                        if ((NodeSDKServiceDocJSONNodeRed.value === "true" || NodeSDKServiceDocJSONNodeRed.value === true) && (NodeSDKServiceDocJSONService.value === "true" || NodeSDKServiceDocJSONService.value === true) && (NodeSDKServiceDocJSON["kind"] === "member")) {
+                            console.log("Rainbow NodeSDKServiceDocJSON JSON : ", NodeSDKServiceDocJSON);
+                            console.log("Rainbow NodeSDKServiceDocJSON properties : ", NodeSDKServiceDocJSON.properties);
+                            let serviceObj = {};
+                            if (Array.isArray(NodeSDKServiceDocJSON.properties) && NodeSDKServiceDocJSON.properties[0] != undefined) {
+                                serviceObj.name = NodeSDKServiceDocJSON.properties[0].name;
+                                serviceObj.typeService = NodeSDKServiceDocJSON.properties[0].type? NodeSDKServiceDocJSON.properties[0].type.names[0]: "";
+                            }
+                            sdkPublic.push(serviceObj);
+                        }
+                    }
+                }
+            }
+            servicesArray = sdkPublic ;
+        }
+        // */
+        sdkPublic = loadServices();
         //sdkPublic.add();
         res.json(sdkPublic);
     });
