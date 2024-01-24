@@ -551,6 +551,8 @@
             <li><code>msg.payload.subject</code> should contain the message subject (optional, as a string).</li>
             <li>Bubble only: <b>and only if user is Bubble owner !</b><br/>
                 <code>msg.payload.customData</code> if given (and if user is the Bubble owner), will also set the Bubble's customData (optional, as a string).</li>
+                <code>msg.payload.mentions</code> array containing a list of JID of contact to mention or a string containing a single JID of the contact (optional, as a string).</li>
+            <li><code>msg.payload.urgency</code> The urgence of the message. Value can be :   'high' Urgent message, 'middle' important message, 'low' information message, "std' or null standard message (optional, as a string).</li>
         </ul>
     </script>
 
@@ -784,11 +786,11 @@
         </div>
         <div class="form-row">
             <label for="node-input-apis"><i class="icon-tag"></i> APIS To Call </label>
-            <input type="text" id="node-input-apis" style="display: hidden">
+            <input type="text" id="node-input-apis" style="display: none">
             <select id="apis-select">
                  <!-- option value='NONE' >NONE</option -->
             </select>
-            <input type="button" onClick="LireLesSelections()">
+            <input type="button" onClick="LireLesSelections()" style="display: none">
         </div>
         <div class="form-row">
             <label for="label-description"><i class="icon-tag"></i> API Description </label>
