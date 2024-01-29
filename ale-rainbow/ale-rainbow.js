@@ -1593,7 +1593,7 @@ module.exports = function (RED) {
                 node.status({
                     fill: "orange",
                     shape: "dot",
-                    text: "will call bubble api "
+                    text: "will call " + sdkServiceName + "::" + sdkApiName + " api "
                 });
                 node.log("Rainbow : callServicesApis to cnx: " + JSON.stringify(node.server.name) + ", sdkServiceName : " + sdkServiceName + ", sdkApiName : " + sdkApiName);
                 if (node.server.rainbow.logged === false) {

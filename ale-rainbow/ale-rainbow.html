@@ -169,6 +169,10 @@
                     //let servicesSelected = $("#node-input-services option:selected" ).text();
                     servicesSelected = $("#node-input-servicesName option:selected" ).text();
                     console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected );
+                    // if the SdkServices-select string is in the selected item then it means that there is no services selected so clear servicesSelected.
+                    if (servicesSelected.indexOf("SdkServices-select") != -1) {
+                        servicesSelected = "";
+                    }
                     /* if (servicesSelected.indexOf("SdkServices-select") < 0) {
                         $.getJSON('/rainbowsdkapis?serviceType=' + servicesSelected, function (data) {
                             console.log("Call_ServicesApis /rainbowsdkapis readed ");
@@ -373,7 +377,7 @@
                 $('#node-config-input-servicesName').append('<option value=\'NONE\'>NONE</option>');
                 for (let i = 0; i < data.length; i++) {
                     let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                    console.log("SdkServices-select : ",methodObj);
+                    console.log("SdkServices-select : ", methodObj);
 
                     $('#node-config-input-servicesName').append('<option value=\'' + methodObj.typeService + '\'>' + methodObj.typeService + '</option>');
                 }
