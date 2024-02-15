@@ -1373,7 +1373,7 @@ module.exports = function (RED) {
             },
             // IM options
             "im": {},
-            "servicesToStart": {}
+            "servicesToStart": {},
                 s2s: {
                     start_up:true,
                     optional:true,
