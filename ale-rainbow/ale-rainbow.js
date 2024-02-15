@@ -172,6 +172,119 @@ module.exports = function (RED) {
                 "nbMaxConversations": config.nbMaxConversations,
                 "rateLimitPerHour": config.rateLimitPerHour,
                 //"messagesDataStore": DataStoreType.NoPermanentStore
+            },
+            "servicesToStart" : {
+                "s2s": {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._settings);
+                "presence": {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._settings);
+                "contacts":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "conversations" :  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":true
+                }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._fileStorage, that._fileServer);
+                "im" :  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":true
+                }, //need services :  (that._xmpp, that._conversations, that._bubbles, that._fileStorage);
+                "profiles" :  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "groups" :  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+
+                "bubbles":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "telephony":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._profiles);
+                "channels":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "admin":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "fileServer":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest, that._fileStorage);
+                "fileStorage":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest, that._fileServer, that._conversations);
+                "calllog":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest, that._contacts, that._profiles, that._telephony);
+                "favorites":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "alerts":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "invitation":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services :  (that._xmpp, that._rest);
+                "settings":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services : ( XMPPService, _rest : RESTService)
+                "webinar":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services : ( )
+                "rbvoice":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services : ( )
+                "httpoverxmpp":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                }, //need services : ( )
+                "rpcoverxmpp":  {
+                    "start_up":true,
+                    "optional":true,
+                    "logEntryParameters":false
+                } //need services : ( )
             }
         };
         if (config.sdkFileLog) {
@@ -1261,6 +1374,117 @@ module.exports = function (RED) {
             // IM options
             "im": {},
             "servicesToStart": {}
+                s2s: {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._settings);
+                presence: {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._settings);
+                contacts:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                conversations :  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:true
+                }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._fileStorage, that._fileServer);
+                im :  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:true
+                }, //need services :  (that._xmpp, that._conversations, that._bubbles, that._fileStorage);
+                profiles :  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                groups :  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+
+                bubbles:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                telephony:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._profiles);
+                channels:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                admin:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                fileServer:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest, that._fileStorage);
+                fileStorage:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest, that._fileServer, that._conversations);
+                calllog:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest, that._contacts, that._profiles, that._telephony);
+                favorites:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                alerts:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                invitation:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services :  (that._xmpp, that._rest);
+                settings:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services : ( XMPPService, _rest : RESTService)
+                webinar:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services : ( )
+                rbvoice:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services : ( )
+                httpoverxmpp:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                }, //need services : ( )
+                rpcoverxmpp:  {
+                    start_up:true,
+                    optional:true,
+                    logEntryParameters:false
+                } //need services : ( )
         };
         let sdkInstance = new _RainbowSDK(options);
         let sdkPublicEventsName = [];
