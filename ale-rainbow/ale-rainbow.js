@@ -1583,7 +1583,10 @@ module.exports = function (RED) {
             /*if (msg)  {
                 msg.payload = {};
             } */
-            let sdkServiceName = RED.nodes.getNode(config.servicesName)? RED.nodes.getNode(config.servicesName).servicesName:"";
+            node.log("Rainbow : callServicesApis input");
+
+            //let sdkServiceName = RED.nodes.getNode(config.servicesName)? RED.nodes.getNode(config.servicesName).servicesName:"";
+            let sdkServiceName = config.servicesName? config.servicesName:"";
             let accessorServiceNameTab = servicesArray.filter((item)=>{
                 return (item.typeService === sdkServiceName);
             });
@@ -1655,10 +1658,12 @@ module.exports = function (RED) {
 
     }
 
+/*
     function methodApisSelectNode(n) {
         RED.nodes.createNode(this, n);
         this.apis = n.apis;
     }
+// */
 
     RED.httpAdmin.get("/rainbowsdkapis", function (req, res) {
         let node = this;
@@ -1692,7 +1697,7 @@ module.exports = function (RED) {
                     if (bubblesServiceDocJSONNodeRed) {
                         //console.log("Rainbow BubblesService bubblesServiceDocJSONNodeRed JSON : ", bubblesServiceDocJSONNodeRed);
                         if ((bubblesServiceDocJSONNodeRed.value === "true" || bubblesServiceDocJSONNodeRed.value === true) && (bubblesServiceDocJSON["kind"] === "function" || bubblesServiceDocJSON["kind"] === "method")) {
-                            console.log("Rainbow BubblesService bubblesServiceDocJSON JSON : ", bubblesServiceDocJSON);
+                            //console.log("Rainbow BubblesService bubblesServiceDocJSON JSON : ", util.inspect(bubblesServiceDocJSON));
                             let methodObj = {};
                             methodObj.name = bubblesServiceDocJSON.name;
                             methodObj.description = bubblesServiceDocJSON.description;
@@ -1709,10 +1714,11 @@ module.exports = function (RED) {
         res.json(sdkPublic);
     });
 
-    function sdkServicesSelectNode(n) {
+/*    function sdkServicesSelectNode(n) {
         RED.nodes.createNode(this, n);
         this.servicesName = n.servicesName;
     }
+    // */
 
     function loadServices() {
         let sdkPublic = [];
@@ -1833,8 +1839,8 @@ module.exports = function (RED) {
     RED.nodes.registerType("Event-select", eventSelectNode);
     RED.nodes.registerType("Notified_Event", notifyEventReceived);
 
-    RED.nodes.registerType("MethodApis-select", methodApisSelectNode);
-    RED.nodes.registerType("SdkServices-select", sdkServicesSelectNode);
+    //RED.nodes.registerType("MethodApis-select", methodApisSelectNode);
+    //RED.nodes.registerType("SdkServices-select", sdkServicesSelectNode);
     RED.nodes.registerType("Call_ServicesApis", callServicesApis);
 
     RED.nodes.registerType("Notified_Presence", getContactsPresence);

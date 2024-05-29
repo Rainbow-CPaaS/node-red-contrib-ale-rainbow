@@ -110,7 +110,7 @@
         let servicesSelected = "";
         $.getJSON('/rainbowsdkservices',function(data) {
             console.log("Call_ServicesApis /rainbowsdkservices readed ");
-            apisService.push({name: "NONE", description:"--"});
+            apisService.push({name: "NONE", typeService:"NONE", description:"--"});
             for (let i = 0; i < data.length; i++) {
                 let methodObj = data[i] ? data[i] : {}; // {name, description, params}
                 console.log("Call_ServicesApis /rainbowsdkservices methodObj : ", methodObj);
@@ -149,7 +149,7 @@
             color: '#a6bbcf',
             defaults: {
                 server: {value: "", type: "Login"},
-                servicesName: {value: "", type: "SdkServices-select"},
+                servicesName: {value: ""},
                 apis: {value: ""},
                 name: {value: ""}
             },
@@ -161,18 +161,129 @@
             },
             oneditprepare: function() {
                 let that = this;
-                console.log("Call_ServicesApis oneditprepare - 1")
-                
-                //$("#node-input-apis").on('focus', function () { nodeName = this.value; }).change(function() {
-                $("#node-input-servicesName").change(function() {
-                    console.log("Call_ServicesApis oneditprepare - change");
-                    //let servicesSelected = $("#node-input-services option:selected" ).text();
-                    servicesSelected = $("#node-input-servicesName option:selected" ).text();
-                    console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected );
-                    // if the SdkServices-select string is in the selected item then it means that there is no services selected so clear servicesSelected.
-                    if (servicesSelected.indexOf("SdkServices-select") != -1) {
-                        servicesSelected = "";
+                console.log("Call_ServicesApis oneditprepare - 1");
+
+                $('#services-select').empty();
+               // $('#services-select').append('<option value=\'NONE\'>NONE</option>');
+                console.log("Call_ServicesApis oneditprepare - cleaned and added NONE to #services-select.");
+                for (let i = 0; i < apisService.length; i++) {
+                    let methodObj = apisService [i];
+                    console.log("Call_ServicesApis oneditprepare - added " + methodObj.name + " : " + methodObj.typeService + " to #services-select.");
+                    $('#services-select').append('<option value=\'' + methodObj.typeService + '\'>' + methodObj.typeService + '</option>');
+                }
+
+                let selectedServicesDomObj = document.getElementById("node-input-servicesName");
+                let selectServicesName=selectedServicesDomObj.value;
+                // alert("selection change : " + selectApisName);
+                // Recherche de l'option s&eacute;lectionn&eacute;e
+                let servicesFoundInSelect = false;
+                let listServicesDomObj = document.getElementById("services-select");
+                for (i=0; i < listServicesDomObj.options.length; i++) {
+                    if (listServicesDomObj.options[i].value === selectServicesName) {
+                        //alert("option found at id : " + i);
+                        console.log("Service found in option with value " + selectServicesName + " at id : " + i);
+
+                        servicesFoundInSelect = true;
+                        listServicesDomObj.options[i].selected = true;
+
+                        if (selectServicesName !== undefined && selectServicesName !== null && selectServicesName !== "" && selectServicesName !== "NONE" && selectServicesName.indexOf("new SdkServices-select") < 0) {
+                            console.log("Call_ServicesApis oneditprepare - selectServicesName : ", selectServicesName, " load the Apis." );
+                            $.getJSON('/rainbowsdkapis?serviceType=' + selectServicesName, function (data) {
+                                console.log("/rainbowsdkapis returned data : ", data);
+                                $('#apis-select').empty();
+                                $('#apis-select').append('<option value=\'NONE\'>NONE</option>');
+                                for (let i = 0; i < data.length; i++) {
+                                    let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+                                    console.log("/rainbowsdkapis : ", methodObj);
+                                    apisArray.push(methodObj);
+                                    $('#apis-select').append('<option value=\'' + methodObj.name + '\'>' + methodObj.name + '</option>');
+                                }
+
+                                let selectedApisDomObj = document.getElementById("node-input-apis");
+                                let selectApisName=selectedApisDomObj.value;
+                                // alert("selection change : " + selectApisName);
+                                // Recherche de l'option s&eacute;lectionn&eacute;e
+                                let apisFoundInSelect = false;
+                                let listApisDomObj = document.getElementById("apis-select");
+                                for (i=0; i < listApisDomObj.options.length; i++) {
+                                    if (listApisDomObj.options[i].value === selectApisName) {
+                                        //alert("option found at id : " + i);
+                                        console.log("Api found in option with value " + selectApisName + " at id : " + i);
+
+                                        apisFoundInSelect = true;
+                                        listApisDomObj.options[i].selected = true;
+
+                                        let apiObject = getApiFromName(selectApisName);
+                                        console.log("update api description & params from : ", apiObject);
+                                        if (apiObject) {
+                                            $("#label-description").val(apiObject.description ? apiObject.description : "--");
+                                            let str = $("#label-description").val();
+                                            let regex = /<br\s*[\/]?>/gi;
+                                            $("#label-description").val(str.replace(regex, "\n"));
+
+                                            if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
+                                                $("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
+                                                let str = $("#label-params").val();
+                                                let regex = /<br\s*[\/]?>/gi;
+                                                $("#label-params").val(str.replace(regex, "\n"));
+                                            }
+                                            else {
+                                                $("#label-params").val("--");
+                                            }
+                                        } else {
+                                            $("#label-params").val("--");
+                                            $("#label-description").val("--");
+                                        }
+                                    }
+                                }
+
+                                if (!apisFoundInSelect) {
+                                    console.log("Api not found in option with value : " + apisFoundInSelect + " so clean list of apis.");
+                                    /* $("#node-input-apis").empty();
+                                    if (listApisDomObj && listApisDomObj.options) {
+                                        listApisDomObj.options = [];
+                                        console.log("Clean Api option.");
+                                    }
+                                    // */
+                                }
+                            }).fail((err)=> {
+                             //   $('#apis-select').empty();
+                             //   $("#node-input-apis" ).empty();
+                                console.log("fail to getJSON /rainbowsdkapis ");
+                            }); // */
+                        } else {
+                            console.log("Service value to ignore : " + selectServicesName + ", will not search Apis.");
+                            //$("#node-input-apis" ).empty();
+                        }
+
+
                     }
+                }
+
+                if (!servicesFoundInSelect) {
+                    console.log("Service not found in option with value : " + servicesFoundInSelect + " so clean list of apis.");
+                    //$("#node-input-apis").empty();
+                    /* if (listServicesDomObj && listServicesDomObj.options) {
+                        listServicesDomObj.options = [];
+                        console.log("Clean Service option.");
+                    } // */
+                }
+
+                //$("#node-input-apis").on('focus', function () { nodeName = this.value; }).change(function() {
+                //$("#node-input-servicesName").change(function() {
+                $("#services-select").change(function() {
+                    console.log("Call_ServicesApis oneditprepare - change");
+                    servicesSelected = $("#services-select option:selected" ).text();
+                    console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected );
+                    $("#node-input-servicesName").val(servicesSelected);
+                    //let servicesSelected = $("#node-input-services option:selected" ).text();
+                    //servicesSelected = $("#node-input-servicesName option:selected" ).text();
+                    //servicesSelected = document.getElementById("node-input-servicesName")?.value;
+                    //console.log("Call_ServicesApis oneditprepare - servicesSelected : ", servicesSelected );
+                    // if the SdkServices-select string is in the selected item then it means that there is no services selected so clear servicesSelected.
+                  /*  if (servicesSelected.indexOf("SdkServices-select") != -1) {
+                        servicesSelected = "";
+                    } // */
                     /* if (servicesSelected.indexOf("SdkServices-select") < 0) {
                         $.getJSON('/rainbowsdkapis?serviceType=' + servicesSelected, function (data) {
                             console.log("Call_ServicesApis /rainbowsdkapis readed ");
@@ -311,79 +422,79 @@
         return result;
     }());
 
-    RED.nodes.registerType('MethodApis-select',{
-        category: 'config',
-        defaults: {
-            apis: {value:"",required:true},
-        },
-        label: function() {
-            return this.apis;
-        },
-        oneditprepare: function() {
-            let node = this;
-            //alert("hello");
-            /*
-            for (let i = 0; i < data.length; i++) {
-                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                console.log("MethodApis-select : ",methodObj);
-
-                $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
-            }
-            // */
-            //let servicesSelected = $("#node-input-services option:selected").text();
-            $.getJSON('/getserviceselected?id=' + (node?node.id:""), function (serviceObj) {
-                let servicesSelected = serviceObj ? serviceObj.name : "";
-                console.log("MethodApis-select oneditprepare - servicesSelected : ", servicesSelected);
-                if (servicesSelected && servicesSelected.indexOf("SdkServices-select") < 0) {
-                    console.log("Call_ServicesApis oneditprepare - update list of API methods from.");
-
-
-                    $.getJSON('/rainbowsdkapis?serviceType=' + servicesSelected, function (data) {
-                        $('#node-config-input-apis').empty();
-                        $('#node-config-input-apis').append('<option value=\'NONE\'>NONE</option>');
-                        for (let i = 0; i < data.length; i++) {
-                            let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                            console.log("MethodApis-select /rainbowsdkapis : ", methodObj);
-
-                            $('#node-config-input-apis').append('<option value=\'' + methodObj.name + '\'>' + methodObj.name + '</option>');
-                        }
-                    }); // */
-                }
-            }).catch((err) => {
-                console.log("Error while getJSON getserviceselected err : ", err);
-            });
-        }
-    });
-
-    RED.nodes.registerType('SdkServices-select',{
-        category: 'config',
-        defaults: {
-            servicesName: {value:"",required:true},
-        },
-        label: function() {
-            return this.servicesName;
-        },
-        oneditprepare: function() {
-            /*
-            for (let i = 0; i < data.length; i++) {
-                let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                console.log("SdkServices-select : ",methodObj);
-
-                $('#node-config-input-services').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
-            }
-            // */
-            $.getJSON('/rainbowsdkservices',function(data) {
-                $('#node-config-input-servicesName').empty();
-                $('#node-config-input-servicesName').append('<option value=\'NONE\'>NONE</option>');
-                for (let i = 0; i < data.length; i++) {
-                    let methodObj = data[i] ? data[i] : {}; // {name, description, params}
-                    console.log("SdkServices-select : ", methodObj);
-
-                    $('#node-config-input-servicesName').append('<option value=\'' + methodObj.typeService + '\'>' + methodObj.typeService + '</option>');
-                }
-            }); // */
-        }
-    });
+    // RED.nodes.registerType('MethodApis-select',{
+    //     category: 'config',
+    //     defaults: {
+    //         apis: {value:"",required:true},
+    //     },
+    //     label: function() {
+    //         return this.apis;
+    //     },
+    //     oneditprepare: function() {
+    //         let node = this;
+    //         //alert("hello");
+    //         /*
+    //         for (let i = 0; i < data.length; i++) {
+    //             let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+    //             console.log("MethodApis-select : ",methodObj);
+    //
+    //             $('#node-config-input-apis').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+    //         }
+    //         // */
+    //         //let servicesSelected = $("#node-input-services option:selected").text();
+    //         $.getJSON('/getserviceselected?id=' + (node?node.id:""), function (serviceObj) {
+    //             let servicesSelected = serviceObj ? serviceObj.name : "";
+    //             console.log("MethodApis-select oneditprepare - servicesSelected : ", servicesSelected);
+    //             if (servicesSelected && servicesSelected.indexOf("SdkServices-select") < 0) {
+    //                 console.log("Call_ServicesApis oneditprepare - update list of API methods from.");
+    //
+    //
+    //                 $.getJSON('/rainbowsdkapis?serviceType=' + servicesSelected, function (data) {
+    //                     $('#node-config-input-apis').empty();
+    //                     $('#node-config-input-apis').append('<option value=\'NONE\'>NONE</option>');
+    //                     for (let i = 0; i < data.length; i++) {
+    //                         let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+    //                         console.log("MethodApis-select /rainbowsdkapis : ", methodObj);
+    //
+    //                         $('#node-config-input-apis').append('<option value=\'' + methodObj.name + '\'>' + methodObj.name + '</option>');
+    //                     }
+    //                 }); // */
+    //             }
+    //         }).catch((err) => {
+    //             console.log("Error while getJSON getserviceselected err : ", err);
+    //         });
+    //     }
+    // });
+    //
+    // RED.nodes.registerType('SdkServices-select',{
+    //     category: 'config',
+    //     defaults: {
+    //         servicesName: {value:"",required:true},
+    //     },
+    //     label: function() {
+    //         return this.servicesName;
+    //     },
+    //     oneditprepare: function() {
+    //         /*
+    //         for (let i = 0; i < data.length; i++) {
+    //             let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+    //             console.log("SdkServices-select : ",methodObj);
+    //
+    //             $('#node-config-input-services').append('<option value="' + methodObj.name + '">' + methodObj.name + '</option>');
+    //         }
+    //         // */
+    //         $.getJSON('/rainbowsdkservices',function(data) {
+    //             $('#node-config-input-servicesName').empty();
+    //             $('#node-config-input-servicesName').append('<option value=\'NONE\'>NONE</option>');
+    //             for (let i = 0; i < data.length; i++) {
+    //                 let methodObj = data[i] ? data[i] : {}; // {name, description, params}
+    //                 console.log("SdkServices-select : ", methodObj);
+    //
+    //                 $('#node-config-input-servicesName').append('<option value=\'' + methodObj.typeService + '\'>' + methodObj.typeService + '</option>');
+    //             }
+    //         }); // */
+    //     }
+    // });
 
     RED.nodes.registerType('Notified_IM_Read',{
         category: 'ALE Rainbow',
@@ -786,7 +897,10 @@
         </div>
         <div class="form-row">
             <label for="node-input-servicesName"><i class="icon-tag"></i> SERVICES To Call </label>
-            <input type="text" id="node-input-servicesName" >
+            <input type="text" id="node-input-servicesName" style="display: none">
+            <select id="services-select">
+                 <!-- option value='NONE' >NONE</option -->
+            </select>
         </div>
         <div class="form-row">
             <label for="node-input-apis"><i class="icon-tag"></i> APIS To Call </label>
@@ -845,25 +959,25 @@
         <p><code>WARNING</code> : The result is the data provided by the api call, if it SDK's API is a promise, then the node wait for the result (even success or fail) of the SDK's API call.</p>
     </script>
 
-    <script type="text/html" data-template-name="SdkServices-select">
-        <div class="form-row">
-            <label for="node-config-input-servicesName"><i class="icon-bookmark"></i>Services to call </label>
-            <!-- input type="text" id="node-config-input-services"> -->
-            <select id="node-config-input-servicesName">
-                 <!-- option value='NONE' >NONE</option -->
-            </select>
-        </div>
-    </script>
+<!--    <script type="text/html" data-template-name="SdkServices-select">-->
+<!--        <div class="form-row">-->
+<!--            <label for="node-config-input-servicesName"><i class="icon-bookmark"></i>Services to call </label>-->
+<!--            &lt;!&ndash; input type="text" id="node-config-input-services"> &ndash;&gt;-->
+<!--            <select id="node-config-input-servicesName">-->
+<!--                 &lt;!&ndash; option value='NONE' >NONE</option &ndash;&gt;-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </script>-->
 
-    <script type="text/html" data-template-name="MethodApis-select">
-        <div class="form-row">
-            <label for="node-config-input-apis"><i class="icon-bookmark"></i>Methods API to call </label>
-            <!-- input type="text" id="node-config-input-apis"> -->
-            <select id="node-config-input-apis">
-                 <!-- option value='NONE' >NONE</option -->
-            </select>
-        </div>
-    </script>
+<!--    <script type="text/html" data-template-name="MethodApis-select">-->
+<!--        <div class="form-row">-->
+<!--            <label for="node-config-input-apis"><i class="icon-bookmark"></i>Methods API to call </label>-->
+<!--            &lt;!&ndash; input type="text" id="node-config-input-apis"> &ndash;&gt;-->
+<!--            <select id="node-config-input-apis">-->
+<!--                 &lt;!&ndash; option value='NONE' >NONE</option &ndash;&gt;-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </script>-->
 
     <script type="text/x-red" data-template-name="Notified_IM_Read">
         <div class="form-row">
