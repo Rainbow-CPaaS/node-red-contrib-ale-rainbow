@@ -2,6 +2,9 @@
 
 Here is the list of the changes and features provided by the **node-red-contrib-ale-rainbow**
 
+## [1.82.8] - 2024-05-31
+- Adds ability to inject the SDK's options in the entry of the CnxState node of the flow.
+ 
 ## [1.82.7] - 2024-02-15
 
 - Update Rainbow SDK dependency (2.25.2-lts.5)
