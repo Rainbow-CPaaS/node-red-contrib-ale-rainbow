@@ -188,7 +188,6 @@ module.exports = function (RED) {
                 "appSecret": node.credentials.appSecret,
             },
             "logs": {
-
                 "enableConsoleLogs": config.sdkConsoleLog, // Default: false
 //                "enableConsoleLogs": false, // Default: false
                 "enableFileLogs": config.sdkFileLog, // Default: false
@@ -220,117 +219,117 @@ module.exports = function (RED) {
                 "rateLimitPerHour": config.rateLimitPerHour,
                 //"messagesDataStore": DataStoreType.NoPermanentStore
             },
-            "servicesToStart" : {
+            "servicesToStart": {
                 "s2s": {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._settings);
                 "presence": {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._settings);
-                "contacts":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "contacts": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "conversations" :  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":true
+                "conversations": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": true
                 }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._fileStorage, that._fileServer);
-                "im" :  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":true
+                "im": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": true
                 }, //need services :  (that._xmpp, that._conversations, that._bubbles, that._fileStorage);
-                "profiles" :  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "profiles": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "groups" :  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "groups": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
 
-                "bubbles":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "bubbles": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "telephony":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "telephony": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest, that._contacts, that._bubbles, that._profiles);
-                "channels":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "channels": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "admin":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "admin": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "fileServer":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "fileServer": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest, that._fileStorage);
-                "fileStorage":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "fileStorage": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest, that._fileServer, that._conversations);
-                "calllog":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "calllog": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest, that._contacts, that._profiles, that._telephony);
-                "favorites":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "favorites": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "alerts":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "alerts": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "invitation":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "invitation": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services :  (that._xmpp, that._rest);
-                "settings":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "settings": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services : ( XMPPService, _rest : RESTService)
-                "webinar":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "webinar": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services : ( )
-                "rbvoice":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "rbvoice": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services : ( )
-                "httpoverxmpp":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "httpoverxmpp": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 }, //need services : ( )
-                "rpcoverxmpp":  {
-                    "start_up":true,
-                    "optional":true,
-                    "logEntryParameters":false
+                "rpcoverxmpp": {
+                    "start_up": true,
+                    "optional": true,
+                    "logEntryParameters": false
                 } //need services : ( )
             }
         };
@@ -508,6 +507,40 @@ module.exports = function (RED) {
         });
     }
 
+    function updateObjectPropertiesFromAnOtherObject (dstObjectArray, srcObject) {
+        if (!Array.isArray(dstObjectArray)) {
+            return {};
+        }
+
+        let dstObject = dstObjectArray[0];
+        Object.getOwnPropertyNames(srcObject).forEach((val, idx, array) => {
+            //console.log(val + " -> " + data[val]);
+            if (dstObject.hasOwnProperty(val)) {
+                // dev-code //
+                // console.log("WARNING : One property of the parameter of BubbleFactory method is not present in the Bubble class : ", val, " -> ", data[val]);
+                // end-dev-code //
+
+                if (srcObject && (typeof srcObject[val] === "object" || typeof srcObject[val] === "function") ) {
+                    // dev-code //
+                    // console.log("One property of the dst Object is found in dst and is an Object, so recursivly try to update.");
+                    // end-dev-code //
+                    let dstArray = [];
+                    dstArray.push(dstObject[val]);
+                    updateObjectPropertiesFromAnOtherObject(dstArray, srcObject[val]);
+                } else {
+                    // dev-code //
+                    //console.log("One property of the dst Object is found in dst and is an Object, so update it.");
+                    // end-dev-code //
+                    dstObject[val] = srcObject[val];
+                }
+            } else {
+                // dev-code-console //
+                //console.log("WARNING : One property of the dst Object is not present in src Object default value, so ignore it : ", val);
+                // end-dev-code-console //
+            }
+        });
+    }
+
     function getCnxState(config) {
         RED.nodes.createNode(this, config);
         this.server = RED.nodes.getNode(config.server);
@@ -667,19 +700,44 @@ module.exports = function (RED) {
                         if (node.server.rainbow.logged) {
                             pauseSDK(node, node.server, undefined);
                         } else {
-                            if (msg?.rainbow?.options?.credentials) {
-                                this.server.rainbow.options.credentials = JSON.parse(JSON.stringify(msg.rainbow.options.credentials))
-
+                            //input param++
+                            try {
+                                /*if (msg?.rainbow?.options?.levelLogging) {
+                                    let levelLogging = msg.rainbow.options.levelLogging;
+                                    if (levelLogging == "debug" || levelLogging == "debug" || levelLogging == "debug" || levelLogging == "debug" || levelLogging == "debug") {
+                                        this.server.rainbow.options.logs.level = levelLogging;
+                                        if (this.server.rainbow.options.logs && this.server.rainbow.options.logs.file) {
+                                            this.server.rainbow.options.logs.file.level = levelLogging;
+                                        }
+                                    }
+                                } // */
+                                /*
+                                if (msg?.rainbow?.options?.credentials) {
+                                    this.server.rainbow.options.credentials = JSON.parse(JSON.stringify(msg.rainbow.options.credentials));
+                                }
+                                if (msg?.rainbow?.options?.application) {
+                                    this.server.rainbow.options.application = JSON.parse(JSON.stringify(msg.rainbow.options.application));
+                                }
+                                if (msg?.rainbow?.options?.im) {
+                                    Object.keys(msg.rainbow.options.im).forEach(key => {
+                                        this.server.rainbow.options.im[key] = msg.rainbow.options.im[key]
+                                    })
+                                }
+                                if (msg?.rainbow?.options?.logs) {
+                                    Object.keys(msg.rainbow.options.logs).forEach(key => {
+                                        this.server.rainbow.options.logs[key] = msg.rainbow.options.logs[key]
+                                    })
+                                }
+                                // */
+                                if (msg?.rainbow?.options) {
+                                    console.log(this.server.rainbow.options);
+                                    updateObjectPropertiesFromAnOtherObject([this.server.rainbow.options], msg.rainbow.options);
+                                    console.log(this.server.rainbow.options);
+                                }
+                            } catch (e) {
+                                node.log("Rainbow SDK input failed." + JSON.stringify(e));
                             }
-                            if (msg?.rainbow?.options?.application) {
-                                this.server.rainbow.options.application = JSON.parse(JSON.stringify(msg.rainbow.options.application))
-
-                            }
-                            if (msg?.rainbow?.options?.im) {
-                                Object.keys(msg.rainbow.options.im).forEach(key => {
-                                    this.server.rainbow.options.im[key] = msg.rainbow.options.im[key]
-                                })
-                            }
+                            //input param--
                             releaseSDK(node, node.server);
                             allocateSDK(node, node.server);
                             node.server.rainbow.sdk.start().then(() => {

@@ -1115,6 +1115,32 @@
             <li><code>'logout'</code> : triggers Rainbow sign-out procedure<br>
             </ul>
         </p>
+        <p><code>msg.rainbow</code> contains options for Rainbow Node SDK.<br>
+        It can be :
+        <ul>
+            <li><code>'options'</code> : An object with same tree than Rainbow Node SDK input options, to override values.<br>
+<pre><code>msg.rainbow = {
+     options: {
+        "credentials": {
+            "login": env.get("ENV_RAINBOW_CREDENTIAL_USERNAME") || "",
+            "password": env.get("ENV_RAINBOW_CREDENTIAL_PASSWORD") || ""
+        },
+        "application": {
+            "appID": env.get("ENV_RAINBOW_APPLICATION_ID") || "",
+            "appSecret": env.get("ENV_RAINBOW_APPLICATION_SECRET") || ""
+        },
+        "logs": {
+            "level": "info",
+            "file": {
+               "level": "info"
+            }
+        }
+     }
+} </code>
+            </pre>
+            Note that the properties values are overrided one by one and not the full options object. So if an option is not present in this provided object, then the configured value in `CnxState node` is used.
+            </ul>
+        </p>
         <h3>Output :</h3>
         <h4>First output:</h4>
 

@@ -31,7 +31,12 @@ pipeline {
     }
     
     parameters {
-        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.81.0', description: 'What is the version of the STS SDK to build?')
+        string(name: 'RAINBOWNODEREDSDKVERSION', defaultValue: '1.82.2', description: 'What is the version of the STS SDK to build?')
+        booleanParam(name: 'SENDEMAIL', defaultValue: false, description: 'Send email after publish ?')
+        booleanParam(name: 'SENDEMAILTOVBERDER', defaultValue: false, description: 'Send email after publish to vincent.berder@al-enterprise.com only ?')
+        booleanParam(name: 'PUBLISHTONPM', defaultValue: false, description: 'Publish the sts SDK built to npmjs.')
+        booleanParam(name: 'PUSHTAGSONGIT', defaultValue: true, description: 'Push tags on git.')
+        
     }
      environment {
                 MJAPIKEY = credentials('2f8c39d0-35d5-4b67-a68a-f60aaa7084ad') // 6f119214480245deed79c5a45c59bae6/****** (MailJet API Key to post emails)
@@ -39,6 +44,7 @@ pipeline {
                 GITLABVBERDER = credentials('b04ca5f5-3666-431d-aaf4-c6c239121510') // gitlab credential of vincent berder.
                 VBERDERRB = credentials('5bf46f68-1d87-4091-9aba-c337198503c8') // (vberder - OFFICIAL).
                 APP = credentials('25181a6c-2586-477d-9b95-0a1cc456c831') // (Rainbow Official Vberder AppId).
+                
     }
     stages {
             stage('Show for parameters') {
@@ -217,7 +223,7 @@ pipeline {
                     git config --local credential.helper "!f() { echo username=\\$GITLABVBERDER_USR; echo password=\\$GITLABVBERDER_PSW; }; f"
                     git config --global user.email "vincent.berder@al-enterprise.com"
                     git config --global user.name "vincent.berder@al-enterprise.com"
-                        
+                    
                     #echo ---------- Create a specific branch :
                     #git branch "delivered${RAINBOWNODEREDSDKVERSION}" 
                     #git checkout "delivered${RAINBOWNODEREDSDKVERSION}"
@@ -256,19 +262,55 @@ pipeline {
                     npm token list
                         
                     echo ---------- STEP publish :
-                    npm publish 
-
-                   echo ---------- PUSH tags AND files :
-                   git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
-                   git push  origin HEAD:${env.BRANCH_NAME}
-                   git push --tags origin HEAD:${env.BRANCH_NAME}
+                    ${PUBLISHTONPM} &&  npm publish 
                         
                     more ~/.npmrc.sav > ~/.npmrc
                     
                     git status
+                    echo ---------- send emails  :
+                    export MJ_APIKEY_PUBLIC="${MJAPIKEY_USR}" 
+                    export MJ_APIKEY_PRIVATE="${MJAPIKEY_PSW}"
+                    yarn add git+https://github.com/Rainbow-CPaaS/rainbow-node-sdk.git
+                    cd ${WORKSPACE}/node_modules/rainbow-node-sdk/
+                    yarn install 
+                    grunt debugDeliveryBuild --verbose
+                        
+                    #cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing 
+                    #pwd
+                    #cp ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing/mailChangelog.js ${WORKSPACE}/mailing/ 
+
+                    ${SENDEMAIL} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing && node mailChangelog.js notify  notify -e production -f ${WORKSPACE}/mailing/changelog.yaml -p ${WORKSPACE}/package.json -m "Node RED Contrib." -c ${WORKSPACE}/CHANGELOG.md -h "CHANGELOG of Rainbow NodeRed Contrib"
+                    ${SENDEMAIL} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing && node ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW}  changeLog=${WORKSPACE}/CHANGELOG.md changeLogTitle="Rainbow Node NodeRed Contrib" packageJson=${WORKSPACE}/package.json
+
+                    # To send the mailing only to vincent.berder@al-enterprise.com . 
+                    ${SENDEMAILTOVBERDER} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing && node mailChangelog.js notify -e production -t vincent.berder@al-enterprise.com -f ${WORKSPACE}/mailing/changelog.yaml -p ${WORKSPACE}/package.json -m \\\"Node RED Contrib\\\" -c ${WORKSPACE}/CHANGELOG.md -h \\\"CHANGELOG of Rainbow NodeRed Contrib\\\" 
+                    ${SENDEMAILTOVBERDER} && cd ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing && node ${WORKSPACE}/node_modules/rainbow-node-sdk/mailing/postChangeLogInChannel.js host=official login=${VBERDERRB_USR} password=${VBERDERRB_PSW} appID=${APP_USR} appSecret=${APP_PSW} channelName=RNodeSdkChangeLog changeLog=${WORKSPACE}/CHANGELOG.md changeLogTitle=\"Rainbow Node NodeRed Contrib\" packageJson=${WORKSPACE}/package.json
+                    
+                    cd ${WORKSPACE}
                 """
-                }                
-            }
+                
+                withCredentials([sshUserPrivateKey(credentialsId: 'c75fd541-3fca-4399-b551-ab8288126dec', keyFileVariable: 'private_key', passphraseVariable: 'passphrase_value', usernameVariable: '')]){
+                
+                    // start ssh-agent
+                    sh 'ssh-agent /bin/bash'
+                
+                    // add private key to ssh-agent, check if private key is successfully added and git clone using the private key
+                
+                    sh """
+                           echo ---------- PUSH tags AND files :
+                           eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l 
+                           ${PUSHTAGSONGIT} && git tag -a ${RAINBOWNODEREDSDKVERSION} -m "${RAINBOWNODEREDSDKVERSION} version."
+                           ${PUSHTAGSONGIT} && git push  origin HEAD:${env.BRANCH_NAME} 
+                           ${PUSHTAGSONGIT} && git push --tags origin HEAD:${env.BRANCH_NAME}
+                           # ${PUSHTAGSONGIT} && eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l &&  git push  origin HEAD:${env.BRANCH_NAME} 
+                           # ${PUSHTAGSONGIT} && eval \$(ssh-agent) && echo ${passphrase_value} | ssh-add ${private_key} && ssh-add -l && git push --tags origin HEAD:${env.BRANCH_NAME}
+                           git ls-remote
+                    """
+                
+                }
+                
+            }                
+         }
     }
     post {
         always {
