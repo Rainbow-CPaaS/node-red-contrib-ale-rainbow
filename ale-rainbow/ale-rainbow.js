@@ -11,6 +11,10 @@ module.exports = function (RED) {
     let servicesArray = [];
     let isFunction = require("node:util").isFunction;
 
+    function isObject (value) {
+        return (value !== null && typeof value === 'object');
+    }
+
     function isPromise (x) {
         let isProm = utilTypes.isPromise(x) || x.constructor.name === 'Promise' || x.constructor.name === 'AsyncFunction';
         return isProm ;
@@ -1669,6 +1673,9 @@ module.exports = function (RED) {
                     let serviceSdkObj = node.server.rainbow.sdk[accessorServiceName.name]; 
                     if (serviceSdkObj && isFunction(serviceSdkObj[sdkApiName])) {
                         let resultApiCall = serviceSdkObj[sdkApiName].apply(serviceSdkObj, msg.payload.params);
+                        if (!isObject(msg.payload)) {
+                            msg.payload = {};
+                        }
                         if (isPromise(resultApiCall)) {
                             Promise.race([resultApiCall]).then((result) => {
                                 msgSent++;
@@ -1807,8 +1814,8 @@ module.exports = function (RED) {
                     if (NodeSDKServiceDocJSONNodeRed && NodeSDKServiceDocJSONService) {
                         //console.log("Rainbow BubblesService NodeSDKServiceDocJSONNodeRed JSON : ", NodeSDKServiceDocJSONNodeRed);
                         if ((NodeSDKServiceDocJSONNodeRed.value === "true" || NodeSDKServiceDocJSONNodeRed.value === true) && (NodeSDKServiceDocJSONService.value === "true" || NodeSDKServiceDocJSONService.value === true) && (NodeSDKServiceDocJSON["kind"] === "member")) {
-                            console.log("Rainbow NodeSDKServiceDocJSON JSON : ", NodeSDKServiceDocJSON);
-                            console.log("Rainbow NodeSDKServiceDocJSON properties : ", NodeSDKServiceDocJSON.properties);
+                            //console.log("Rainbow NodeSDKServiceDocJSON JSON : ", NodeSDKServiceDocJSON);
+                            //console.log("Rainbow NodeSDKServiceDocJSON properties : ", NodeSDKServiceDocJSON.properties);
                             let serviceObj = {};
                             if (Array.isArray(NodeSDKServiceDocJSON.properties) && NodeSDKServiceDocJSON.properties[0] != undefined) {
                                 serviceObj.name = NodeSDKServiceDocJSON.properties[0].name;

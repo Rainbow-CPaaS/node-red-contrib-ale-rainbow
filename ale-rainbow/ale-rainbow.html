@@ -130,6 +130,22 @@
         });
         // */
 
+        /**
+         * Transforms JSONDoc into JavaDoc-like format.
+         * @param jsonDoc - The JSON array representing parameter metadata.
+         * @returns A string formatted as JavaDoc.
+         */
+        function transformToJavaDoc(jsonDoc) {
+            let javadoc = "/**\n";
+
+            jsonDoc.forEach((param) => {
+                javadoc += ` * @param \{ ${param.type.names.join('|')} \} ${param.name} - ${param.description}\n`;
+            });
+
+            javadoc += " */";
+            return javadoc;
+        }
+
         function getApiFromName(apiName) {
             let apiObject = apisArray.find((item) => {
                 console.log("getApiFromName - item.name : " + item? item.name:"" + ", apiName : ", apiName);
@@ -222,10 +238,12 @@
                                             $("#label-description").val(str.replace(regex, "\n"));
 
                                             if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
-                                                $("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
+                                                /* $("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
                                                 let str = $("#label-params").val();
                                                 let regex = /<br\s*[\/]?>/gi;
                                                 $("#label-params").val(str.replace(regex, "\n"));
+                                                // */
+                                                $("#label-params").val(transformToJavaDoc(apiObject.params));
                                             }
                                             else {
                                                 $("#label-params").val("--");
@@ -335,10 +353,12 @@
                                         $("#label-description").val(str.replace(regex, "\n"));
 
                                         if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
-                                            $("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
+                                            /*$("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
                                             let str = $("#label-params").val();
                                             let regex = /<br\s*[\/]?>/gi;
                                             $("#label-params").val(str.replace(regex, "\n"));
+                                            // */
+                                            $("#label-params").val(transformToJavaDoc(apiObject.params));
                                         }
                                         else {
                                             $("#label-params").val("--");
@@ -402,10 +422,13 @@
                             $("#label-description").val(str.replace(regex, "\n"));
 
                             if (apiObject.params && Array.isArray(apiObject.params) && apiObject.params.length > 0) {
+                                /*
                                 $("#label-params").val(JSON.stringify(apiObject.params, null, '\t'));
                                 let str = $("#label-params").val();
                                 let regex = /<br\s*[\/]?>/gi;
                                 $("#label-params").val(str.replace(regex, "\n"));
+                                // */
+                                $("#label-params").val(transformToJavaDoc(apiObject.params));
                             }
                             else {
                                 $("#label-params").val("--");
@@ -953,6 +976,7 @@
         <h3>Output :</h3>
         <code>msg.payload</code> contains <b>relevant</b> :<br>
         <ul>
+            <li><code>serviceName</code> : The name of the SDK's service called,</li>
             <li><code>apiName</code> : The name of the SDK's api called,</li>
             <li><code>apiResult</code> : The result returned by the SDK's api call.</li>
         </ul>

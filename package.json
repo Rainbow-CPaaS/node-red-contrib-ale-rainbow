@@ -10,9 +10,9 @@
     "adaptivecards-templating": "^2.3.1",
     "colors": "^1.4.0",
     "moment-timezone": "^0.5.43",
-    "rainbow-node-sdk": "^2.29.0",
     "node-red": "^3.0.2",
     "node-red-dashboard": "~3.6.0",
+    "rainbow-node-sdk": "^2.25.2-lts.11",
     "safe-stable-stringify": "^2.4.3"
   },
   "keywords": [
